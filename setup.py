@@ -15,7 +15,7 @@ setup(
     name="chinese-name-processor",
     version="2.0.0",
     author="Ma Jiaxin",
-    author_email="ma.jiaxin@student.msu.ru",
+    author_email="majiaxing@mail.ru",
     description="中文姓名处理和验证模块 - ИСТИНА系统",
     long_description=long_description,
     long_description_content_type="text/markdown",
