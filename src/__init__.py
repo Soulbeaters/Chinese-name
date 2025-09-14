@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-ChineseNameProcessor - 中文姓名处理模块 / Chinese Name Processing Module
+ChineseNameProcessor - Модуль обработки китайских имён / 中文姓名处理模块
 
 Автор / 作者: Ма Цзясин (Ma Jiaxin)
 Проект / 项目: ИСТИНА - Интеллектуальная Система Тематического Исследования НАукометрических данных
+             智能科学计量数据专题研究系统
 
-版本 / Version: 2.0.0
+Версия / 版本: 2.0.0
 """
 
 from .chinese_name_processor import ChineseNameProcessor, SurnameDatabase, NameComponents, NameParsingResult
@@ -29,10 +30,10 @@ __all__ = [
 
 def create_default_processor():
     """
-    创建默认的中文姓名处理器 / Create default Chinese name processor
+    Создать процессор китайских имён по умолчанию / 创建默认的中文姓名处理器
 
     Returns:
-        ChineseNameProcessor: 配置好的处理器实例 / Configured processor instance
+        ChineseNameProcessor: Настроенный экземпляр процессора / 配置好的处理器实例
     """
     from .chinese_name_processor import create_default_processor
     return create_default_processor()

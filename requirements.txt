@@ -1,11 +1,11 @@
-# 核心依赖 / Core Dependencies
+# Основные зависимости / 核心依赖
 # ChineseNameProcessor v2.0.0
 
-# 可选依赖 / Optional Dependencies
-pypinyin>=0.44.0  # 拼音转换支持 / Pinyin conversion support
+# Опциональные зависимости / 可选依赖
+pypinyin>=0.44.0  # Поддержка конверсии пиньинь / 拼音转换支持
 
-# 开发依赖 / Development Dependencies
-pytest>=6.0      # 测试框架 / Testing framework
-pytest-cov       # 覆盖率测试 / Coverage testing
-black            # 代码格式化 / Code formatting
-flake8           # 代码质量检查 / Code quality checking
+# Зависимости разработки / 开发依赖
+pytest>=6.0      # Фреймворк тестирования / 测试框架
+pytest-cov       # Тестирование покрытия / 覆盖率测试
+black            # Форматирование кода / 代码格式化
+flake8           # Проверка качества кода / 代码质量检查

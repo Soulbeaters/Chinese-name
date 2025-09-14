@@ -1,98 +1,114 @@
-# ChineseNameProcessor - 中文姓名处理模块
+# ChineseNameProcessor - Модуль обработки китайских имён / 中文姓名处理模块
 
 [![Python 3.7+](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/istina/chinese-name-processor)
+[![Version](https://img.shields.io/badge/version-2.0.0-green.svg)](https://github.com/Soulbeaters/Chinese-name)
+[![MSU](https://img.shields.io/badge/МГУ-ИСТИНА-red.svg)](https://istina.msu.ru/)
 
-**Русский** | **中文** | **English**
+**Русский** | **中文**
 
+Модуль обработки и верификации китайских имён для системы ИСТИНА - версия 2.0.0 (крупное обновление)
 ИСТИНА系统中文姓名处理和验证模块 - 版本2.0.0重大更新
 
-## 🚀 快速开始 / Quick Start
+## 🚀 Быстрый старт / 快速开始
 
 ```bash
-# 安装 / Installation
+# Установка / 安装
 pip install -e .
 
-# 基本使用 / Basic Usage
+# Базовое использование / 基本使用
 from src import create_default_processor
 
 processor = create_default_processor()
 result = processor.process_name("李小明")
-print(f"姓氏: {result.components.surname}")
-print(f"名字: {result.components.first_name}")
-print(f"置信度: {result.confidence_score:.3f}")
+print(f"Фамилия / 姓氏: {result.components.surname}")
+print(f"Имя / 名字: {result.components.first_name}")
+print(f"Достоверность / 置信度: {result.confidence_score:.3f}")
 ```
 
-## 📁 项目结构 / Project Structure
+## 📁 Структура проекта / 项目结构
 
 ```
-C:\program 1 in 2025\
-├── src/                    # 源代码 / Source code
-│   ├── chinese_name_processor.py    # 核心处理器 / Core processor
-│   ├── transliteration_db.py        # 音译数据库 / Transliteration database
-│   └── surname_trie.py              # Trie树实现 / Trie implementation
-├── tests/                  # 测试文件 / Test files
-├── docs/                   # 文档 / Documentation
-│   └── README_ChineseNameProcessor.md  # 详细文档 / Detailed docs
-├── examples/               # 示例代码 / Example code
-├── utils/                  # 工具脚本 / Utility scripts
-├── setup.py               # 安装配置 / Setup configuration
-├── requirements.txt       # 依赖列表 / Dependencies
-└── LICENSE               # 许可证 / License
+Chinese-Name/
+├── src/                              # Исходный код / 源代码
+│   ├── chinese_name_processor.py    # Основной процессор / 核心处理器
+│   ├── transliteration_db.py        # База данных транслитерации / 音译数据库
+│   └── surname_trie.py              # Реализация Trie-дерева / Trie树实现
+├── tests/                           # Тестовые файлы / 测试文件
+├── docs/                            # Документация / 文档
+│   └── README_ChineseNameProcessor.md  # Подробная документация / 详细文档
+├── examples/                        # Примеры кода / 示例代码
+├── utils/                           # Утилитарные скрипты / 工具脚本
+├── setup.py                         # Конфигурация установки / 安装配置
+├── requirements.txt                 # Список зависимостей / 依赖列表
+└── LICENSE                          # Лицензия / 许可证
 ```
 
-## ✨ 新功能 v2.0.0 / New Features v2.0.0
+## ✨ Новые возможности v2.0.0 / v2.0.0新功能
 
-- ✅ **Trie树高性能搜索** - O(n)→O(m)性能提升
-- ✅ **混合文字处理** - 支持"张John", "David李"格式
-- ✅ **动态语料库学习** - 自动发现新姓氏
-- ✅ **扩展音译数据库** - 支持变体和连字符
-- ✅ **多级置信度评估** - 7级精确评分系统
-- ✅ **关键错误修复** - 6个重要问题解决
+- ✅ **Высокопроизводительный поиск с Trie-деревом** - повышение производительности O(n)→O(m) / Trie树高性能搜索 - O(n)→O(m)性能提升
+- ✅ **Обработка смешанного письма** - поддержка форматов "张John", "David李" / 混合文字处理 - 支持"张John", "David李"格式
+- ✅ **Динамическое обучение на корпусах** - автоматическое обнаружение новых фамилий / 动态语料库学习 - 自动发现新姓氏
+- ✅ **Расширенная база данных транслитерации** - поддержка вариантов и дефисов / 扩展音译数据库 - 支持变体和连字符
+- ✅ **Многоуровневая оценка достоверности** - 7-уровневая система точного скоринга / 多级置信度评估 - 7级精确评分系统
+- ✅ **Исправление критических ошибок** - решение 6 важных проблем / 关键错误修复 - 6个重要问题解决
 
-## 📊 性能指标 / Performance Metrics
+## 📊 Показатели производительности / 性能指标
 
-- **处理速度**: 300-2000 姓名/秒
-- **准确率**: 有效案例100%
-- **内存使用**: Trie优化，低内存消耗
-- **并发支持**: 线程安全设计
+- **Скорость обработки / 处理速度**: 300-2000 имён/сек / 姓名/秒
+- **Точность / 准确率**: 100% для валидных случаев / 有效案例100%
+- **Использование памяти / 内存使用**: Оптимизация Trie, низкое потребление / Trie优化，低内存消耗
+- **Поддержка параллелизма / 并发支持**: Потокобезопасный дизайн / 线程安全设计
 
-## 🧪 测试 / Testing
+## 🧪 Тестирование / 测试
 
 ```bash
-# 运行所有测试 / Run all tests
+# Запуск всех тестов / 运行所有测试
 python -m pytest tests/
 
-# 特定功能测试 / Specific feature tests
+# Тесты конкретных функций / 特定功能测试
 python tests/test_trie_integration.py
 python tests/test_mixed_script.py
 python tests/test_corpus_learning.py
 ```
 
-## 📖 文档 / Documentation
+## 📖 Документация / 文档
 
+Подробную документацию см.: [Полная документация](docs/README_ChineseNameProcessor.md)
 详细文档请参阅：[完整文档](docs/README_ChineseNameProcessor.md)
 
-## 🏛️ ИСТИНА系统集成 / ISTINA System Integration
+## 🏛️ Интеграция с системой ИСТИНА / ИСТИНА系统集成
 
+Данный модуль специально разработан для системы ИСТИНА Московского государственного университета и поддерживает:
 本模块专为莫斯科国立大学ИСТИНА系统设计，支持：
-- 科学计量数据处理
-- 作者姓名标准化
-- 多语言姓名识别
-- 大规模数据验证
 
-## 👥 作者 / Authors
+- Обработка наукометрических данных / 科学计量数据处理
+- Стандартизация имён авторов / 作者姓名标准化
+- Распознавание многоязычных имён / 多语言姓名识别
+- Валидация больших объёмов данных / 大规模数据验证
 
-**Ма Цзясин (Ma Jiaxin)**
-博士生 / PhD Student
-莫斯科国立大学计算机科学系 / MSU Computer Science Department
-导师: д.ф.-м.н. профессор Васенин В.А.
+## 👥 Автор / 作者
 
-## 📄 许可证 / License
+**Ма Цзясин (Ma Jiaxin) / 马嘉星**
+Аспирант кафедры вычислительных технологий / 计算技术系博士生
+Московский государственный университет им. М.В. Ломоносова / 莫斯科国立大学
+Научный руководитель: д.ф.-м.н. профессор **Васенин В.А.** / 导师: 瓦先宁教授
+Email: majiaxing@mail.ru
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+## 📄 Лицензия / 许可证
+
+MIT License - см. файл [LICENSE](LICENSE) / 详见 [LICENSE](LICENSE) 文件
+
+## 🔗 Ссылки / 链接
+
+- **GitHub**: https://github.com/Soulbeaters/Chinese-name
+- **Система ИСТИНА / ИСТINA系统**: https://istina.msu.ru/
+- **МГУ им. М.В. Ломоносова / 莫斯科国立大学**: https://www.msu.ru/
 
 ---
 
-© 2025 Moscow State University ISTINA Development Team
+© 2025 Московский государственный университет им. М.В. Ломоносова
+Команда разработки системы ИСТИНА
+
+© 2025 Moscow State University
+ISTINA System Development Team / ИСТИНА系统开发团队
