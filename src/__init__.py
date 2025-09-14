@@ -14,7 +14,7 @@ from .surname_trie import SurnameTrie, create_optimized_surname_trie
 
 __version__ = "2.0.0"
 __author__ = "Ma Jiaxin"
-__email__ = "ma.jiaxin@student.msu.ru"
+__email__ = "majiaxing@mail.ru"
 
 __all__ = [
     'ChineseNameProcessor',
