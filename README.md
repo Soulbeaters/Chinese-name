@@ -90,9 +90,7 @@ python tests/test_corpus_learning.py
 ## 👥 Автор / 作者
 
 **Ма Цзясин (Ma Jiaxin) / 马嘉星**
-Аспирант кафедры вычислительных технологий / 计算技术系博士生
 Московский государственный университет им. М.В. Ломоносова / 莫斯科国立大学
-Научный руководитель: д.ф.-м.н. профессор **Васенин В.А.** / 导师: 瓦先宁教授
 Email: majiaxing@mail.ru
 
 ## 📄 Лицензия / 许可证
@@ -102,13 +100,9 @@ MIT License - см. файл [LICENSE](LICENSE) / 详见 [LICENSE](LICENSE) 文�
 ## 🔗 Ссылки / 链接
 
 - **GitHub**: https://github.com/Soulbeaters/Chinese-name
-- **Система ИСТИНА / ИСТINA系统**: https://istina.msu.ru/
 - **МГУ им. М.В. Ломоносова / 莫斯科国立大学**: https://www.msu.ru/
 
 ---
 
 © 2025 Московский государственный университет им. М.В. Ломоносова
-Команда разработки системы ИСТИНА
-
-© 2025 Moscow State University
-ISTINA System Development Team / ИСТИНА系统开发团队
+© 2025 Moscow State University / 莫斯科国立大学
