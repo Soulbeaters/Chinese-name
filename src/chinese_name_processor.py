@@ -4,26 +4,45 @@
 基于ISTINA风格，只保留核心功能 / На основе стиля ИСТИНА, только основная функциональность
 """
 import re
+import sys
+from pathlib import Path
+
+# 导入完整的姓氏数据库 / Импорт полных баз данных фамилий
+try:
+    # 尝试相对导入 / Попытка относительного импорта
+    from ..data.chinese_surnames import SINGLE_SURNAMES, COMPOUND_SURNAMES, ALL_SURNAMES
+    from ..data.surname_pinyin_db import is_surname_pinyin, SURNAME_PINYIN_SET
+    from ..data.surname_russian_db import is_surname_russian, SURNAME_RUSSIAN_SET
+except (ImportError, ValueError):
+    try:
+        # 尝试添加路径 / Попытка добавить путь
+        data_path = Path(__file__).parent.parent / 'data'
+        sys.path.insert(0, str(data_path))
+        from chinese_surnames import SINGLE_SURNAMES, COMPOUND_SURNAMES, ALL_SURNAMES
+        from surname_pinyin_db import is_surname_pinyin, SURNAME_PINYIN_SET
+        from surname_russian_db import is_surname_russian, SURNAME_RUSSIAN_SET
+    except ImportError:
+        # 备用：使用基础数据 / Резервный вариант
+        SINGLE_SURNAMES = {'李', '王', '张', '刘', '陈', '杨', '黄', '赵', '吴', '周'}
+        COMPOUND_SURNAMES = {'欧阳', '司马', '诸葛', '上官'}
+        ALL_SURNAMES = SINGLE_SURNAMES | COMPOUND_SURNAMES
+        SURNAME_PINYIN_SET = set()
+        SURNAME_RUSSIAN_SET = set()
+
+        def is_surname_pinyin(text):
+            basic_surnames = {'li', 'wang', 'zhang', 'liu', 'chen', 'yang', 'huang', 'zhao'}
+            return text.lower() in basic_surnames
+
+        def is_surname_russian(text):
+            return False
 
 # 正则 / Регулярные выражения
 SEP_RE = re.compile(r'[.,;\s+]')
 
-# 中文姓氏库（高频Top50） / База китайских фамилий (топ-50)
-SURNAMES = {
-    '李': 95, '王': 92, '张': 90, '刘': 85, '陈': 80, '杨': 77, '黄': 74,
-    '赵': 72, '吴': 70, '周': 69, '徐': 64, '孙': 63, '马': 62, '朱': 60,
-    '胡': 59, '郭': 58, '何': 57, '高': 56, '林': 55, '罗': 52, '郑': 50,
-    '梁': 48, '谢': 46, '宋': 45, '唐': 43, '许': 42, '韩': 40, '冯': 38,
-    '邓': 36, '曹': 35, '彭': 33, '曾': 32, '萧': 30, '田': 28, '董': 27,
-    # 复合姓 / Составные фамилии
-    '欧阳': 15, '司马': 12, '诸葛': 11, '上官': 10,
-}
-
-# 音译映射（精简） / Транслитерация (упрощенная)
-PINYIN = {
-    'li': '李', 'wang': '王', 'zhang': '张', 'liu': '刘', 'chen': '陈',
-    'yang': '杨', 'huang': '黄', 'zhao': '赵', 'wu': '吴', 'zhou': '周',
-}
+# 兼容性：保留旧的SURNAMES字典 / Совместимость
+SURNAMES = {surname: 90 for surname in SINGLE_SURNAMES}
+for surname in COMPOUND_SURNAMES:
+    SURNAMES[surname] = 80
 
 
 def is_chinese(char):
@@ -43,10 +62,10 @@ def process_name(name):
     # 纯中文姓名 / Чисто китайское имя
     if all(is_chinese(c) for c in name):
         # 尝试双字姓 / Попытка составной фамилии
-        if len(name) >= 2 and name[:2] in SURNAMES:
+        if len(name) >= 2 and name[:2] in COMPOUND_SURNAMES:
             return name[:2], name[2:]
         # 单字姓 / Однословная фамилия
-        if name[0] in SURNAMES:
+        if name[0] in SINGLE_SURNAMES:
             return name[0], name[1:]
         # 默认第一个字为姓 / По умолчанию первый символ
         return name[0], name[1:] if len(name) > 1 else ""
@@ -56,17 +75,21 @@ def process_name(name):
     if not parts:
         return None, None
 
-    # 查找姓氏 / Поиск фамилии
+    # 查找姓氏：检查是否为已知拼音姓氏 / Поиск фамилии
     surname = parts[0]
-    if surname in PINYIN:
-        return PINYIN[surname], " ".join(parts[1:])
+    if is_surname_pinyin(surname):
+        # 保持原样返回拼音形式 / Вернуть в пиньинь форме
+        return surname.capitalize(), " ".join(parts[1:]).capitalize()
 
     # 默认处理 / Обработка по умолчанию
     return parts[0].capitalize(), " ".join(parts[1:]).capitalize()
 
 
 # 集成姓名顺序检测 / Интеграция определения порядка
-from .name_order_detector import detect_order, parse_authors
+try:
+    from .name_order_detector import detect_order, parse_authors
+except ImportError:
+    from name_order_detector import detect_order, parse_authors
 
 
 class ChineseNameProcessor:
@@ -120,8 +143,23 @@ class ChineseNameProcessor:
         return [self.detect_name_order(n) for n in names]
 
     def is_known_surname(self, surname):
-        """检查姓氏"""
-        return surname in SURNAMES or surname.upper() in {'ZHANG', 'LI', 'WANG', 'LIU'}
+        """检查姓氏 / Проверка фамилии"""
+        if not surname:
+            return False
+
+        # 检查中文姓氏 / Проверка китайской фамилии
+        if surname in ALL_SURNAMES:
+            return True
+
+        # 检查拼音姓氏 / Проверка пиньинь фамилии
+        if is_surname_pinyin(surname):
+            return True
+
+        # 检查俄语姓氏 / Проверка русской фамилии
+        if is_surname_russian(surname):
+            return True
+
+        return False
 
 
 def create_default_processor():
@@ -131,11 +169,27 @@ def create_default_processor():
 
 # 兼容旧API / Совместимость со старым API
 class SurnameDatabase:
-    """极简姓氏数据库 / Минимальная база фамилий"""
+    """完整姓氏数据库 / Полная база фамилий"""
 
     def __init__(self):
         self.surnames = SURNAMES
+        self.all_surnames = ALL_SURNAMES
 
     def is_known_surname(self, surname):
-        """检查姓氏"""
-        return surname in SURNAMES or surname.upper() in {'ZHANG', 'LI', 'WANG', 'LIU'}
+        """检查姓氏 / Проверка фамилии"""
+        if not surname:
+            return False
+
+        # 检查中文姓氏 / Проверка китайской фамилии
+        if surname in ALL_SURNAMES:
+            return True
+
+        # 检查拼音姓氏 / Проверка пиньинь фамилии
+        if is_surname_pinyin(surname):
+            return True
+
+        # 检查俄语姓氏 / Проверка русской фамилии
+        if is_surname_russian(surname):
+            return True
+
+        return False
