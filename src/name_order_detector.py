@@ -50,14 +50,50 @@ _NAMES = {
 }
 
 
+def _clean_name_string(name_string):
+    """
+    清洗姓名字符串 / Очистка строки имени
+    处理无效字符、连字符等 / Обработка невалидных символов, дефисов
+    """
+    # 去除首尾空白 / Удаление пробелов
+    cleaned = name_string.strip()
+
+    # 去除开头的无效字符（如 -ZH 的开头破折号）/ Удаление невалидных символов в начале
+    cleaned = re.sub(r'^[^\w\u4e00-\u9fff]+', '', cleaned, flags=re.U)
+
+    # 处理连字符姓名：Tian-Ye → Tian Ye / Обработка имен с дефисом
+    # 但保留单字母连字符（如A-B）/ Но сохранить односимвольные с дефисом
+    def replace_hyphen(match):
+        parts = match.group(0).split('-')
+        # 如果都是多字母单词，替换为空格 / Если многобуквенные слова, заменить на пробел
+        if all(len(p) > 1 for p in parts):
+            return ' '.join(parts)
+        return match.group(0)
+
+    cleaned = re.sub(r'(\w{2,})-(\w{2,})', replace_hyphen, cleaned, flags=re.U)
+
+    return cleaned
+
+
 def detect_order(name_string, surname_db=None):
     """
     检测姓名顺序 / Определение порядка имени
     返回: 1(姓-名), 0(未知), -1(名-姓) / Возвращает: 1, 0, -1
+
+    改进策略 / Улучшенная стратегия:
+    1. 使用姓氏数据库判断位置 / Использование базы фамилий
+    2. 结合名字特征判断 / Комбинация с характеристиками имен
+    3. 多重证据综合判断 / Комплексная оценка
     """
+    # 清洗输入 / Очистка входа
+    name_string = _clean_name_string(name_string)
+
     names = [x.upper() for x in NAME_SEP_RE.split(name_string.strip()) if x]
     if not names:
         return 0
+
+    if len(names) == 1:
+        return 0  # 单个词无法判断
 
     # 判断每个部分是否为名字 / Определение, является ли каждая часть именем
     is_name = lambda n: (_NAMES.get(n, 0) >= 30 or
@@ -67,13 +103,42 @@ def detect_order(name_string, surname_db=None):
 
     name_map = [is_name(n) for n in names]
 
-    # 推断顺序 / Вывод порядка
+    # 新增：检查姓氏位置 / Проверка позиции фамилии
+    first_is_surname = False
+    last_is_surname = False
+
+    if surname_db and hasattr(surname_db, 'is_known_surname'):
+        first_is_surname = surname_db.is_known_surname(names[0])
+        last_is_surname = surname_db.is_known_surname(names[-1])
+
+    # 综合判断逻辑 / Комплексная логика
+    # 1. 如果第一个是姓，最后一个不是姓 → 姓-名
+    if first_is_surname and not last_is_surname:
+        return 1
+
+    # 2. 如果最后一个是姓，第一个不是姓 → 名-姓
+    if last_is_surname and not first_is_surname:
+        return -1
+
+    # 3. 如果两个都是姓，看名字特征
+    if first_is_surname and last_is_surname:
+        # 如果中间有明显的名字特征，第一个应该是姓
+        if len(names) > 2 and any(name_map[1:-1]):
+            return 1
+        # 如果第二个部分像名字，第一个是姓
+        if len(names) >= 2 and name_map[1]:
+            return 1
+        # 默认返回未确定
+        return 0
+
+    # 4. 如果都不是已知姓氏，使用原有逻辑
     if not any(name_map):
         return 0
     if name_map[0]:
         return -1  # 第一个是名 / Первое - имя
     if any(name_map[1:]):
         return 1   # 后面有名 / Есть имя после
+
     return 0
 
 
@@ -82,6 +147,9 @@ def parse_author(author, order):
     解析单个作者 / Разбор одного автора
     返回: (surname, firstname, middlename) / Возвращает: (фамилия, имя, отчество)
     """
+    # 清洗输入 / Очистка входа
+    author = _clean_name_string(author)
+
     names = [x for x in NAME_SEP_RE.split(author.strip()) if x]
     if not names:
         return None
@@ -114,6 +182,9 @@ def parse_authors(authors_string, surname_db=None):
     解析作者列表 / Разбор списка авторов
     返回: [(surname, firstname, middlename, is_first), ...]
     """
+    # 清洗输入 / Очистка входа
+    authors_string = _clean_name_string(authors_string)
+
     # 分割作者 / Разделение авторов
     if ";" in authors_string or "；" in authors_string:
         parts = re.split(r'[;；]', authors_string)
@@ -164,8 +235,11 @@ class NameOrderDetector:
 
     def detect_name_order(self, name):
         """检测姓名顺序，返回AuthorNameParts对象"""
+        # 清洗输入 / Очистка входа
+        cleaned_name = _clean_name_string(name)
+
         order = detect_order(name, self.surname_db)
-        parts = [x for x in NAME_SEP_RE.split(name.strip()) if x]
+        parts = [x for x in NAME_SEP_RE.split(cleaned_name.strip()) if x]
 
         # 判断每个部分是否为名字
         is_first_name_map = [self._is_given_name(p) for p in parts]
