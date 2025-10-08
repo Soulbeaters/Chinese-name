@@ -25,6 +25,7 @@ class AuthorNameParts:
     detected_order: NameOrder
     is_first_name_map: List[bool]
     confidence: float = 0.8
+    is_non_chinese: bool = False  # 是否为非中文姓氏 / Не китайская фамилия
 
 
 @dataclass
@@ -81,10 +82,33 @@ def detect_order(name_string, surname_db=None):
     返回: 1(姓-名), 0(未知), -1(名-姓) / Возвращает: 1, 0, -1
 
     改进策略 / Улучшенная стратегия:
-    1. 使用姓氏数据库判断位置 / Использование базы фамилий
-    2. 结合名字特征判断 / Комбинация с характеристиками имен
-    3. 多重证据综合判断 / Комплексная оценка
+    1. 中国学者署名规范识别 / Распознавание норм китайских ученых
+    2. 使用姓氏数据库判断位置 / Использование базы фамилий
+    3. 结合名字特征判断 / Комбинация с характеристиками имен
+    4. 多重证据综合判断 / Комплексная оценка
     """
+    # 在清洗前检查连字符模式 / Проверка дефиса до очистки
+    original_parts = name_string.strip().split()
+    has_hyphen_in_original = any('-' in part for part in original_parts)
+
+    # 规则2: 连字符复合名格式 / Правило 2: Имя с дефисом
+    # "Rui-Chen Song" → 名-名 姓 (连字符在前，姓在后)
+    # "Wu Bing-Ru" → 姓 名-名 (连字符在后，姓在前)
+    if has_hyphen_in_original and len(original_parts) >= 2 and surname_db and hasattr(surname_db, 'is_known_surname'):
+        first_has_hyphen = '-' in original_parts[0]
+        last_has_hyphen = '-' in original_parts[-1]
+
+        # 检查姓氏位置（使用原始部分）
+        first_is_sur = surname_db.is_known_surname(original_parts[0].upper().replace('-', ''))
+        last_is_sur = surname_db.is_known_surname(original_parts[-1].upper().replace('-', ''))
+
+        if first_has_hyphen and not last_has_hyphen and last_is_sur:
+            # "Sheng-Lan Xu" 模式：名-名 姓
+            return -1  # GIVEN_NAME_FIRST
+        elif not first_has_hyphen and last_has_hyphen and first_is_sur:
+            # "Wu Bing-Ru" 模式：姓 名-名
+            return 1  # SURNAME_FIRST
+
     # 清洗输入 / Очистка входа
     name_string = _clean_name_string(name_string)
 
@@ -94,6 +118,21 @@ def detect_order(name_string, surname_db=None):
 
     if len(names) == 1:
         return 0  # 单个词无法判断
+
+    # 规则1: 缩写名字格式 - "Zhang L." / Правило 1: Сокращенное имя
+    # 中国学者习惯: [姓氏] [名字缩写.] 格式 100% 是姓-名顺序
+    # Китайские ученые: [фамилия] [инициал.]
+    if len(names) == 2:
+        second_part = names[1]
+        # 检查第二部分是否为缩写 (单字母+点，或两字母+点)
+        is_abbreviation = (len(second_part) <= 3 and
+                          second_part.endswith('.') and
+                          second_part[0].isalpha())
+
+        if is_abbreviation and surname_db and hasattr(surname_db, 'is_known_surname'):
+            # 如果第一部分是已知姓氏，确定为姓-名格式
+            if surname_db.is_known_surname(names[0]):
+                return 1  # SURNAME_FIRST
 
     # 判断每个部分是否为名字 / Определение, является ли каждая часть именем
     is_name = lambda n: (_NAMES.get(n, 0) >= 30 or
@@ -131,13 +170,17 @@ def detect_order(name_string, surname_db=None):
         # 默认返回未确定
         return 0
 
-    # 4. 如果都不是已知姓氏，使用原有逻辑
-    if not any(name_map):
-        return 0
-    if name_map[0]:
-        return -1  # 第一个是名 / Первое - имя
-    if any(name_map[1:]):
-        return 1   # 后面有名 / Есть имя после
+    # 4. 如果都不是已知姓氏，可能是非中文姓氏
+    # 使用原有名字特征判断逻辑 / Использование характеристик имен
+    if not first_is_surname and not last_is_surname:
+        # 都不是中文姓氏，可能是外国姓名
+        # 使用名字特征判断
+        if not any(name_map):
+            return 0  # 无法判断，标记为非中文
+        if name_map[0]:
+            return -1  # 第一个是名 / Первое - имя
+        if any(name_map[1:]):
+            return 1   # 后面有名 / Есть имя после
 
     return 0
 
@@ -248,15 +291,31 @@ class NameOrderDetector:
         order_enum = {1: NameOrder.SURNAME_FIRST, 0: NameOrder.UNDETERMINED,
                       -1: NameOrder.GIVEN_NAME_FIRST}[order]
 
+        # 检查是否为非中文姓氏 / Проверка на не китайскую фамилию
+        is_non_chinese = False
+        if parts and len(parts) >= 2 and self.surname_db and hasattr(self.surname_db, 'is_known_surname'):
+            # 如果第一个和最后一个部分都不是已知中文姓氏，标记为非中文
+            # (这两个位置是姓氏可能出现的地方)
+            first_is_chinese = self.surname_db.is_known_surname(parts[0])
+            last_is_chinese = self.surname_db.is_known_surname(parts[-1])
+            if not first_is_chinese and not last_is_chinese and order_enum == NameOrder.UNDETERMINED:
+                is_non_chinese = True
+
         # 计算置信度
-        confidence = 0.9 if any(is_first_name_map) else 0.5
+        if is_non_chinese:
+            confidence = 0.3  # 非中文姓氏，低置信度
+        elif any(is_first_name_map):
+            confidence = 0.9
+        else:
+            confidence = 0.5
 
         return AuthorNameParts(
             raw_string=name,
             name_parts=parts,
             detected_order=order_enum,
             is_first_name_map=is_first_name_map,
-            confidence=confidence
+            confidence=confidence,
+            is_non_chinese=is_non_chinese
         )
 
     def batch_detect_orders(self, names):
