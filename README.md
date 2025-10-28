@@ -14,6 +14,11 @@ Comprehensive Chinese name processing system for scientometric databases.
 
 ### Core Features / Основные возможности
 
+- ✅ **v3.0 Surname Position Identifier** / Идентификатор позиции фамилии v3.0 **[NEW]**
+  - Identifies which token is surname in "Wei Li" / Определяет, какой токен - фамилия
+  - **58.75% accuracy** on Crossref data (50k sample) / Точность 58.75%
+  - Multi-language support: Chinese, Korean, Japanese, European, Indian
+  - Chinese-Korean name discrimination via given name pattern analysis
 - ✅ **Name order detection** / Определение порядка имени (姓-名 vs 名-姓)
 - ✅ **First author identification** / Определение первого автора
 - ✅ **Author list parsing** / Разбор списков авторов
@@ -21,7 +26,7 @@ Comprehensive Chinese name processing system for scientometric databases.
   - Chinese → Pinyin (English) / Китайский → Пиньинь
   - Chinese → Palladius (Russian) / Китайский → Палладий
 - ✅ **41,923 character coverage** / Покрытие 41,923 иероглифов
-- ✅ **387 surname database** / База 387 фамилий
+- ✅ **387 surname database** (+40 variant mappings, +289 exclusions) / База 387 фамилий
 
 ---
 
@@ -38,6 +43,31 @@ pip install -r requirements.txt
 ---
 
 ## Quick Start / Быстрый старт
+
+### v3.0 Surname Position Identifier (NEW / НОВОЕ)
+
+```python
+from src.surname_identifier import identify_surname_position
+
+# Identify surname position in English publications
+# Определение позиции фамилии в англоязычных публикациях
+
+position, confidence, reason = identify_surname_position(
+    original_name="Wei Li",
+    affiliation="Tsinghua University, Beijing, China"
+)
+
+print(f"Position: {position}")     # "family_first"
+print(f"Confidence: {confidence}") # 0.90
+print(f"Reason: {reason}")         # "姓在前: Li是姓氏拼音→['李','理'...]; 中国机构"
+
+# More examples / Дополнительные примеры
+identify_surname_position("John Smith")[0]       # "given_first"
+identify_surname_position("Mingyuan Han")[0]    # "family_first"
+identify_surname_position("Wei Lee")[0]         # "given_first" (Lee≠中文li)
+```
+
+### Original Chinese Name Processing / Обработка китайских имён
 
 ```python
 from src.chinese_name_processor import create_default_processor

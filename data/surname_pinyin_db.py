@@ -47,6 +47,7 @@ def _generate_pinyin_surname_set():
         '单': ['dan', 'shan'],   # 单作为姓氏读shan
         '朴': ['pu', 'piao'],    # 朴作为姓氏读piao
         '繁': ['fan', 'po'],     # 繁作为姓氏读po
+        '翟': ['di', 'zhai'],    # 翟作为姓氏读zhai
     }
 
     surname_pinyin_set = set()
@@ -88,22 +89,48 @@ def _generate_pinyin_to_surname_map():
     if not PYPINYIN_AVAILABLE:
         return {}
 
+    # 多音字姓氏特殊处理 (同_generate_pinyin_surname_set中的定义)
+    POLYPHONIC_SURNAMES = {
+        '曾': ['ceng', 'zeng'],
+        '仇': ['chou', 'qiu'],
+        '区': ['qu', 'ou'],
+        '查': ['cha', 'zha'],
+        '员': ['yuan', 'yun'],
+        '盖': ['gai', 'ge'],
+        '种': ['zhong', 'chong'],
+        '解': ['jie', 'xie'],
+        '单': ['dan', 'shan'],
+        '朴': ['pu', 'piao'],
+        '繁': ['fan', 'po'],
+        '翟': ['di', 'zhai'],
+    }
+
     pinyin_map = {}
 
     for surname in ALL_SURNAMES:
-        pinyin_parts = lazy_pinyin(surname, style=Style.NORMAL)
+        # 检查是否是多音字
+        if len(surname) == 1 and surname in POLYPHONIC_SURNAMES:
+            # 添加所有可能的读音
+            for py in POLYPHONIC_SURNAMES[surname]:
+                if py not in pinyin_map:
+                    pinyin_map[py] = []
+                if surname not in pinyin_map[py]:
+                    pinyin_map[py].append(surname)
+        else:
+            # 常规处理
+            pinyin_parts = lazy_pinyin(surname, style=Style.NORMAL)
 
-        # 小写连写 / Строчная слитная
-        key = ''.join(pinyin_parts).lower()
-        if key not in pinyin_map:
-            pinyin_map[key] = []
-        pinyin_map[key].append(surname)
+            # 小写连写 / Строчная слитная
+            key = ''.join(pinyin_parts).lower()
+            if key not in pinyin_map:
+                pinyin_map[key] = []
+            pinyin_map[key].append(surname)
 
-        # 小写分写 / Строчная раздельная
-        key = ' '.join(pinyin_parts).lower()
-        if key not in pinyin_map:
-            pinyin_map[key] = []
-        pinyin_map[key].append(surname)
+            # 小写分写 / Строчная раздельная
+            key = ' '.join(pinyin_parts).lower()
+            if key not in pinyin_map:
+                pinyin_map[key] = []
+            pinyin_map[key].append(surname)
 
     return pinyin_map
 
