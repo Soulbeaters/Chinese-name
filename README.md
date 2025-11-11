@@ -66,6 +66,22 @@ The project includes a sample test dataset in the `test_data/` directory:
 
 See [`test_data/README.md`](test_data/README.md) for complete data documentation.
 
+**完整数据集下载 / Скачать полный набор данных / Full Dataset Download:**
+
+GitHub仓库中包含样本数据（0.86MB），完整测试数据集（~490MB）可通过Google Drive获取：
+
+Репозиторий GitHub содержит образцы данных (0.86MB), полный набор тестовых данных (~490MB) доступен через Google Drive:
+
+The GitHub repository contains sample data (0.86MB), the full test dataset (~490MB) is available via Google Drive:
+
+🔗 **[下载完整数据集 / Скачать полные данные / Download Full Dataset](https://drive.google.com/drive/folders/1BHyZJt8MhTPz6isMRoBIT2NVQuf1H6Eq?usp=sharing)**
+
+**完整数据集内容 / Содержание полного набора / Full Dataset Contents:**
+- `full_orcid_data.json` (343 MB) - 31,502篇文章，410,724条作者记录
+- `crossref_authors_formatted.json` (87 MB) - Crossref格式化作者数据
+- `article_authors_map.json` (53 MB) - 文章-作者映射关系
+- `orcid_history.json` (6.5 MB) - ORCID历史记录数据
+
 ---
 
 ## Quick Start / Быстрый старт
