@@ -121,11 +121,69 @@ Chinese-name/
 
 ## Testing / Тестирование
 
+### Unit Tests / Модульные тесты
+
 ```bash
 pytest tests/ -v
 ```
 
 **Result / Результат:** 31/31 tests pass (100%)
+
+### Comprehensive Testing / Комплексное тестирование
+
+The project includes comprehensive test scripts with command-line parameter support for flexible data source configuration and multilingual output (Chinese, Russian, English).
+
+Проект включает комплексные тестовые скрипты с поддержкой параметров командной строки для гибкой настройки источников данных и многоязычного вывода (китайский, русский, английский).
+
+#### Quick Start / Быстрый старт
+
+```bash
+# v5.0 comprehensive test (default: advisor data, Russian output)
+# v5.0 комплексный тест (по умолчанию: данные руководителя, русский вывод)
+python comprehensive_test_v5.py
+
+# v5.0 comprehensive validation (default: advisor data, Russian output)
+# v5.0 комплексная валидация (по умолчанию: данные руководителя, русский вывод)
+python comprehensive_validation_v5.py
+```
+
+#### Using Custom Data Paths / Использование пользовательских путей
+
+```bash
+# Specify custom data path
+# Указать пользовательский путь к данным
+python comprehensive_test_v5.py --data-path "C:/custom/path/crossref_authors.json"
+
+# Specify output file path
+# Указать путь к выходному файлу
+python comprehensive_test_v5.py \
+    --data-path "C:/custom/data.json" \
+    --output "C:/custom/results.json"
+
+# English output
+# Английский вывод
+python comprehensive_test_v5.py --language en
+
+# Chinese output
+# Китайский вывод
+python comprehensive_validation_v5.py --language zh
+```
+
+#### View Help Information / Просмотр справки
+
+```bash
+python comprehensive_test_v5.py --help
+python comprehensive_validation_v5.py --help
+```
+
+**Features / Особенности / 功能特性:**
+- ✅ Flexible data paths / Гибкие пути к данным / 灵活的数据路径
+- ✅ Multilingual output (zh/ru/en) / Многоязычный вывод / 多语言输出
+- ✅ Quality validation / Проверка качества / 质量验证
+- ✅ Detailed reports / Детальные отчеты / 详细报告
+
+**Default Data Path / Путь к данным по умолчанию:**
+- `C:\istina\materia 材料\测试表单\crossref_authors.json`
 
 ---
 
