@@ -156,13 +156,37 @@ python comprehensive_validation_v5.py --data test_data/sample_orcid_data.json
 
 For large-scale testing with the full dataset:
 
-1. **联系项目维护者获取完整数据 / Свяжитесь с maintainer для получения полных данных / Contact project maintainer for full data**
-   - Email: (提供联系方式)
-   - GitHub: [@Soulbeaters](https://github.com/Soulbeaters)
+#### 🔗 通过Google Drive下载完整数据集 / Скачать через Google Drive / Download via Google Drive
 
-2. **自行从Crossref和ORCID API收集数据 / Самостоятельный сбор данных из API / Collect data yourself from APIs**
+完整测试数据集（~490 MB）已上传至Google Drive，包含所有原始数据文件：
+
+Полный набор тестовых данных (~490 MB) загружен на Google Drive, содержит все исходные файлы данных:
+
+The full test dataset (~490 MB) has been uploaded to Google Drive, containing all original data files:
+
+**📥 [点击下载完整数据集 / Скачать полные данные / Download Full Dataset](https://drive.google.com/drive/folders/1BHyZJt8MhTPz6isMRoBIT2NVQuf1H6Eq?usp=sharing)**
+
+**完整数据集包含 / Полный набор содержит / Full dataset includes:**
+- `full_orcid_data.json` (343 MB) - 完整ORCID数据：31,502篇文章，410,724条作者记录，1,333个ORCID作者
+- `crossref_authors_formatted.json` (87 MB) - Crossref格式化的作者数据
+- `article_authors_map.json` (53 MB) - 文章与作者的完整映射关系
+- `orcid_history.json` (6.5 MB) - ORCID认证历史记录数据
+
+**使用完整数据集 / Использование полного набора / Using the full dataset:**
+```bash
+# 下载并解压数据后 / После скачивания и распаковки / After downloading and extracting
+python comprehensive_test_v5.py --data-path "path/to/full_orcid_data.json"
+```
+
+#### 其他获取方式 / Альтернативные способы / Alternative Methods:
+
+1. **联系项目维护者 / Связаться с maintainer / Contact maintainer**
+   - GitHub: [@Soulbeaters](https://github.com/Soulbeaters)
+   - 可协助提供其他格式或部分数据
+
+2. **自行从API收集数据 / Собрать данные самостоятельно / Collect data yourself**
    - 使用项目中的数据收集脚本
-   - 需要网络连接和API访问权限
+   - 需要网络连接和Crossref/ORCID API访问权限
 
 ---
 
