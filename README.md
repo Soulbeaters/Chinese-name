@@ -40,6 +40,32 @@ pip install -r requirements.txt
 
 **Requirements / Требования:** Python 3.11+, pypinyin 0.55.0+
 
+### Test Data / Тестовые данные
+
+项目包含样本测试数据集，位于 `test_data/` 目录：
+
+Проект включает образец тестового набора данных в директории `test_data/`:
+
+The project includes a sample test dataset in the `test_data/` directory:
+
+**数据文件 / Файлы данных / Data Files:**
+- `sample_orcid_data.json` (0.86MB)
+  - 100 ORCID authors / 100 авторов с ORCID
+  - 1,000 author records / 1,000 записей авторов
+  - 100 related publications / 100 связанных публикаций
+
+**数据来源 / Источник / Source:**
+- ✅ Sample from Crossref and ORCID public databases / Выборка из публичных баз данных
+- ✅ No personal privacy information / Без личных данных
+- ✅ For system verification and reproducible research / Для верификации и воспроизводимых исследований
+
+**详细说明 / Подробное описание / Detailed Description:**
+查看 [`test_data/README.md`](test_data/README.md) 获取完整的数据说明文档。
+
+См. [`test_data/README.md`](test_data/README.md) для полной документации по данным.
+
+See [`test_data/README.md`](test_data/README.md) for complete data documentation.
+
 ---
 
 ## Quick Start / Быстрый старт
