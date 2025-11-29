@@ -14,11 +14,14 @@ Comprehensive Chinese name processing system for scientometric databases.
 
 ### Core Features / Основные возможности
 
-- ✅ **v3.0 Surname Position Identifier** / Идентификатор позиции фамилии v3.0 **[NEW]**
-  - Identifies which token is surname in "Wei Li" / Определяет, какой токен - фамилия
-  - **58.75% accuracy** on Crossref data (50k sample) / Точность 58.75%
-  - Multi-language support: Chinese, Korean, Japanese, European, Indian
-  - Chinese-Korean name discrimination via given name pattern analysis
+- ✅ **v8.0 Surname Position Identifier** / Идентификатор позиции фамилии v8.0 **[LATEST]**
+  - Fellegi-Sunter style scoring framework / Фреймворк оценки в стиле Fellegi-Sunter
+  - **Crossref: 95.8%** accuracy (v7: 86.25%) / Точность на Crossref
+  - **ORCID: 96.35%** accuracy (v7: 90.47%) / Точность на ORCID
+  - **ISTINA: 80.03%** accuracy (v7: 80.0%) / Точность на ИСТИНА
+  - Source-specific strategies (Crossref/ORCID/ISTINA) / Стратегии для разных источников
+  - Batch consistency adjustment / Пакетная коррекция согласованности
+  - Single syllable optimization / Оптимизация одно слоговых имен
 - ✅ **Name order detection** / Определение порядка имени (姓-名 vs 名-姓)
 - ✅ **First author identification** / Определение первого автора
 - ✅ **Author list parsing** / Разбор списков авторов
@@ -86,27 +89,43 @@ The GitHub repository contains sample data (0.86MB), the full test dataset (~490
 
 ## Quick Start / Быстрый старт
 
-### v3.0 Surname Position Identifier (NEW / НОВОЕ)
+### v8.0 Surname Position Identifier (LATEST / ПОСЛЕДНЯЯ ВЕРСИЯ)
 
 ```python
-from src.surname_identifier import identify_surname_position
+from src.surname_identifier_v8 import identify_surname_position_v8
 
-# Identify surname position in English publications
-# Определение позиции фамилии в англоязычных публикациях
-
-position, confidence, reason = identify_surname_position(
-    original_name="Wei Li",
-    affiliation="Tsinghua University, Beijing, China"
+# Single record identification / Идентификация одной записи
+order, confidence, reason = identify_surname_position_v8(
+    original_name="Tianxiang Tang",
+    affiliation="Tsinghua University, Beijing, China",
+    source="CROSSREF"  # CROSSREF / ORCID / ISTINA
 )
 
-print(f"Position: {position}")     # "family_first"
-print(f"Confidence: {confidence}") # 0.90
-print(f"Reason: {reason}")         # "姓在前: Li是姓氏拼音→['李','理'...]; 中国机构"
+print(f"Order: {order}")           # "given_first"
+print(f"Confidence: {confidence}") # 0.92
+print(f"Reason: {reason}")         # "CHINESE: CN_SURNAME_LAST_ONLY, FIRST_VALID_PY_NAME(2syl)..."
 
 # More examples / Дополнительные примеры
-identify_surname_position("John Smith")[0]       # "given_first"
-identify_surname_position("Mingyuan Han")[0]    # "family_first"
-identify_surname_position("Wei Lee")[0]         # "given_first" (Lee≠中文li)
+identify_surname_position_v8("David Smith")[0]              # "given_first"
+identify_surname_position_v8("Zhang Tianxiang", source="ISTINA")[0]  # "family_first"
+identify_surname_position_v8("Liu W.")[0]                   # "family_first" (abbreviation)
+
+# Batch processing with consistency adjustment / Пакетная обработка с коррекцией
+from src.surname_identifier_v8 import batch_identify_surname_position_v8, NameRecord
+
+records = [
+    NameRecord(record_id="1", name_raw="Tang Tianxiang", person_id="P001", source="CROSSREF"),
+    NameRecord(record_id="2", name_raw="Tianxiang Tang", person_id="P001", source="CROSSREF"),
+]
+
+decisions = batch_identify_surname_position_v8(
+    records,
+    enable_person_consistency=True,  # Person-level consistency
+    enable_pub_consistency=True      # Publication-level consistency
+)
+
+for rid, decision in decisions.items():
+    print(f"{rid}: {decision.order} (conf: {decision.confidence:.2f})")
 ```
 
 ### Original Chinese Name Processing / Обработка китайских имён
@@ -352,4 +371,4 @@ Data Input and Verification in Interactive Scientometric Systems
 
 ---
 
-*Last Updated: October 2025*
+*Last Updated: November 2025 (v8.0)*
