@@ -380,17 +380,17 @@ def decide_chinese(
             r_first = get_surname_frequency_rank(first_token.ascii)
             r_last = get_surname_frequency_rank(last_token.ascii)
 
-            if r_first and r_last and abs(r_first - r_last) > 20:
-                if r_last < r_first:  # last更常见
-                    score_giv += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"]
-                    reasons.append(f"CN_SURNAME_DOUBLE_FREQ_LAST({r_last}<{r_first})")
-                else:  # first更常见
-                    score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"]
-                    reasons.append(f"CN_SURNAME_DOUBLE_FREQ_FIRST({r_first}<{r_last})")
-            else:
+            # if r_first and r_last and abs(r_first - r_last) > 20:
+            #     if r_last < r_first:  # last更常见
+            #         score_giv += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"]
+            #         reasons.append(f"CN_SURNAME_DOUBLE_FREQ_LAST({r_last}<{r_first})")
+            #     else:  # first更常见
+            #         score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"]
+            #         reasons.append(f"CN_SURNAME_DOUBLE_FREQ_FIRST({r_first}<{r_last})")
+            # else:
                 # 频率差距不大,默认family_first
-                score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"]
-                reasons.append("CN_SURNAME_DOUBLE_DEFAULT_FAM")
+            score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"]
+            reasons.append("CN_SURNAME_DOUBLE_DEFAULT_FAM")
 
     # === 特征2: 拼音名字模式 ===
 
