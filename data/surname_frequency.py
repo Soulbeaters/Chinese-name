@@ -121,7 +121,7 @@ def get_surname_frequency_rank(surname_pinyin: str) -> int:
         int: 排名（1-100），如果不在Top 100则返回999 / Rank (1-100), returns 999 if not in Top 100
     """
     surname_lower = surname_pinyin.lower().strip()
-    return SURNAME_FREQUENCY_RANK.get(surname_lower, 999)
+    return SURNAME_FREQUENCY_RANK.get(surname_lower, 100)
 
 
 def compare_surname_frequency(surname1: str, surname2: str) -> dict:
