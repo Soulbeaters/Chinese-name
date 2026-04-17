@@ -22,7 +22,10 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from data.surname_pinyin_db import is_surname_pinyin, get_surname_from_pinyin
-from data.surname_frequency import get_surname_frequency_rank
+from data.surname_frequency import (
+    compare_surname_frequency_share,
+    get_surname_frequency_rank,
+)
 from data.western_name_features import (
     has_western_suffix,
     has_western_consonant_cluster,
@@ -34,12 +37,98 @@ from src.pinyin_validator import is_valid_pinyin_name
 from src.affiliation_analyzer import analyze_affiliation, AffiliationInfo
 from src.config_v8 import (
     get_config,
+    get_ablation_config,
     SourceConfig,
     CHINESE_FEATURE_WEIGHTS,
     WESTERN_FEATURE_WEIGHTS,
     MIXED_FEATURE_WEIGHTS,
     sigmoid,
 )
+
+
+def _format_share_value(share: float) -> str:
+    """Format share values for compact reason codes."""
+    return f"{share:.4f}".rstrip("0").rstrip(".")
+
+
+def _apply_double_surname_frequency_rule(
+    first_token: "Token",
+    last_token: "Token",
+) -> Tuple[float, float, str]:
+    """
+    Apply the configured double-surname frequency rule for non-ISTINA sources.
+    """
+    strategy = get_ablation_config().surname_freq_strategy
+
+    if strategy == "share_ratio":
+        share_comparison = compare_surname_frequency_share(first_token.ascii, last_token.ascii)
+        share1 = share_comparison["share1"]
+        share2 = share_comparison["share2"]
+        has_share1 = share_comparison["has_share1"]
+        has_share2 = share_comparison["has_share2"]
+
+        if has_share1 and has_share2 and share_comparison["share_ratio"] >= 1.5:
+            if share1 > share2:
+                return (
+                    CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                    0.0,
+                    f"CN_SURNAME_DOUBLE_FREQ_FIRST({_format_share_value(share1)}>{_format_share_value(share2)})",
+                )
+            if share2 > share1:
+                return (
+                    0.0,
+                    CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                    f"CN_SURNAME_DOUBLE_FREQ_LAST({_format_share_value(share2)}>{_format_share_value(share1)})",
+                )
+        elif has_share1 != has_share2:
+            known_share = share1 if has_share1 else share2
+            if known_share >= 0.10:
+                if has_share1:
+                    return (
+                        CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                        0.0,
+                        f"CN_SURNAME_DOUBLE_FREQ_FIRST({_format_share_value(share1)}>{_format_share_value(share2)})",
+                    )
+                return (
+                    0.0,
+                    CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                    f"CN_SURNAME_DOUBLE_FREQ_LAST({_format_share_value(share2)}>{_format_share_value(share1)})",
+                )
+
+        return (
+            CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"],
+            0.0,
+            "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+        )
+
+    if strategy == "freq_disabled":
+        return (
+            CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"],
+            0.0,
+            "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+        )
+
+    r_first = get_surname_frequency_rank(first_token.ascii)
+    r_last = get_surname_frequency_rank(last_token.ascii)
+
+    if abs(r_first - r_last) > 20:
+        if r_last < r_first:
+            return (
+                0.0,
+                CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                f"CN_SURNAME_DOUBLE_FREQ_LAST({r_last}<{r_first})",
+            )
+        return (
+            CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+            0.0,
+            f"CN_SURNAME_DOUBLE_FREQ_FIRST({r_first}<{r_last})",
+        )
+
+    return (
+        CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"],
+        0.0,
+        "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+    )
 
 
 # ========== 数据结构 Data Structures ==========
@@ -377,20 +466,13 @@ def decide_chinese(
             reasons.append("CN_SURNAME_DOUBLE_DEFAULT_FAM_ISTINA")
         else:
             # 其他数据源: 使用频率逻辑
-            r_first = get_surname_frequency_rank(first_token.ascii)
-            r_last = get_surname_frequency_rank(last_token.ascii)
-
-            if r_first and r_last and abs(r_first - r_last) > 20:
-                if r_last < r_first:  # last更常见
-                    score_giv += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"]
-                    reasons.append(f"CN_SURNAME_DOUBLE_FREQ_LAST({r_last}<{r_first})")
-                else:  # first更常见
-                    score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"]
-                    reasons.append(f"CN_SURNAME_DOUBLE_FREQ_FIRST({r_first}<{r_last})")
-            else:
-                # 频率差距不大,默认family_first
-                score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"]
-                reasons.append("CN_SURNAME_DOUBLE_DEFAULT_FAM")
+            fam_delta, giv_delta, reason = _apply_double_surname_frequency_rule(
+                first_token,
+                last_token,
+            )
+            score_fam += fam_delta
+            score_giv += giv_delta
+            reasons.append(reason)
 
     # === 特征2: 拼音名字模式 ===
 

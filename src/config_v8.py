@@ -215,3 +215,56 @@ MIXED_FEATURE_WEIGHTS = {
 def sigmoid(x: float) -> float:
     """Sigmoid函数用于置信度归一化 / Sigmoid for confidence normalization"""
     return 1.0 / (1.0 + math.exp(-x))
+
+
+# === 消融实验配置 Ablation Configuration ===
+
+@dataclass
+class AblationConfig:
+    """
+    消融实验配置 / Ablation experiment configuration
+    用于控制算法中的各个组件开关 / Used to control algorithm component switches
+    """
+    # 数据源先验开关 / Source prior switch
+    disable_source_prior: bool = False
+
+    # 西方姓氏排除规则开关 / Western exclusion switch
+    disable_western_exclusion: bool = False
+
+    # 批量一致性调整开关 / Batch consistency switch
+    disable_batch_consistency: bool = False
+
+    # 双姓频率策略 / Dual-surname frequency strategy
+    # share_ratio: current default, based on aggregated population share ratio
+    # rank_gap: legacy rule based on rank difference > 20
+    # freq_disabled: reproduce the mentor branch by suppressing the
+    #   non-ISTINA double-surname frequency signal and falling back to
+    #   family_first by default
+    surname_freq_strategy: str = "share_ratio"
+
+    # 作者级一致性开关 / Person-level consistency switch
+    enable_person_consistency: bool = True
+
+    # 文章级一致性开关 / Publication-level consistency switch
+    enable_pub_consistency: bool = True
+
+
+# 全局消融配置实例（默认全部启用）/ Global ablation config instance
+_global_ablation_config = AblationConfig()
+
+
+def set_ablation_config(config: AblationConfig) -> None:
+    """设置全局消融配置 / Set global ablation configuration"""
+    global _global_ablation_config
+    _global_ablation_config = config
+
+
+def get_ablation_config() -> AblationConfig:
+    """获取当前消融配置 / Get current ablation configuration"""
+    return _global_ablation_config
+
+
+def reset_ablation_config() -> None:
+    """重置消融配置为默认值 / Reset ablation config to default"""
+    global _global_ablation_config
+    _global_ablation_config = AblationConfig()

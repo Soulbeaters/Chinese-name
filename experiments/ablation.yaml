@@ -1,0 +1,81 @@
+# Ablation study configuration
+
+baseline:
+  name: "v8.0_baseline"
+  description: "Full v8.0 system with all features"
+  disable_source_prior: false
+  disable_western_exclusion: false
+  disable_batch_consistency: false
+  surname_freq_strategy: "rank_gap"
+  enable_person_consistency: true
+  enable_pub_consistency: true
+
+ablation_no_source_prior:
+  name: "v8.0_no_source_prior"
+  description: "Remove source-specific prior scores"
+  disable_source_prior: true
+  disable_western_exclusion: false
+  disable_batch_consistency: false
+  surname_freq_strategy: "rank_gap"
+  enable_person_consistency: true
+  enable_pub_consistency: true
+
+ablation_no_western_exclusion:
+  name: "v8.0_no_western_exclusion"
+  description: "Remove western surname exclusion rules"
+  disable_source_prior: false
+  disable_western_exclusion: true
+  disable_batch_consistency: false
+  surname_freq_strategy: "rank_gap"
+  enable_person_consistency: true
+  enable_pub_consistency: true
+
+ablation_no_batch_consistency:
+  name: "v8.0_no_batch_consistency"
+  description: "Remove batch consistency adjustment"
+  disable_source_prior: false
+  disable_western_exclusion: false
+  disable_batch_consistency: true
+  surname_freq_strategy: "rank_gap"
+  enable_person_consistency: false
+  enable_pub_consistency: false
+
+ablation_no_person_consistency:
+  name: "v8.0_no_person_consistency"
+  description: "Remove only person-level consistency"
+  disable_source_prior: false
+  disable_western_exclusion: false
+  disable_batch_consistency: false
+  surname_freq_strategy: "rank_gap"
+  enable_person_consistency: false
+  enable_pub_consistency: true
+
+ablation_no_pub_consistency:
+  name: "v8.0_no_pub_consistency"
+  description: "Remove only publication-level consistency"
+  disable_source_prior: false
+  disable_western_exclusion: false
+  disable_batch_consistency: false
+  surname_freq_strategy: "rank_gap"
+  enable_person_consistency: true
+  enable_pub_consistency: false
+
+ablation_share_ratio:
+  name: "v8.0_share_ratio"
+  description: "Use aggregated population share ratio from the 2013 top-400 surname list"
+  disable_source_prior: false
+  disable_western_exclusion: false
+  disable_batch_consistency: false
+  surname_freq_strategy: "share_ratio"
+  enable_person_consistency: true
+  enable_pub_consistency: true
+
+ablation_freq_disabled:
+  name: "v8.0_freq_disabled"
+  description: "Reproduce origin/zenderro/frequency_check_disabled by removing the non-ISTINA double-surname frequency signal"
+  disable_source_prior: false
+  disable_western_exclusion: false
+  disable_batch_consistency: false
+  surname_freq_strategy: "freq_disabled"
+  enable_person_consistency: true
+  enable_pub_consistency: true
