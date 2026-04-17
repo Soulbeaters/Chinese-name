@@ -8,7 +8,7 @@ ChineseNameProcessor - 中文姓名处理模块
 
 from setuptools import setup, find_packages
 
-with open("docs/README_ChineseNameProcessor.md", "r", encoding="utf-8") as fh:
+with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
@@ -20,7 +20,11 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://gitlab.com/istina/chinese-name-processor",
-    packages=find_packages(),
+    packages=['chinese_name.src', 'chinese_name.data'],
+    package_dir={
+        "chinese_name.src": "src",
+        "chinese_name.data": "data"
+    },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Science/Research",
