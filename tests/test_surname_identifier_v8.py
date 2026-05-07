@@ -32,9 +32,15 @@ def _local_strategy_decision(
     name_raw: str,
     strategy: str = "share_ratio",
     source: str = "CROSSREF",
+    share_threshold: float = 1.0,
 ):
     """Exercise a specific double-surname frequency strategy directly."""
-    set_ablation_config(AblationConfig(surname_freq_strategy=strategy))
+    set_ablation_config(
+        AblationConfig(
+            surname_freq_strategy=strategy,
+            surname_share_ratio_threshold=share_threshold,
+        )
+    )
     try:
         record = NameRecord(
             record_id="share-test",
@@ -144,9 +150,30 @@ def test_share_ratio_double_surname_regressions():
     assert "CN_SURNAME_DOUBLE_FREQ_LAST(0.5519>0.18)" in decision.reason_codes
 
     decision = _local_strategy_decision("Zhang Wang", strategy="share_ratio")
-    assert decision.order == "family_first"
-    assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision.reason_codes
-    assert all(not code.startswith("CN_SURNAME_DOUBLE_FREQ_") for code in decision.reason_codes)
+    assert decision.order == "given_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_LAST(7.53>6.86)" in decision.reason_codes
+
+
+def test_share_ratio_threshold_changes_boundary_trigger():
+    decision_relaxed = _local_strategy_decision(
+        "Wang Liu",
+        strategy="share_ratio",
+        share_threshold=1.0,
+    )
+    assert decision_relaxed.order == "family_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_FIRST(7.53>5.2)" in decision_relaxed.reason_codes
+
+    decision_default = _local_strategy_decision(
+        "Wang Liu",
+        strategy="share_ratio",
+        share_threshold=1.5,
+    )
+    assert decision_default.order == "family_first"
+    assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision_default.reason_codes
+    assert all(
+        not code.startswith("CN_SURNAME_DOUBLE_FREQ_")
+        for code in decision_default.reason_codes
+    )
 
 
 def test_rank_gap_legacy_double_surname_regressions():
@@ -218,6 +245,118 @@ def test_source_specific_orcid():
         source="ORCID",
     )
     assert order == "given_first"
+
+
+def test_split_field_exact_alignment_reason_codes():
+    decision = local_decision(
+        NameRecord(
+            record_id="split-given",
+            name_raw="Yuhui Liu",
+            firstname_raw="Yuhui",
+            lastname_raw="Liu",
+            source="CROSSREF",
+        ),
+        get_config("CROSSREF"),
+    )
+    assert decision.order == "given_first"
+    assert "FIELD_SPLIT_EXACT_GIVEN" in decision.reason_codes
+
+    decision = local_decision(
+        NameRecord(
+            record_id="split-family",
+            name_raw="Liu Yuhui",
+            firstname_raw="Yuhui",
+            lastname_raw="Liu",
+            source="CROSSREF",
+        ),
+        get_config("CROSSREF"),
+    )
+    assert decision.order == "family_first"
+    assert "FIELD_SPLIT_EXACT_FAMILY" in decision.reason_codes
+
+
+def test_split_field_exact_given_overrides_cn_boundary_unknown():
+    decision = local_decision(
+        NameRecord(
+            record_id="split-given-boundary",
+            name_raw="Zhao Hongrui",
+            firstname_raw="Zhao",
+            lastname_raw="Hongrui",
+            affiliation_raw="Chinese Academy of Sciences",
+            source="CROSSREF",
+        ),
+        get_config("CROSSREF"),
+    )
+    assert decision.order == "given_first"
+    assert "FIELD_SPLIT_EXACT_GIVEN" in decision.reason_codes
+    assert "DELTA_SMALL_CN" not in decision.reason_codes
+
+
+def test_split_field_exact_given_overrides_abbreviation_rule():
+    decision = local_decision(
+        NameRecord(
+            record_id="split-given-abbrev",
+            name_raw="Lokesh K. N",
+            firstname_raw="Lokesh K.",
+            lastname_raw="N",
+            source="CROSSREF",
+        ),
+        get_config("CROSSREF"),
+    )
+    assert decision.order == "given_first"
+    assert "FIELD_SPLIT_EXACT_GIVEN" in decision.reason_codes
+    assert "ABBREV_DEFER_TO_SPLIT_FIELDS" in decision.reason_codes
+
+
+def test_duplicate_split_fields_are_not_proxy_labels():
+    from experiments.run_bench import infer_proxy_order
+
+    assert infer_proxy_order({
+        "original_name": "Piradov Piradov",
+        "firstname": "Piradov",
+        "lastname": "Piradov",
+    }) is None
+
+
+def test_structural_family_fullname_reason_codes():
+    decision = local_decision(
+        NameRecord(
+            record_id="structural",
+            name_raw="Zhu Yongqiang",
+            firstname_raw="朱勇强",
+            lastname_raw="Zhu Yongqiang",
+            source="CROSSREF",
+        ),
+        get_config("CROSSREF"),
+    )
+    assert "FIELD_FAMILY_MATCHES_FULL_NAME" in decision.reason_codes
+    assert "FIELD_FAMILY_FULLNAME_GIVEN_CJK" in decision.reason_codes
+    assert "FIELD_SPLIT_MISMATCH" in decision.reason_codes
+
+
+def test_given_field_compound_surname_prefix_reason_codes():
+    decision = local_decision(
+        NameRecord(
+            record_id="compound-prefix",
+            name_raw="Ouyang Ming Li",
+            firstname_raw="Ouyang Ming",
+            lastname_raw="Li",
+            source="CROSSREF",
+        ),
+        get_config("CROSSREF"),
+    )
+    assert "FIELD_GIVEN_COMPOUND_SURNAME_PREFIX" in decision.reason_codes
+
+
+def test_single_token_compound_surname_is_not_hard_error():
+    order, _, reason = identify_surname_position_v8(
+        "Chunyu Xu",
+        firstname="Chunyu",
+        lastname="Xu",
+        source="CROSSREF",
+    )
+    assert order == "given_first"
+    assert "FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN_DIAG" in reason
 
 
 def test_edge_cases():
@@ -399,6 +538,13 @@ def run_all_tests(output_file=None):
         ("source_specific_crossref", test_source_specific_crossref),
         ("source_specific_istina", test_source_specific_istina),
         ("source_specific_orcid", test_source_specific_orcid),
+        ("split_field_exact_alignment", test_split_field_exact_alignment_reason_codes),
+        ("split_field_exact_given_boundary", test_split_field_exact_given_overrides_cn_boundary_unknown),
+        ("split_field_exact_given_abbrev", test_split_field_exact_given_overrides_abbreviation_rule),
+        ("duplicate_split_fields_proxy_skip", test_duplicate_split_fields_are_not_proxy_labels),
+        ("structural_family_fullname", test_structural_family_fullname_reason_codes),
+        ("given_field_compound_prefix", test_given_field_compound_surname_prefix_reason_codes),
+        ("single_token_compound_surname_soft_signal", test_single_token_compound_surname_is_not_hard_error),
         ("edge_cases", test_edge_cases),
         ("none_handling", test_none_handling),
         ("unicode_handling", test_unicode_handling),

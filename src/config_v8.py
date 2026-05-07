@@ -185,6 +185,13 @@ CHINESE_FEATURE_WEIGHTS = {
     # 特殊模式
     "TWO_TOKENS_CN_SURNAME_LAST": 0.7, # 两token且last是姓
     "TWO_TOKENS_SINGLE_SYLLABLE": 0.3, # 两token且有单音节
+    "FIELD_SPLIT_EXACT_FAMILY": 3.0,
+    "FIELD_SPLIT_EXACT_GIVEN": 3.0,
+    "FIELD_FAMILY_MATCHES_FULL_NAME": 0.35,
+    "FIELD_FAMILY_FULLNAME_GIVEN_CJK": 0.75,
+    "FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME": 0.4,
+    "FIELD_GIVEN_COMPOUND_SURNAME_PREFIX": 0.2,
+    "FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN": 0.05,
 }
 
 
@@ -200,6 +207,13 @@ WESTERN_FEATURE_WEIGHTS = {
 
     # 默认推断
     "NO_CN_EVIDENCE_DEFAULT": 1.0,     # 无中文证据,默认given-first
+    "FIELD_SPLIT_EXACT_FAMILY": 3.0,
+    "FIELD_SPLIT_EXACT_GIVEN": 3.0,
+    "FIELD_FAMILY_MATCHES_FULL_NAME": 0.25,
+    "FIELD_FAMILY_FULLNAME_GIVEN_CJK": 0.45,
+    "FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME": 0.25,
+    "FIELD_GIVEN_COMPOUND_SURNAME_PREFIX": 0.1,
+    "FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN": 0.02,
 }
 
 
@@ -209,6 +223,13 @@ MIXED_FEATURE_WEIGHTS = {
     "CN_SURNAME_LAST_CN_AFFIL": 1.5,
     "CN_SURNAME_ONLY": 1.0,
     "NO_MATCH_DEFAULT": 0.5,
+    "FIELD_SPLIT_EXACT_FAMILY": 3.0,
+    "FIELD_SPLIT_EXACT_GIVEN": 3.0,
+    "FIELD_FAMILY_MATCHES_FULL_NAME": 0.3,
+    "FIELD_FAMILY_FULLNAME_GIVEN_CJK": 0.6,
+    "FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME": 0.35,
+    "FIELD_GIVEN_COMPOUND_SURNAME_PREFIX": 0.15,
+    "FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN": 0.03,
 }
 
 
@@ -241,6 +262,9 @@ class AblationConfig:
     #   non-ISTINA double-surname frequency signal and falling back to
     #   family_first by default
     surname_freq_strategy: str = "share_ratio"
+    # Threshold for the share-based rule; 1.0 means any non-tied known-share
+    # comparison can trigger the frequency bonus.
+    surname_share_ratio_threshold: float = 1.0
 
     # 作者级一致性开关 / Person-level consistency switch
     enable_person_consistency: bool = True

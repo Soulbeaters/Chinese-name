@@ -62,11 +62,34 @@ ablation_no_pub_consistency:
 
 ablation_share_ratio:
   name: "v8.0_share_ratio"
-  description: "Use aggregated population share ratio from the 2013 top-400 surname list"
+  description: "Use aggregated population share with a low threshold that fires on any non-tied comparison"
   disable_source_prior: false
   disable_western_exclusion: false
   disable_batch_consistency: false
   surname_freq_strategy: "share_ratio"
+  surname_share_ratio_threshold: 1.0
+  enable_person_consistency: true
+  enable_pub_consistency: true
+
+ablation_share_ratio_theta_15:
+  name: "v8.0_share_ratio_theta_15"
+  description: "Share-ratio rule with threshold 1.5 for sensitivity analysis"
+  disable_source_prior: false
+  disable_western_exclusion: false
+  disable_batch_consistency: false
+  surname_freq_strategy: "share_ratio"
+  surname_share_ratio_threshold: 1.5
+  enable_person_consistency: true
+  enable_pub_consistency: true
+
+ablation_share_ratio_theta_20:
+  name: "v8.0_share_ratio_theta_20"
+  description: "Share-ratio rule with threshold 2.0 for sensitivity analysis"
+  disable_source_prior: false
+  disable_western_exclusion: false
+  disable_batch_consistency: false
+  surname_freq_strategy: "share_ratio"
+  surname_share_ratio_threshold: 2.0
   enable_person_consistency: true
   enable_pub_consistency: true
 

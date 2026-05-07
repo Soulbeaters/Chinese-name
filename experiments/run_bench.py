@@ -29,7 +29,8 @@ sys.path.insert(0, str(project_root))
 from src.surname_identifier_v8 import (
     identify_surname_position_v8,
     batch_identify_surname_position_v8,
-    NameRecord
+    NameRecord,
+    preprocess_name,
 )
 from src.config_v8 import (
     AblationConfig,
@@ -183,11 +184,85 @@ def load_dataset(file_path: str) -> List[Dict[str, Any]]:
     return records
 
 
+def _name_tokens(value: Optional[str]) -> List[str]:
+    """Normalize a name field to tokenizer-level comparison tokens."""
+    return [tok.ascii.lower() for tok in preprocess_name(value or "").tokens if tok.ascii]
+
+
+def infer_proxy_order(record: Dict[str, Any]) -> Optional[str]:
+    """Infer pseudo-label order from split fields using token-level alignment."""
+    original_tokens = _name_tokens(record.get('original_name'))
+    lastname_tokens = _name_tokens(record.get('lastname'))
+    firstname_tokens = _name_tokens(record.get('firstname'))
+
+    if not original_tokens or not lastname_tokens or not firstname_tokens:
+        return None
+
+    if lastname_tokens == firstname_tokens:
+        return None
+
+    if original_tokens == lastname_tokens + firstname_tokens:
+        return "family_first"
+    if original_tokens == firstname_tokens + lastname_tokens:
+        return "given_first"
+
+    if original_tokens[:len(lastname_tokens)] == lastname_tokens:
+        return "family_first"
+    if original_tokens[:len(firstname_tokens)] == firstname_tokens:
+        return "given_first"
+
+    return None
+
+
+def build_field_reason_summary(
+    records: List[Dict[str, Any]],
+    decisions: Dict[str, Any],
+    error_samples: List[Dict[str, Any]],
+    skipped_samples: Optional[List[Dict[str, Any]]] = None,
+    sample_limit: int = 5,
+) -> Dict[str, Any]:
+    """Summarize structural FIELD_* reasons with representative samples."""
+    counts: Dict[str, int] = {}
+    samples: Dict[str, List[Dict[str, Any]]] = {}
+
+    for i, rec in enumerate(records):
+        decision = decisions.get(str(i))
+        if not decision:
+            continue
+
+        for code in decision.reason_codes:
+            if not code.startswith("FIELD_"):
+                continue
+            counts[code] = counts.get(code, 0) + 1
+            bucket = samples.setdefault(code, [])
+            if len(bucket) >= sample_limit:
+                continue
+            bucket.append({
+                "record_id": i,
+                "original_name": rec.get('original_name', ''),
+                "lastname": rec.get('lastname', ''),
+                "firstname": rec.get('firstname', ''),
+                "predicted": decision.order,
+                "confidence": decision.confidence,
+                "reason_codes": decision.reason_codes,
+                "doi": rec.get('doi'),
+            })
+
+    return {
+        "counts": counts,
+        "samples": samples,
+        "skipped_examples": (skipped_samples or [])[:sample_limit],
+        "unknown_examples": error_samples[:sample_limit],
+        "error_examples": [sample for sample in error_samples if sample.get("predicted") != "unknown"][:sample_limit],
+    }
+
+
 def evaluate_algorithm(
     records: List[Dict[str, Any]],
     config_name: str = "baseline",
-    warmup: bool = False
-) -> tuple[Dict[str, Any], List[Dict[str, Any]]]:
+    warmup: bool = False,
+    force_source: Optional[str] = None,
+) -> tuple[Dict[str, Any], List[Dict[str, Any]], Dict[str, Any]]:
     """
     评估算法性能 / Evaluate algorithm performance
 
@@ -205,8 +280,10 @@ def evaluate_algorithm(
         name_records.append(NameRecord(
             record_id=str(i),
             name_raw=rec.get('original_name', ''),
+            firstname_raw=rec.get('firstname'),
+            lastname_raw=rec.get('lastname'),
             affiliation_raw=rec.get('affiliation'),
-            source=rec.get('source', 'CROSSREF'),
+            source=force_source or rec.get('source', 'CROSSREF'),
             person_id=rec.get('person_id'),
             publication_id=rec.get('doi')
         ))
@@ -216,7 +293,7 @@ def evaluate_algorithm(
     monitor.start()
 
     # 批量识别 / Batch identification
-    decisions = batch_identify_surname_position_v8(name_records)
+    decisions = batch_identify_surname_position_v8(name_records, source=force_source)
 
     # 停止监控 / Stop monitoring
     metrics = monitor.stop(n_records=len(records))
@@ -224,26 +301,39 @@ def evaluate_algorithm(
     # 计算准确率（如果有ground truth）/ Calculate accuracy (if ground truth exists)
     correct = 0
     total = 0
+    skipped_count = 0
     unknown_count = 0
     error_samples = []
+    skipped_samples = []
 
     for i, rec in enumerate(records):
         decision = decisions[str(i)]
 
         # 判断正确性 / Check correctness
         if 'lastname' in rec and 'firstname' in rec:
-            total += 1
-
             # 推断ground truth
-            lastname = rec['lastname']
-            firstname = rec['firstname']
             original_name = rec.get('original_name', '')
 
-            # 简单启发式：如果lastname出现在开头，则是family_first
-            if original_name.strip().startswith(lastname):
-                gt_order = "family_first"
-            else:
-                gt_order = "given_first"
+            gt_order = infer_proxy_order(rec)
+            if gt_order is None:
+                skipped_count += 1
+                if len(skipped_samples) < 100:
+                    skipped_samples.append({
+                        "record_id": i,
+                        "original_name": original_name,
+                        "lastname": rec.get('lastname', ''),
+                        "firstname": rec.get('firstname', ''),
+                        "predicted": decision.order,
+                        "confidence": decision.confidence,
+                        "reason": ", ".join(decision.reason_codes),
+                        "affiliation": rec.get('affiliation', ''),
+                        "doi": rec.get('doi'),
+                        "source": force_source or rec.get('source', ''),
+                        "skip_reason": "split_fields_not_token_aligned",
+                    })
+                continue
+
+            total += 1
 
             if decision.order == "unknown":
                 unknown_count += 1
@@ -256,7 +346,8 @@ def evaluate_algorithm(
                     "confidence": decision.confidence,
                     "reason": ", ".join(decision.reason_codes),
                     "affiliation": rec.get('affiliation', ''),
-                    "source": rec.get('source', '')
+                    "doi": rec.get('doi'),
+                    "source": force_source or rec.get('source', '')
                 })
             elif decision.order != gt_order:
                 # 记录预测错误
@@ -268,7 +359,8 @@ def evaluate_algorithm(
                     "confidence": decision.confidence,
                     "reason": ", ".join(decision.reason_codes),
                     "affiliation": rec.get('affiliation', ''),
-                    "source": rec.get('source', '')
+                    "doi": rec.get('doi'),
+                    "source": force_source or rec.get('source', '')
                 })
             else:
                 correct += 1
@@ -276,22 +368,30 @@ def evaluate_algorithm(
     accuracy = correct / total if total > 0 else 0.0
     unknown_rate = unknown_count / total if total > 0 else 0.0
     error_rate = 1.0 - accuracy if total > 0 else 0.0
+    skipped_rate = skipped_count / len(records) if records else 0.0
 
     result = {
         "config_name": config_name,
         "n_records": len(records),
+        "labeled_total": total,
+        "skipped_count": skipped_count,
+        "correct_count": correct,
+        "unknown_count": unknown_count,
         "accuracy": accuracy,
         "unknown_rate": unknown_rate,
         "error_rate": error_rate,
+        "skipped_rate": skipped_rate,
         "wall_time_s": metrics.wall_time_s,
         "cpu_user_s": metrics.cpu_user_s,
         "cpu_sys_s": metrics.cpu_sys_s,
         "peak_rss_mb": metrics.peak_rss_mb,
         "names_per_sec": metrics.names_per_sec,
+        "force_source": force_source or "dataset_default",
         "warmup": warmup
     }
 
-    return result, error_samples
+    field_reason_summary = build_field_reason_summary(records, decisions, error_samples, skipped_samples)
+    return result, error_samples, field_reason_summary
 
 
 def run_benchmark(
@@ -299,7 +399,8 @@ def run_benchmark(
     ablation_config_path: Optional[str] = None,
     output_dir: Optional[str] = None,
     n_repeats: int = 3,
-    skip_warmup: bool = False
+    skip_warmup: bool = False,
+    force_source: Optional[str] = None,
 ) -> str:
     """
     运行基准测试 / Run benchmark
@@ -363,7 +464,8 @@ def run_benchmark(
         "algorithm_version": "v8.0",
         "ablation_config_file": str(ablation_config_path) if ablation_config_path else None,
         "datasets": [str(p) for p in dataset_paths],
-        "n_repeats": n_repeats
+        "n_repeats": n_repeats,
+        "force_source": force_source or "dataset_default",
     }
 
     with open(output_dir / "run_manifest.json", 'w', encoding='utf-8') as f:
@@ -388,6 +490,7 @@ def run_benchmark(
 
     # 运行所有实验 / Run all experiments
     all_results = []
+    profile_summaries = []
 
     for dataset_path in dataset_paths:
         dataset_path = Path(dataset_path)
@@ -426,6 +529,7 @@ def run_benchmark(
                 disable_western_exclusion=config_dict.get('disable_western_exclusion', False),
                 disable_batch_consistency=config_dict.get('disable_batch_consistency', False),
                 surname_freq_strategy=config_dict.get('surname_freq_strategy', 'share_ratio'),
+                surname_share_ratio_threshold=config_dict.get('surname_share_ratio_threshold', 1.0),
                 enable_person_consistency=config_dict.get('enable_person_consistency', True),
                 enable_pub_consistency=config_dict.get('enable_pub_consistency', True)
             )
@@ -434,14 +538,25 @@ def run_benchmark(
             # Warmup run (if not skipped) / 预热运行（如果未跳过）
             if not skip_warmup:
                 print("    预热运行 / Warmup run...")
-                _, _ = evaluate_algorithm(records, config_name=config_dict['name'], warmup=True)
+                _, _, _ = evaluate_algorithm(
+                    records,
+                    config_name=config_dict['name'],
+                    warmup=True,
+                    force_source=force_source,
+                )
 
             # 重复运行 / Repeated runs
             run_results = []
             all_errors_for_config = []
+            first_repeat_field_summary = None
             for repeat_idx in range(n_repeats):
                 print(f"    重复 {repeat_idx + 1}/{n_repeats} / Repeat {repeat_idx + 1}/{n_repeats}...")
-                result, error_samples = evaluate_algorithm(records, config_name=config_dict['name'], warmup=False)
+                result, error_samples, field_reason_summary = evaluate_algorithm(
+                    records,
+                    config_name=config_dict['name'],
+                    warmup=False,
+                    force_source=force_source,
+                )
                 result["dataset"] = dataset_name
                 result["repeat"] = repeat_idx
                 run_results.append(result)
@@ -450,6 +565,7 @@ def run_benchmark(
                 # 收集错误样本（只保留第一次运行的错误）
                 if repeat_idx == 0:
                     all_errors_for_config.extend(error_samples)
+                    first_repeat_field_summary = field_reason_summary
 
             # 保存错误样本 / Save error samples (只保存前100个)
             if all_errors_for_config:
@@ -461,11 +577,16 @@ def run_benchmark(
             # 计算平均值和标准差 / Calculate mean and std dev
             if run_results:
                 import statistics
-                metrics_to_avg = ['accuracy', 'unknown_rate', 'error_rate', 'wall_time_s', 'cpu_user_s', 'cpu_sys_s', 'peak_rss_mb', 'names_per_sec']
+                metrics_to_avg = ['accuracy', 'unknown_rate', 'error_rate', 'skipped_rate', 'wall_time_s', 'cpu_user_s', 'cpu_sys_s', 'peak_rss_mb', 'names_per_sec']
                 avg_result = {
                     "config_name": config_dict['name'],
                     "dataset": dataset_name,
-                    "n_records": run_results[0]['n_records']
+                    "n_records": run_results[0]['n_records'],
+                    "labeled_total": run_results[0]['labeled_total'],
+                    "skipped_count": run_results[0]['skipped_count'],
+                    "correct_count": run_results[0]['correct_count'],
+                    "unknown_count": run_results[0]['unknown_count'],
+                    "force_source": run_results[0]['force_source'],
                 }
 
                 for metric in metrics_to_avg:
@@ -474,6 +595,29 @@ def run_benchmark(
                     avg_result[f"{metric}_std"] = statistics.stdev(values) if len(values) > 1 else 0.0
 
                 all_results.append(avg_result)
+
+                profile_summary = {
+                    "dataset": dataset_name,
+                    "config_name": config_dict['name'],
+                    "force_source": run_results[0]['force_source'],
+                    "n_records": run_results[0]['n_records'],
+                    "labeled_total": run_results[0]['labeled_total'],
+                    "skipped_count": run_results[0]['skipped_count'],
+                    "accuracy": avg_result["accuracy_mean"],
+                    "unknown_rate": avg_result["unknown_rate_mean"],
+                    "error_rate": avg_result["error_rate_mean"],
+                    "skipped_rate": avg_result["skipped_rate_mean"],
+                    "field_reason_counts": (first_repeat_field_summary or {}).get("counts", {}),
+                    "field_reason_samples": (first_repeat_field_summary or {}).get("samples", {}),
+                    "skipped_examples": (first_repeat_field_summary or {}).get("skipped_examples", []),
+                    "unknown_examples": (first_repeat_field_summary or {}).get("unknown_examples", []),
+                    "error_examples": (first_repeat_field_summary or {}).get("error_examples", []),
+                }
+                profile_summaries.append(profile_summary)
+
+                profile_file = output_dir / "results" / f"profile_summary_{dataset_name}_{config_dict['name']}.json"
+                with open(profile_file, 'w', encoding='utf-8') as f:
+                    json.dump(profile_summary, f, indent=2, ensure_ascii=False)
 
     # 保存结果 / Save results
     print("\n保存结果 / Saving results...")
@@ -496,6 +640,10 @@ def run_benchmark(
     json_path = output_dir / "results" / "metrics.json"
     with open(json_path, 'w', encoding='utf-8') as f:
         json.dump(all_results, f, indent=2, ensure_ascii=False)
+
+    profile_summary_path = output_dir / "results" / "profile_summaries.json"
+    with open(profile_summary_path, 'w', encoding='utf-8') as f:
+        json.dump(profile_summaries, f, indent=2, ensure_ascii=False)
 
     print(f"\n完成！结果保存在 / Done! Results saved in: {output_dir}")
     return str(output_dir)
@@ -571,6 +719,13 @@ def main():
         help=argparse.SUPPRESS  # 隐藏此参数，仅用于兼容性
     )
 
+    parser.add_argument(
+        '--force-source',
+        type=str,
+        default=None,
+        help='Override source/profile for all records'
+    )
+
     args = parser.parse_args()
 
     # 确定使用哪个datasets参数
@@ -587,7 +742,8 @@ def main():
         ablation_config_path=args.config,
         output_dir=args.output,
         n_repeats=args.repeats,
-        skip_warmup=args.skip_warmup
+        skip_warmup=args.skip_warmup,
+        force_source=args.force_source
     )
 
 
