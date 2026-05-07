@@ -45,6 +45,8 @@ from src.config_v8 import (
     sigmoid,
 )
 
+ISTINA_SOURCE_NAMES = {"ISTINA", "istina", "袠小孝袠袧袗"}
+
 
 def _format_share_value(share: float) -> str:
     """Format share values for compact reason codes."""
@@ -58,7 +60,9 @@ def _apply_double_surname_frequency_rule(
     """
     Apply the configured double-surname frequency rule for non-ISTINA sources.
     """
-    strategy = get_ablation_config().surname_freq_strategy
+    ablation_config = get_ablation_config()
+    strategy = ablation_config.surname_freq_strategy
+    share_ratio_threshold = ablation_config.surname_share_ratio_threshold
 
     if strategy == "share_ratio":
         share_comparison = compare_surname_frequency_share(first_token.ascii, last_token.ascii)
@@ -67,7 +71,7 @@ def _apply_double_surname_frequency_rule(
         has_share1 = share_comparison["has_share1"]
         has_share2 = share_comparison["has_share2"]
 
-        if has_share1 and has_share2 and share_comparison["share_ratio"] >= 1.5:
+        if has_share1 and has_share2 and share_comparison["share_ratio"] >= share_ratio_threshold:
             if share1 > share2:
                 return (
                     CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
@@ -177,6 +181,20 @@ class Features:
     cn_affiliation: bool = False
     west_affiliation: bool = False
 
+    has_split_fields: bool = False
+    field_split_exact_family_first: bool = False
+    field_split_exact_given_first: bool = False
+    field_split_mismatch: bool = False
+    field_family_matches_full_name: bool = False
+    field_family_multitoken: bool = False
+    field_given_family_duplicate: bool = False
+    field_firstname_has_cjk: bool = False
+    field_lastname_has_cjk: bool = False
+    field_family_fullname_given_cjk: bool = False
+    field_given_compound_surname_prefix: bool = False
+    field_given_compound_surname_single_token: bool = False
+    field_given_head_surname_family_non_surname: bool = False
+
 
 @dataclass
 class NameDecision:
@@ -195,6 +213,8 @@ class NameRecord:
     person_id: Optional[str] = None
     publication_id: Optional[str] = None
     name_raw: str = ""
+    firstname_raw: Optional[str] = None
+    lastname_raw: Optional[str] = None
     affiliation_raw: Optional[str] = None
     lang_hint: Optional[str] = None
 
@@ -233,6 +253,7 @@ def preprocess_name(name_raw: str) -> ParsedName:
     # 1. 正规化
     s = name_raw.strip()
     s = re.sub(r'[,\(\)\[\]]', ' ', s)
+    s = re.sub(r'\b([A-Z])\.(?=[A-Z][a-z])', r'\1. ', s)
     s = re.sub(r'\s+', ' ', s).strip()
 
     # 2. 分词
@@ -279,6 +300,57 @@ def preprocess_name(name_raw: str) -> ParsedName:
 
 
 # ========== 模块2: 模式识别 Module 2: Mode Detection ==========
+
+def _normalize_field_text(value: Optional[str]) -> str:
+    """Normalize split-field content before secondary parsing."""
+    if not value:
+        return ""
+    return re.sub(r"\s+", " ", value.strip())
+
+
+def _parsed_field(value: Optional[str]) -> ParsedName:
+    """Parse a firstname/lastname field with the main tokenizer."""
+    return preprocess_name(_normalize_field_text(value))
+
+
+def _token_ascii_sequence(tokens: List[Token]) -> List[str]:
+    """Return a lowercased token sequence for exact-order checks."""
+    return [tok.ascii.lower() for tok in tokens if tok.ascii]
+
+
+def _contains_cjk_text(value: Optional[str]) -> bool:
+    """Detect Han characters in split fields."""
+    return bool(value and re.search(r"[\u4e00-\u9fff]", value))
+
+
+def _is_compound_surname_pinyin(text: str) -> bool:
+    """Check whether a pinyin form maps to a compound Chinese surname."""
+    if not text:
+        return False
+    return any(len(surname) > 1 for surname in get_surname_from_pinyin(text))
+
+
+def _extract_compound_surname_prefix(tokens: List[Token]) -> Optional[str]:
+    """Return a compound-surname prefix at the start of a given-name field."""
+    if not tokens:
+        return None
+
+    candidates = [tokens[0].ascii.lower()]
+    if len(tokens) >= 2:
+        head1 = tokens[0].ascii.lower()
+        head2 = tokens[1].ascii.lower()
+        candidates.extend([head1 + head2, f"{head1} {head2}"])
+
+    for candidate in candidates:
+        if _is_compound_surname_pinyin(candidate):
+            return candidate
+    return None
+
+
+def _is_external_metadata_source(source: Optional[str]) -> bool:
+    """External metadata can use stronger split-field evidence than ISTINA."""
+    return (source or "DEFAULT") not in ISTINA_SOURCE_NAMES
+
 
 def detect_mode(
     record: NameRecord,
@@ -399,6 +471,71 @@ def extract_features(
             f.cn_affiliation = affil_info.is_chinese
             f.west_affiliation = not affil_info.is_chinese and bool(affil_info.country)
 
+    split_first = _parsed_field(record.firstname_raw)
+    split_last = _parsed_field(record.lastname_raw)
+    split_first_tokens = split_first.tokens
+    split_last_tokens = split_last.tokens
+
+    if split_first_tokens or split_last_tokens:
+        f.has_split_fields = True
+
+    original_ascii = _token_ascii_sequence(parsed.tokens)
+    split_first_ascii = _token_ascii_sequence(split_first_tokens)
+    split_last_ascii = _token_ascii_sequence(split_last_tokens)
+
+    if split_first_ascii and split_last_ascii:
+        if original_ascii == split_last_ascii + split_first_ascii:
+            f.field_split_exact_family_first = True
+        elif original_ascii == split_first_ascii + split_last_ascii:
+            f.field_split_exact_given_first = True
+
+    if split_last_ascii and split_last_ascii == original_ascii and split_first_ascii:
+        f.field_family_matches_full_name = True
+
+    f.field_family_multitoken = len(split_last_tokens) >= 2
+    f.field_firstname_has_cjk = _contains_cjk_text(record.firstname_raw)
+    f.field_lastname_has_cjk = _contains_cjk_text(record.lastname_raw)
+    f.field_given_family_duplicate = bool(
+        split_first_ascii and split_last_ascii and split_first_ascii == split_last_ascii
+    )
+
+    if (
+        f.field_family_matches_full_name
+        and f.field_firstname_has_cjk
+        and not f.field_lastname_has_cjk
+    ):
+        f.field_family_fullname_given_cjk = True
+
+    compound_prefix = _extract_compound_surname_prefix(split_first_tokens)
+    if compound_prefix:
+        if len(split_first_tokens) >= 2:
+            f.field_given_compound_surname_prefix = True
+        else:
+            f.field_given_compound_surname_single_token = True
+
+    if split_first_tokens and split_last_tokens:
+        first_head = split_first_tokens[0].ascii.lower()
+        last_head = split_last_tokens[0].ascii.lower()
+        last_joined = "".join(tok.ascii.lower() for tok in split_last_tokens if tok.ascii)
+        lastname_looks_like_surname = is_surname_pinyin(last_head) or is_surname_pinyin(last_joined)
+        if is_surname_pinyin(first_head) and not lastname_looks_like_surname:
+            if len(split_first_tokens) >= 2 or f.field_given_compound_surname_prefix:
+                f.field_given_head_surname_family_non_surname = True
+
+    if (
+        f.has_split_fields
+        and not f.field_split_exact_family_first
+        and not f.field_split_exact_given_first
+        and (
+            f.field_family_matches_full_name
+            or f.field_given_family_duplicate
+            or f.field_family_fullname_given_cjk
+            or f.field_given_compound_surname_prefix
+            or f.field_given_head_surname_family_non_surname
+        )
+    ):
+        f.field_split_mismatch = True
+
     # 中文姓氏
     f.first_is_cn_surname = is_surname_pinyin(first.ascii)
     f.last_is_cn_surname = is_surname_pinyin(last.ascii)
@@ -417,6 +554,60 @@ def extract_features(
     f.last_pinyin_syllables = syl_last
 
     return f
+
+
+def _apply_field_structure_evidence(
+    record: NameRecord,
+    f: Features,
+    weight_map: Dict[str, float],
+    score_fam: float,
+    score_giv: float,
+    reasons: List[str],
+) -> Tuple[float, float]:
+    """Translate split-field checks into soft, explainable evidence."""
+    if not f.has_split_fields:
+        return score_fam, score_giv
+
+    source_multiplier = 1.0 if _is_external_metadata_source(record.source) else 0.35
+
+    if f.field_split_exact_family_first:
+        score_fam += weight_map["FIELD_SPLIT_EXACT_FAMILY"] * source_multiplier
+        reasons.append("FIELD_SPLIT_EXACT_FAMILY")
+
+    if f.field_split_exact_given_first:
+        score_giv += weight_map["FIELD_SPLIT_EXACT_GIVEN"] * source_multiplier
+        reasons.append("FIELD_SPLIT_EXACT_GIVEN")
+
+    if f.field_family_matches_full_name:
+        score_fam += weight_map["FIELD_FAMILY_MATCHES_FULL_NAME"] * source_multiplier
+        reasons.append("FIELD_FAMILY_MATCHES_FULL_NAME")
+
+    if f.field_family_fullname_given_cjk:
+        score_fam += weight_map["FIELD_FAMILY_FULLNAME_GIVEN_CJK"] * source_multiplier
+        reasons.append("FIELD_FAMILY_FULLNAME_GIVEN_CJK")
+
+    if f.field_given_head_surname_family_non_surname:
+        score_fam += weight_map["FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME"] * source_multiplier
+        reasons.append("FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME")
+
+    if f.field_given_compound_surname_prefix:
+        score_fam += weight_map["FIELD_GIVEN_COMPOUND_SURNAME_PREFIX"] * source_multiplier
+        reasons.append("FIELD_GIVEN_COMPOUND_SURNAME_PREFIX")
+
+    if f.field_given_compound_surname_single_token:
+        score_fam += weight_map["FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN"] * source_multiplier
+        reasons.append("FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN_DIAG")
+
+    if f.field_family_multitoken:
+        reasons.append("FIELD_FAMILY_MULTITOKEN")
+
+    if f.field_given_family_duplicate:
+        reasons.append("FIELD_GIVEN_FAMILY_DUPLICATE")
+
+    if f.field_split_mismatch:
+        reasons.append("FIELD_SPLIT_MISMATCH")
+
+    return score_fam, score_giv
 
 
 # ========== 模块4: 决策引擎 Module 4: Decision Engine ==========
@@ -511,6 +702,15 @@ def decide_chinese(
             score_giv += CHINESE_FEATURE_WEIGHTS["TWO_TOKENS_SINGLE_SYLLABLE"]
             reasons.append("TWO_TOKENS_CN_SURNAME_LAST_ISTINA")
 
+    score_fam, score_giv = _apply_field_structure_evidence(
+        record,
+        f,
+        CHINESE_FEATURE_WEIGHTS,
+        score_fam,
+        score_giv,
+        reasons,
+    )
+
     # === 决策 ===
 
     delta = score_fam - score_giv
@@ -571,6 +771,15 @@ def decide_western(
         score_giv += WESTERN_FEATURE_WEIGHTS["NO_CN_EVIDENCE_DEFAULT"]
         reasons.append("NO_CN_EVIDENCE_DEFAULT_GIVEN")
 
+    score_fam, score_giv = _apply_field_structure_evidence(
+        record,
+        f,
+        WESTERN_FEATURE_WEIGHTS,
+        score_fam,
+        score_giv,
+        reasons,
+    )
+
     # === 决策 ===
 
     delta = score_fam - score_giv
@@ -628,6 +837,15 @@ def decide_mixed(
         score_giv += MIXED_FEATURE_WEIGHTS["NO_MATCH_DEFAULT"]
         reasons.append("NO_MATCH_DEFAULT_GIVEN")
 
+    score_fam, score_giv = _apply_field_structure_evidence(
+        record,
+        f,
+        MIXED_FEATURE_WEIGHTS,
+        score_fam,
+        score_giv,
+        reasons,
+    )
+
     # === 决策 ===
 
     delta = score_fam - score_giv
@@ -669,20 +887,72 @@ def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
     abbrev_pattern = r'^[A-Z](\.[A-Z])*\.?$'
     single_letter_pattern = r'^[A-Z]$'  # 单字母也算缩写
     tokens = parsed.tokens
+    second_token_is_abbrev = (
+        len(tokens) == 2
+        and (
+            re.match(abbrev_pattern, tokens[1].raw)
+            or re.match(single_letter_pattern, tokens[1].raw)
+        )
+    )
+    first_token_is_abbrev = (
+        len(tokens) == 2
+        and (
+            re.match(abbrev_pattern, tokens[0].raw)
+            or re.match(single_letter_pattern, tokens[0].raw)
+        )
+    )
+    tail_tokens_are_abbrev = (
+        len(tokens) >= 3
+        and all(
+            re.match(abbrev_pattern, t.raw) or re.match(single_letter_pattern, t.raw)
+            for t in tokens[1:]
+        )
+    )
+
+    # External metadata may already provide a reliable split-field alignment.
+    # Do not let generic initial patterns override an exact given/family match.
+    if (
+        _is_external_metadata_source(record.source)
+        and (second_token_is_abbrev or first_token_is_abbrev or tail_tokens_are_abbrev)
+    ):
+        split_first = _parsed_field(record.firstname_raw)
+        split_last = _parsed_field(record.lastname_raw)
+        split_first_ascii = _token_ascii_sequence(split_first.tokens)
+        split_last_ascii = _token_ascii_sequence(split_last.tokens)
+        original_ascii = _token_ascii_sequence(parsed.tokens)
+        if (
+            split_first_ascii
+            and split_last_ascii
+            and split_first_ascii != split_last_ascii
+        ):
+            if original_ascii == split_last_ascii + split_first_ascii:
+                return NameDecision(
+                    "family_first",
+                    0.99,
+                    "FIELD_STRUCTURE",
+                    ["FIELD_SPLIT_EXACT_FAMILY", "ABBREV_DEFER_TO_SPLIT_FIELDS"],
+                )
+            if original_ascii == split_first_ascii + split_last_ascii:
+                return NameDecision(
+                    "given_first",
+                    0.99,
+                    "FIELD_STRUCTURE",
+                    ["FIELD_SPLIT_EXACT_GIVEN", "ABBREV_DEFER_TO_SPLIT_FIELDS"],
+                )
 
     if len(tokens) == 2:
         # 检测第二个token是否是缩写
-        if re.match(abbrev_pattern, tokens[1].raw) or re.match(single_letter_pattern, tokens[1].raw):
+        if second_token_is_abbrev:
             return NameDecision("family_first", 1.0, "ABBREVIATION",
                                [f"ABBREV_{tokens[0].raw}_{tokens[1].raw}"])
         # 检测第一个token是否是缩写（倒置情况）
-        if re.match(abbrev_pattern, tokens[0].raw) or re.match(single_letter_pattern, tokens[0].raw):
+        if first_token_is_abbrev:
             return NameDecision("given_first", 0.85, "ABBREVIATION",
                                [f"ABBREV_{tokens[0].raw}_{tokens[1].raw}_REVERSED"])
 
     if len(tokens) >= 3:
         # 所有非第一个token都是缩写
-        if all(re.match(abbrev_pattern, t.raw) or re.match(single_letter_pattern, t.raw) for t in tokens[1:]):
+        if tail_tokens_are_abbrev:
             return NameDecision("family_first", 1.0, "ABBREVIATION",
                                [f"ABBREV_{tokens[0].raw}_+"])
 
@@ -836,6 +1106,8 @@ def identify_surname_position_v8(
         person_id=person_id,
         publication_id=publication_id,
         name_raw=original_name,
+        firstname_raw=firstname,
+        lastname_raw=lastname,
         affiliation_raw=affiliation,
         lang_hint=mode_hint,
     )
