@@ -13,8 +13,8 @@ v8.0中文姓氏位置识别算法 / v8.0 Chinese Surname Position Identifier
 """
 
 import re
-from typing import Optional, Tuple, List, Dict
-from dataclasses import dataclass, field
+from typing import Any, Optional, Tuple, List, Dict
+from dataclasses import dataclass, field, replace
 from collections import defaultdict
 import sys
 from pathlib import Path
@@ -910,11 +910,10 @@ def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
     )
 
     # External metadata may already provide a reliable split-field alignment.
-    # Do not let generic initial patterns override an exact given/family match.
-    if (
-        _is_external_metadata_source(record.source)
-        and (second_token_is_abbrev or first_token_is_abbrev or tail_tokens_are_abbrev)
-    ):
+    # Treat an exact original_name <-> given/family alignment as decisive for
+    # external sources, while still recording when it suppresses abbreviation rules.
+    has_abbrev_pattern = second_token_is_abbrev or first_token_is_abbrev or tail_tokens_are_abbrev
+    if _is_external_metadata_source(record.source):
         split_first = _parsed_field(record.firstname_raw)
         split_last = _parsed_field(record.lastname_raw)
         split_first_ascii = _token_ascii_sequence(split_first.tokens)
@@ -925,19 +924,55 @@ def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
             and split_last_ascii
             and split_first_ascii != split_last_ascii
         ):
+            diagnostic_reasons = []
+            if len(split_last.tokens) >= 2:
+                diagnostic_reasons.append("FIELD_FAMILY_MULTITOKEN")
+
+            compound_prefix = _extract_compound_surname_prefix(split_first.tokens)
+            if compound_prefix:
+                if len(split_first.tokens) >= 2:
+                    diagnostic_reasons.append("FIELD_GIVEN_COMPOUND_SURNAME_PREFIX")
+                else:
+                    diagnostic_reasons.append("FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN_DIAG")
+
+            if split_first.tokens and split_last.tokens:
+                first_head = split_first.tokens[0].ascii.lower()
+                last_head = split_last.tokens[0].ascii.lower()
+                last_joined = "".join(tok.ascii.lower() for tok in split_last.tokens if tok.ascii)
+                lastname_looks_like_surname = (
+                    is_surname_pinyin(last_head) or is_surname_pinyin(last_joined)
+                )
+                if is_surname_pinyin(first_head) and not lastname_looks_like_surname:
+                    if len(split_first.tokens) >= 2 or compound_prefix:
+                        diagnostic_reasons.append("FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME")
+
             if original_ascii == split_last_ascii + split_first_ascii:
+                reasons = [
+                    "FIELD_SPLIT_EXACT_FAMILY",
+                    "FIELD_STRUCTURE_EXACT_OVERRIDE",
+                    *diagnostic_reasons,
+                ]
+                if has_abbrev_pattern:
+                    reasons.append("ABBREV_DEFER_TO_SPLIT_FIELDS")
                 return NameDecision(
                     "family_first",
                     0.99,
                     "FIELD_STRUCTURE",
-                    ["FIELD_SPLIT_EXACT_FAMILY", "ABBREV_DEFER_TO_SPLIT_FIELDS"],
+                    reasons,
                 )
             if original_ascii == split_first_ascii + split_last_ascii:
+                reasons = [
+                    "FIELD_SPLIT_EXACT_GIVEN",
+                    "FIELD_STRUCTURE_EXACT_OVERRIDE",
+                    *diagnostic_reasons,
+                ]
+                if has_abbrev_pattern:
+                    reasons.append("ABBREV_DEFER_TO_SPLIT_FIELDS")
                 return NameDecision(
                     "given_first",
                     0.99,
                     "FIELD_STRUCTURE",
-                    ["FIELD_SPLIT_EXACT_GIVEN", "ABBREV_DEFER_TO_SPLIT_FIELDS"],
+                    reasons,
                 )
 
     if len(tokens) == 2:
@@ -1124,8 +1159,60 @@ def identify_surname_position_v8(
     return (decision.order, decision.confidence, reason)
 
 
+def _coerce_batch_record(
+    record: Any,
+    index: int,
+    default_source: Optional[str] = None,
+) -> NameRecord:
+    """Accept NameRecord or common Crossref-style dicts in the batch API."""
+    if isinstance(record, NameRecord):
+        if default_source and (not record.source or record.source == "DEFAULT"):
+            return replace(record, source=default_source)
+        return record
+
+    if not isinstance(record, dict):
+        raise TypeError(
+            "batch_identify_surname_position_v8 expects NameRecord or dict records"
+        )
+
+    firstname_raw = (
+        record.get("firstname_raw")
+        or record.get("firstname")
+        or record.get("given")
+        or record.get("given_name")
+    )
+    lastname_raw = (
+        record.get("lastname_raw")
+        or record.get("lastname")
+        or record.get("family")
+        or record.get("family_name")
+        or record.get("surname")
+    )
+    name_raw = (
+        record.get("name_raw")
+        or record.get("original_name")
+        or record.get("name")
+        or record.get("full_name")
+        or ""
+    )
+    if not name_raw and firstname_raw and lastname_raw:
+        name_raw = f"{firstname_raw} {lastname_raw}"
+
+    return NameRecord(
+        record_id=str(record.get("record_id") or record.get("id") or index),
+        source=record.get("source") or default_source or "DEFAULT",
+        person_id=record.get("person_id") or record.get("orcid"),
+        publication_id=record.get("publication_id") or record.get("doi"),
+        name_raw=name_raw,
+        firstname_raw=firstname_raw,
+        lastname_raw=lastname_raw,
+        affiliation_raw=record.get("affiliation_raw") or record.get("affiliation"),
+        lang_hint=record.get("lang_hint"),
+    )
+
+
 def batch_identify_surname_position_v8(
-    records: List[NameRecord],
+    records: List[Any],
     source: Optional[str] = None,
     enable_person_consistency: bool = True,
     enable_pub_consistency: bool = True,
@@ -1147,6 +1234,11 @@ def batch_identify_surname_position_v8(
     cfg = get_config(source)
 
     # 1. 局部决策
+    records = [
+        _coerce_batch_record(record, index, source)
+        for index, record in enumerate(records)
+    ]
+
     decisions = {}
     for rec in records:
         rec_cfg = get_config(rec.source) if rec.source else cfg

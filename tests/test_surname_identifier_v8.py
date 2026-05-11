@@ -308,6 +308,47 @@ def test_split_field_exact_given_overrides_abbreviation_rule():
     assert "ABBREV_DEFER_TO_SPLIT_FIELDS" in decision.reason_codes
 
 
+def test_batch_split_field_exact_given_is_decisive():
+    records = [
+        NameRecord(
+            record_id="du-guoming",
+            name_raw="DU Guoming",
+            firstname_raw="DU",
+            lastname_raw="Guoming",
+            source="CROSSREF",
+        )
+    ]
+    decision = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=False,
+    )["du-guoming"]
+    assert decision.order == "given_first"
+    assert "FIELD_SPLIT_EXACT_GIVEN" in decision.reason_codes
+    assert "FIELD_STRUCTURE_EXACT_OVERRIDE" in decision.reason_codes
+
+
+def test_batch_accepts_crossref_style_dict_records():
+    decisions = batch_identify_surname_position_v8(
+        [
+            {
+                "record_id": "dict-record",
+                "original_name": "Lokesh K. N",
+                "firstname": "Lokesh K.",
+                "lastname": "N",
+                "source": "CROSSREF",
+            }
+        ],
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=False,
+    )
+    decision = decisions["dict-record"]
+    assert decision.order == "given_first"
+    assert "FIELD_SPLIT_EXACT_GIVEN" in decision.reason_codes
+
+
 def test_duplicate_split_fields_are_not_proxy_labels():
     from experiments.run_bench import infer_proxy_order
 
