@@ -47,15 +47,19 @@ Results:
 - Mode counts: CHINESE 56,362; MIXED 126,568; WESTERN 75,520; ABBREVIATION 43,136.
 - Order counts: given_first 300,892; family_first 694.
 - Mentor metric (`mode == CHINESE and order != given_first`): 257 / 56,362.
-- Simple proxy-labeled rows: 301,559.
-- Proxy errors: 694 / 301,559 = 0.2301%.
-- Raw publication majority overrides: 4,740, with 4,740 proxy-good and 0 proxy-bad.
-- Raw person majority overrides: 527, with 527 proxy-good and 0 proxy-bad.
+- Strict frozen proxy-labeled rows: 301,146.
+- Strict frozen proxy errors: 689 / 301,146 = 0.2288%.
+- Raw publication majority overrides: 4,740 total; 4,420 strict-proxy-labeled,
+  with 4,420 proxy-good and 0 proxy-bad.
+- Raw person majority overrides: 527 total; 466 strict-proxy-labeled,
+  with 466 proxy-good and 0 proxy-bad.
 
 Interpretation: this is a reproducibility/sanity benchmark only. The simple
 proxy label is derived from `original_name`, `firstname`, and `lastname`; it is
 not manual ground truth and should not be used as a paper claim of true
-accuracy.
+accuracy. The strict frozen proxy audit excludes duplicate or non-token-aligned
+split fields, so the headline acceptance gate is the raw-name mentor metric
+plus zero proxy-bad consistency overrides among strict-proxy-labeled rows.
 
 ### Advisor DOI challenge set
 
