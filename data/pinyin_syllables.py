@@ -29,7 +29,7 @@ PINYIN_SYLLABLES = {
     'fa', 'fo', 'fei', 'fou', 'fan', 'fen', 'fang', 'feng',
 
     # d-
-    'da', 'de', 'dai', 'dei', 'dao', 'dou', 'dan', 'den', 'dang', 'deng', 'di', 'die', 'diao', 'diu', 'dian', 'ding',
+    'da', 'de', 'dai', 'dei', 'dao', 'dou', 'dan', 'den', 'dang', 'deng', 'dong', 'di', 'die', 'diao', 'diu', 'dian', 'ding',
 
     # t-
     'ta', 'te', 'tai', 'tao', 'tou', 'tan', 'tang', 'teng', 'ti', 'tie', 'tiao', 'tian', 'ting',
