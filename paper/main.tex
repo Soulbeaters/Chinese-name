@@ -1,0 +1,265 @@
+% Диссертация: Вопросы ввода и верификации больших данных в интерактивных наукометрических системах
+% Dissertation: Issues of Input and Verification of Big Data in Interactive Scientometric Systems
+%
+% Автор / Author: Ма Цзясин (Ma Jiaxin)
+% Научный руководитель / Scientific Advisor: [TODO: Supervisor Name]
+% Организация / Organization: МГУ имени М.В. Ломоносова
+% Дата / Date: 2025
+
+\documentclass[12pt,a4paper]{report}
+
+% ====================
+% Пакеты / Packages
+% ====================
+
+% Кодировка и язык / Encoding and Language
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[russian,english]{babel}
+
+% Математика / Mathematics
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% Таблицы / Tables
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+
+% Графика / Graphics
+\usepackage{graphicx}
+\usepackage{float}
+
+% Ссылки и гиперссылки / References and Hyperlinks
+\usepackage{hyperref}
+\usepackage{url}
+
+% Листинги кода / Code Listings
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Библиография / Bibliography
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{bib/references.bib}
+
+% Геометрия страницы / Page Geometry
+\usepackage[left=3cm,right=1.5cm,top=2cm,bottom=2cm]{geometry}
+
+% Интервалы / Line Spacing
+\usepackage{setspace}
+\onehalfspacing
+
+% ====================
+% Настройки / Settings
+% ====================
+
+% Цвета для кода / Code Colors
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Стиль листингов / Listings Style
+\lstdefinestyle{pythonstyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+\lstset{style=pythonstyle}
+
+% Гиперссылки / Hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    citecolor=blue,
+    pdfauthor={Ma Jiaxin},
+    pdftitle={Вопросы ввода и верификации больших данных в интерактивных наукометрических системах},
+    pdfsubject={Computer Science Dissertation},
+    pdfkeywords={scientometrics, big data, data verification, ISTINA, Chinese names}
+}
+
+% Теоремы и определения / Theorems and Definitions
+\newtheorem{theorem}{Теорема}[chapter]
+\newtheorem{lemma}[theorem]{Лемма}
+\newtheorem{corollary}[theorem]{Следствие}
+\theoremstyle{definition}
+\newtheorem{definition}{Определение}[chapter]
+\newtheorem{example}{Пример}[chapter]
+\theoremstyle{remark}
+\newtheorem{remark}{Замечание}[chapter]
+
+% ====================
+% Метаданные / Metadata
+% ====================
+
+\title{
+    {\Large МОСКОВСКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ ИМЕНИ М.В. ЛОМОНОСОВА}\\[1cm]
+    {\Large Факультет вычислительной математики и кибернетики}\\[1cm]
+    {\Large Кафедра автоматизации научных исследований}\\[2cm]
+    {\LARGE\textbf{Вопросы ввода и верификации больших данных\\
+    в интерактивных наукометрических системах}}\\[1cm]
+    {\large Диссертация на соискание ученой степени\\
+    кандидата физико-математических наук}\\[0.5cm]
+    {\large по специальности 1.2.2 — Математическое моделирование,\\
+    численные методы и комплексы программ}
+}
+
+\author{Ма Цзясин (Ma Jiaxin)}
+\date{Москва — 2025}
+
+% ====================
+% Начало документа / Document Begin
+% ====================
+
+\begin{document}
+
+% Русский язык по умолчанию / Russian as default language
+\selectlanguage{russian}
+
+% ====================
+% Титульный лист / Title Page
+% ====================
+
+\maketitle
+
+\thispagestyle{empty}
+\clearpage
+
+% ====================
+% Аннотация (русский) / Abstract (Russian)
+% ====================
+
+\chapter*{Аннотация}
+\addcontentsline{toc}{chapter}{Аннотация}
+
+\textbf{Актуальность темы исследования.}
+Интерактивные наукометрические системы играют критическую роль в оценке и анализе научной деятельности исследователей и организаций. Однако ввод и верификация больших объемов библиографических данных остаются существенной проблемой, особенно при работе с многоязычными именами авторов и неструктурированными метаданными. Существующие подходы к автоматизации этих процессов часто не учитывают специфику различных культурных традиций именования и не обеспечивают достаточную точность верификации.
+
+\textbf{Цель исследования.}
+Разработка методов и алгоритмов автоматизированного ввода и верификации больших данных в интерактивных наукометрических системах на примере системы ИСТИНА МГУ.
+
+\textbf{Научная новизна.}
+В диссертации предложен новый подход к автоматической верификации порядка имени и фамилии в китайских именах на основе мультимодульного алгоритма принятия решений с цепочками доказательств. Разработанный метод обеспечивает точность [TODO: insert accuracy value]~\% при обработке [TODO: insert throughput value]~имен в секунду.
+
+\textbf{Практическая значимость.}
+Результаты исследования внедрены в промышленную эксплуатацию системы ИСТИНА МГУ, обрабатывающей более 300~000 научных публикаций ежегодно.
+
+\textbf{Ключевые слова:}
+наукометрия, большие данные, верификация данных, китайские имена, мультимодульные алгоритмы, цепочки доказательств.
+
+\clearpage
+
+% ====================
+% Abstract (English)
+% ====================
+
+\selectlanguage{english}
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+\textbf{[TODO: English abstract placeholder]}
+
+\textbf{Research Relevance.}
+Interactive scientometric systems play a critical role in evaluating and analyzing the scientific activities of researchers and organizations. However, input and verification of large volumes of bibliographic data remain a significant challenge, especially when dealing with multilingual author names and unstructured metadata.
+
+\textbf{Research Objective.}
+Development of methods and algorithms for automated input and verification of big data in interactive scientometric systems using the ISTINA MSU system as an example.
+
+\textbf{Scientific Novelty.}
+[TODO: Insert scientific novelty description in English]
+
+\textbf{Practical Significance.}
+[TODO: Insert practical significance description in English]
+
+\textbf{Keywords:}
+scientometrics, big data, data verification, Chinese names, multi-module algorithms, evidence chains.
+
+\selectlanguage{russian}
+\clearpage
+
+% ====================
+% Содержание / Table of Contents
+% ====================
+
+\tableofcontents
+\clearpage
+
+% ====================
+% Список рисунков / List of Figures
+% ====================
+
+% Раскомментируйте при наличии рисунков
+% \listoffigures
+% \clearpage
+
+% ====================
+% Список таблиц / List of Tables
+% ====================
+
+\listoftables
+\clearpage
+
+% ====================
+% Основной текст / Main Content
+% ====================
+
+% Глава 1: Введение / Chapter 1: Introduction
+\input{sections/01_introduction}
+
+% Глава 2: Обзор литературы / Chapter 2: Literature Review
+\input{sections/02_literature_review}
+
+% Глава 3: Методология / Chapter 3: Methodology
+\input{sections/03_methodology}
+
+% Глава 4: Экспериментальные результаты / Chapter 4: Experimental Results
+\input{sections/04_experiments}
+
+% Глава 5: Интеграция с системой ИСТИНА / Chapter 5: Integration with ISTINA System
+\input{sections/05_istina_integration}
+
+% Глава 6: Обсуждение / Chapter 6: Discussion
+\input{sections/06_discussion}
+
+% Глава 7: Заключение / Chapter 7: Conclusion
+\input{sections/07_conclusion}
+
+% Глава 8: Список литературы / Chapter 8: References
+\input{sections/08_references}
+
+% ====================
+% Приложения / Appendices
+% ====================
+
+\appendix
+
+% Приложение A: Примеры входных данных / Appendix A: Sample Input Data
+% \input{sections/appendix_a}
+
+% Приложение B: Дополнительные таблицы / Appendix B: Additional Tables
+% \input{sections/appendix_b}
+
+% ====================
+% Библиография / Bibliography
+% ====================
+
+% Примечание: Библиография также управляется в sections/08_references.tex
+% Note: Bibliography is also managed in sections/08_references.tex
+
+\end{document}

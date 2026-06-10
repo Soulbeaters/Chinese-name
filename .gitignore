@@ -135,5 +135,6 @@ Thumbs.db
 # Project specific
 *.json
 *.log
+runs/
 temp/
 tmp/

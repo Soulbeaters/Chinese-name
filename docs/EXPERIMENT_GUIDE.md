@@ -140,7 +140,7 @@ $env:ISTINA_LOG_SALT = "YOUR_SECURE_RANDOM_SALT_HERE"
 
 python scripts/run_istina_pilot.py `
   --input "C:\istina\materia 材料\测试表单\crossref_authors.json" `
-  --out_dir "runs/istina_pilot_smoke" `
+  --out_dir "runs/istina_pilot_smoke_1k" `
   --profile ISTINA `
   --seed 42 `
   --max_records 1000 `
@@ -150,7 +150,7 @@ python scripts/run_istina_pilot.py `
 ```
 
 **预期时间**: ~1-2分钟
-**输出**: `runs/istina_pilot_smoke/`
+**输出**: `runs/istina_pilot_smoke_1k/`
 **安全保证**:
 - `--write_full_log 0`: 不生成完整raw日志（默认，安全）
 - `--keep_raw_sampled 0`: 自动删除临时采样文件（默认，安全）
@@ -188,7 +188,7 @@ python scripts/run_istina_pilot.py `
 # Full pilot（全量301k，可选）
 python scripts/run_istina_pilot.py `
   --input "C:\istina\materia 材料\测试表单\crossref_authors.json" `
-  --out_dir "runs/istina_pilot_full" `
+  --out_dir "runs/istina_pilot_full_301k" `
   --profile ISTINA `
   --seed 42 `
   --max_records 0 `
@@ -200,7 +200,7 @@ python scripts/run_istina_pilot.py `
 **安全默认**: 所有raw token files自动清理，仅保留脱敏样本
 
 **预期时间**: ~30-60分钟（取决于数据规模）
-**输出**: `runs/istina_pilot_full/`
+**输出**: `runs/istina_pilot_full_301k/`
 
 ### 输出目录结构 / Output Directory Structure
 
@@ -256,9 +256,9 @@ runs/istina_pilot_*/
 
 #### 合规性 / Compliance
 
-- 按照 GDPR Article 25 & 32 设计
-- 按照俄罗斯联邦152-FZ法设计
-- **最终合规性以机构审查为准**
+- 设计遵循 GDPR Article 25 (Data Protection by Design) & 32 (Security of Processing) 原则
+- 设计遵循俄罗斯联邦152-FZ法（个人数据保护）原则
+- **最终合规性以机构审查为准 / Final compliance subject to institutional review**
 
 ---
 
@@ -292,9 +292,9 @@ VALIDATION PASSED
 
 1. **文件完整性**:
    ```bash
-   ls runs/istina_pilot_smoke/logs/istina_batch_redacted_200.jsonl
-   ls runs/istina_pilot_smoke/tables/istina_pilot_quality.tex
-   ls runs/istina_pilot_smoke/performance_benchmark.json
+   ls runs/istina_pilot_10k_final/logs/istina_batch_redacted_200.jsonl
+   ls runs/istina_pilot_10k_final/tables/istina_pilot_quality.tex
+   ls runs/istina_pilot_10k_final/performance_benchmark.json
    ```
 
 2. **无PII泄露**:
@@ -304,7 +304,7 @@ VALIDATION PASSED
 import re
 import json
 
-with open('runs/istina_pilot_smoke/logs/istina_batch_redacted_200.jsonl', 'r', encoding='utf-8') as f:
+with open('runs/istina_pilot_10k_final/logs/istina_batch_redacted_200.jsonl', 'r', encoding='utf-8') as f:
     for line in f:
         event = json.loads(line)
         # 检查是否存在input_tokens字段
@@ -325,8 +325,8 @@ print('[PASS] No PII found in redacted log')
 4. **数字一致性**:
    ```bash
    # N_total和N_labeled在所有文件中一致
-   cat runs/istina_pilot_smoke/run_manifest.json | grep "n_records"
-   cat runs/istina_pilot_smoke/statistics/stats_ci_global.json | grep "n_records"
+   cat runs/istina_pilot_10k_final/run_manifest.json | grep "n_records"
+   cat runs/istina_pilot_10k_final/statistics/stats_ci_global.json | grep "n_records"
    ```
 
 ---
@@ -373,15 +373,29 @@ python scripts/run_istina_pilot.py --seed 12345 ...
 # 修改redacted样本行数
 python scripts/run_istina_pilot.py --sample_lines 500 ...
 
-# 调试模式：保留临时raw采样文件（仅用于调试，勿提交）
-python scripts/run_istina_pilot.py --keep_raw_sampled 1 ...
-
-# 调试模式：生成完整raw日志（仅用于调试，勿提交）
-python scripts/run_istina_pilot.py --write_full_log 1 ...
-
 # 关闭自动验收
 python scripts/run_istina_pilot.py --validate 0 ...
 ```
+
+### ⚠️ 调试模式 / DEBUG MODE ONLY (不可用于论文提交 / NOT FOR PAPER SUBMISSION)
+
+**警告 / WARNING**: 以下参数仅用于开发和调试，生成的文件包含原始 tokens，**禁止提交到论文中**。
+
+```bash
+# 调试模式：生成完整raw日志（包含原始tokens）
+# DEBUG ONLY: Generate full raw log (contains raw tokens)
+python scripts/run_istina_pilot.py --write_full_log 1 ...
+
+# 调试模式：保留临时raw采样文件（包含原始tokens）
+# DEBUG ONLY: Keep temporary raw sampled file (contains raw tokens)
+python scripts/run_istina_pilot.py --keep_raw_sampled 1 ...
+```
+
+**使用后必须删除 / Must delete after use**:
+- `logs/istina_batch_full.jsonl`
+- `logs/istina_batch_raw_sampled.jsonl`
+
+**验收检查会报错 / Validation will fail** if these files exist with safe defaults (write_full_log=0, keep_raw_sampled=0).
 
 ### 性能优化 / Performance Optimization
 

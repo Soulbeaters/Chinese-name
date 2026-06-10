@@ -1,0 +1,94 @@
+@startuml smbu_pipeline
+!theme plain
+title SMBU Scholarly Platform Integration Design / SMBU学术平台集成设计
+
+' Define components
+component "Data Sources" as Sources {
+  database "Crossref" as Crossref #LightBlue
+  database "ORCID" as ORCID #LightGreen
+  database "Preprint\nServers" as Preprint #LightYellow
+  database "Institutional\nRepository" as Repo #LightPink
+}
+
+component "SMBU Scholarly Research Platform (SRP)" as SRP {
+  component "Metadata\nIngestion" as Ingest #LightCoral
+  component "Name\nNormalization\nQueue" as Queue #LightGreen
+  component "Batch\nProcessor" as Batch #LightBlue
+  component "Review\nQueue" as Review #LightYellow
+  component "Data\nWarehouse" as DW #LightGray
+}
+
+component "Chinese Name Recognizer" as Algorithm {
+  component "v8.0\nAlgorithm" as V8 #LightCoral
+  component "Profile\nManager" as Profile #LightPink
+  component "Evidence\nTracker" as Evidence #LightGreen
+}
+
+component "SMBU International Collaboration Preprint Platform (ICPP)" as ICPP {
+  component "Author\nProfile\nManagement" as AuthorMgmt #LightBlue
+  component "Collaboration\nTracking" as Collab #LightYellow
+}
+
+actor "Human\nOperator" as Operator #LightCoral
+
+' Data flow
+Sources --> Ingest: Daily sync
+Ingest --> Queue: New/updated\nauthor records
+Queue --> Batch: Nightly batch\n(scheduled)
+
+note right of Batch
+  Processing window:
+  - Target: 10,000 names/hour
+  - Based on benchmark:
+    166.7 names/sec
+  - Capacity: 600,000 names/hour
+end note
+
+Batch --> Algorithm: Batch request
+Algorithm --> Profile: Select profile\n(Crossref/ORCID/Mixed)
+Profile --> V8: Configure\nparameters
+V8 --> Evidence: Track decision\nevidence
+Evidence --> Batch: Results +\nevidence chain
+
+Batch --> Review: Low confidence\ncases (< 0.7)
+Batch --> DW: High confidence\ncases (>= 0.7)
+
+Review --> Operator: Manual review\nqueue
+Operator --> DW: Validated\nrecords
+
+DW --> SRP: Update metadata
+DW --> ICPP: Update author\nprofiles
+
+note over Review, Operator
+  **Human-in-the-loop**:
+  - Low confidence: < 0.7
+  - Unknown predictions
+  - Low margin: < 0.2
+  - Conflicting evidence
+end note
+
+note over Algorithm
+  **Configuration**:
+  Profile: Mixed (default)
+  - Chinese prior: 0.4
+  - Western prior: 0.3
+  - Batch consistency: ON
+  - Person consistency: ON
+  - Pub consistency: ON
+end note
+
+note over Sources, ICPP
+  **Data Governance Goals**:
+  ✓ Author name field consistency
+  ✓ Traceability via evidence chain
+  ✓ Audit trail for compliance
+  ✓ Quality metrics monitoring
+end note
+
+' Capacity estimation table reference
+note bottom of Batch
+  See detailed capacity estimation:
+  tables/smbu_capacity_estimate.tex
+end note
+
+@enduml
