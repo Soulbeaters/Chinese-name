@@ -1,0 +1,103 @@
+@startuml istina_integration
+!theme plain
+title ИСТИНА System Integration Architecture / ИСТИНА系统集成架构
+
+' Define participants
+participant "ИСТИНА\n(ИАС «ИСТИНА»)" as ISTINA #LightBlue
+participant "Export\nAdapter" as Adapter #LightGreen
+participant "Chinese Name\nRecognizer\n(v8.0)" as Algorithm #LightCoral
+participant "Decision\nLogger" as Logger #LightYellow
+participant "Statistical\nAnalyzer" as Stats #LightPink
+participant "Audit\nTrail" as Audit #LightGray
+
+' Main flow
+== Data Export ==
+ISTINA -> Adapter: Export authors\n(JSON/JSONL)
+activate Adapter
+note right of Adapter
+  Normalize fields:
+  - original_name
+  - lastname/firstname
+  - person_id
+end note
+
+== Batch Processing ==
+Adapter -> Algorithm: Process batch\n(N records)
+activate Algorithm
+
+loop For each record
+  Algorithm -> Algorithm: Identify surname order
+  note right of Algorithm
+    Profile: ISTINA
+    - Chinese prior: 0.5
+    - Western prior: 0.3
+    - Batch consistency: ON
+  end note
+
+  Algorithm -> Logger: Log decision event
+  activate Logger
+  note right of Logger
+    DecisionEvent:
+    - prediction + confidence
+    - scores + margin
+    - fired modules
+    - reasons (top-K)
+    - latency
+  end note
+  Logger -> Logger: Hash record_id\n(with salt)
+  Logger --> Algorithm: ACK
+  deactivate Logger
+end
+
+Algorithm --> Adapter: Results\n(predictions)
+deactivate Algorithm
+
+== Statistical Analysis ==
+Adapter -> Stats: Generate reports
+activate Stats
+Stats -> Stats: Calculate metrics\n(3 scopes)
+note right of Stats
+  Scopes:
+  1. end_to_end (primary)
+  2. conditional
+  3. coverage
+end note
+Stats -> Stats: Confidence intervals\n(Wilson score)
+Stats -> Stats: McNemar tests\n(if applicable)
+Stats --> Adapter: Reports\n(JSON/MD/TEX)
+deactivate Stats
+
+== Audit Trail ==
+Adapter -> Audit: Store artifacts
+activate Audit
+Audit -> Audit: run_manifest.json
+Audit -> Audit: decision_events.jsonl
+Audit -> Audit: stats_ci_global.*
+Audit -> Audit: module_coverage.*
+Audit --> Adapter: ACK
+deactivate Audit
+
+== Redaction (for paper) ==
+Adapter -> Logger: Redact logs\n(200 samples)
+activate Logger
+Logger -> Logger: Remove input_tokens
+Logger -> Logger: Add token_hash + shape
+Logger -> Logger: Sample priority:\n- unknown\n- low margin\n- exceptions
+Logger --> Adapter: Redacted sample
+deactivate Logger
+
+Adapter --> ISTINA: Pilot summary report
+deactivate Adapter
+
+note over ISTINA, Audit
+  **Deliverables / 交付物**:
+  ✓ Decision event logs (full + redacted 200)
+  ✓ Statistical reports (3 scopes)
+  ✓ Module coverage analysis
+  ✓ Performance benchmarks
+  ✓ LaTeX tables for paper
+  ✓ Redaction policy document
+  ✓ run_manifest.json (reproducibility)
+end note
+
+@enduml

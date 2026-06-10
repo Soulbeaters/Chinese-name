@@ -8,9 +8,34 @@ import sys
 import io
 from pathlib import Path
 
-# 设置UTF-8输出 / Установка вывода UTF-8
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+import pytest
+
+
+TEST_DATA_DIR = Path(r"C:\istina\materia 材料\测试表单")
+
+
+@pytest.fixture
+def firstname_json_path():
+    path = TEST_DATA_DIR / "firstname.json"
+    if not path.exists():
+        pytest.skip(f"test data not found: {path}")
+    return path
+
+
+@pytest.fixture
+def authors_json_path():
+    path = TEST_DATA_DIR / "authors.json"
+    if not path.exists():
+        pytest.skip(f"test data not found: {path}")
+    return path
+
+
+def _ensure_utf8_stdio():
+    """Keep script-mode output UTF-8 without changing pytest's capture streams."""
+    if hasattr(sys.stdout, "buffer"):
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    if hasattr(sys.stderr, "buffer"):
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 # 添加src路径 / Добавить путь к src
 sys.path.insert(0, str(Path(__file__).parent.parent / 'src'))
@@ -26,6 +51,8 @@ from chinese_name_processor import ChineseNameProcessor, SURNAMES
 
 class TestResults:
     """测试结果统计 / Статистика результатов тестирования"""
+    __test__ = False
+
     def __init__(self):
         self.total = 0
         self.passed = 0
@@ -57,7 +84,7 @@ class TestResults:
                 print(f"  ... 还有 {len(self.errors)-10} 个错误")
 
 
-def test_surname_database(firstname_json_path):
+def run_surname_database_check(firstname_json_path):
     """
     测试1: 姓氏数据库识别 / Тест 1: Распознавание базы фамилий
     使用firstname.json测试姓氏是否在数据库中被正确识别
@@ -105,7 +132,7 @@ def test_surname_database(firstname_json_path):
     return results
 
 
-def test_name_order_detection(authors_json_path):
+def run_name_order_detection_check(authors_json_path):
     """
     测试2: 姓名顺序检测 / Тест 2: Определение порядка имен
     使用authors.json测试姓名顺序是否正确检测
@@ -232,7 +259,7 @@ def test_name_order_detection(authors_json_path):
     return results
 
 
-def test_author_parsing(authors_json_path):
+def run_author_parsing_check(authors_json_path):
     """
     测试3: 作者列表解析 / Тест 3: Разбор списка авторов
     测试parse_authors函数和作者顺序判定
@@ -268,7 +295,7 @@ def test_author_parsing(authors_json_path):
             # 检查作者数量 / Проверка количества авторов
             if len(parsed) == expected_count:
                 results.add_pass()
-                print(f"  案例 {i}: ✓ 解析出 {len(parsed)} 个作者")
+                print(f"  案例 {i}: [PASS] 解析出 {len(parsed)} 个作者")
 
                 # 显示第一作者标记 / Показать метку первого автора
                 for j, author_info in enumerate(parsed):
@@ -289,7 +316,7 @@ def test_author_parsing(authors_json_path):
     return results
 
 
-def test_edge_cases():
+def run_edge_cases_check():
     """
     测试4: 边界情况 / Тест 4: Граничные случаи
     测试特殊字符、空值、异常输入等
@@ -328,7 +355,7 @@ def test_edge_cases():
                 cn_result = processor.process_name(name)
 
             results.add_pass()
-            print(f"  ✓ {description}: '{name}' -> {order_result.detected_order.name}")
+            print(f"  [PASS] {description}: '{name}' -> {order_result.detected_order.name}")
 
         except Exception as e:
             results.add_fail(f"{description}: '{name}' 引发异常 {type(e).__name__}: {str(e)}")
@@ -337,17 +364,38 @@ def test_edge_cases():
     return results
 
 
+def test_surname_database(firstname_json_path):
+    results = run_surname_database_check(firstname_json_path)
+    assert results.failed == 0
+
+
+def test_name_order_detection(authors_json_path):
+    results = run_name_order_detection_check(authors_json_path)
+    assert results.failed == 0
+
+
+def test_author_parsing(authors_json_path):
+    results = run_author_parsing_check(authors_json_path)
+    assert results.failed == 0
+
+
+def test_edge_cases():
+    results = run_edge_cases_check()
+    assert results.failed == 0
+
+
 def main():
     """主测试函数 / Основная функция тестирования"""
+    _ensure_utf8_stdio()
+
     print("="*70)
     print("项目一综合测试 / Комплексное тестирование проекта 1")
     print("测试姓名顺序检测和作者列表解析 / Тестирование определения порядка имен и разбора авторов")
     print("="*70)
 
     # 测试数据路径 / Пути к тестовым данным
-    test_data_dir = Path(r"C:\istina\materia 材料\测试表单")
-    firstname_json = test_data_dir / "firstname.json"
-    authors_json = test_data_dir / "authors.json"
+    firstname_json = TEST_DATA_DIR / "firstname.json"
+    authors_json = TEST_DATA_DIR / "authors.json"
 
     # 检查文件存在 / Проверка существования файлов
     if not firstname_json.exists():
@@ -363,25 +411,25 @@ def main():
 
     try:
         # 测试1: 姓氏识别
-        all_results.append(test_surname_database(firstname_json))
+        all_results.append(run_surname_database_check(firstname_json))
     except Exception as e:
         print(f"测试1异常: {e}")
 
     try:
         # 测试2: 姓名顺序检测
-        all_results.append(test_name_order_detection(authors_json))
+        all_results.append(run_name_order_detection_check(authors_json))
     except Exception as e:
         print(f"测试2异常: {e}")
 
     try:
         # 测试3: 作者列表解析
-        all_results.append(test_author_parsing(authors_json))
+        all_results.append(run_author_parsing_check(authors_json))
     except Exception as e:
         print(f"测试3异常: {e}")
 
     try:
         # 测试4: 边界情况
-        all_results.append(test_edge_cases())
+        all_results.append(run_edge_cases_check())
     except Exception as e:
         print(f"测试4异常: {e}")
 
@@ -399,9 +447,9 @@ def main():
     print(f"总失败: {total_failed} ({100*total_failed/total_tests:.1f}%)")
 
     if total_failed == 0:
-        print("\n✓ 所有测试通过! / Все тесты пройдены!")
+        print("\n[PASS] 所有测试通过! / Все тесты пройдены!")
     else:
-        print(f"\n✗ 有 {total_failed} 个测试失败 / Провалено {total_failed} тестов")
+        print(f"\n[FAIL] 有 {total_failed} 个测试失败 / Провалено {total_failed} тестов")
 
     print("="*70)
 

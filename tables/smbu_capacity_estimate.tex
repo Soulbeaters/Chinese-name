@@ -1,0 +1,97 @@
+% SMBU Capacity Estimation Table / SMBU容量估算表
+% 基于真实301K实验实测吞吐量 / Based on real 301K experiment measured throughput
+% Requires: \usepackage{booktabs}
+% Requires: \usepackage{multirow}
+
+\begin{table}[htbp]
+\centering
+\caption{SMBU Scholarly Platform Capacity Estimation}
+\label{tab:smbu_capacity}
+\begin{tabular}{lrrrcc}
+\toprule
+\multirow{2}{*}{Scenario} & \multirow{2}{*}{\begin{tabular}[c]{@{}r@{}}Daily\\Records\end{tabular}} & \multirow{2}{*}{\begin{tabular}[c]{@{}r@{}}Required\\Throughput\end{tabular}} & \multirow{2}{*}{\begin{tabular}[c]{@{}r@{}}Processing\\Time\end{tabular}} & \multicolumn{2}{c}{Feasibility} \\
+\cmidrule(lr){5-6}
+ &  &  &  & Status & Note \\
+\midrule
+Light Load & 5,000 & 1,250 names/h & 30 min & \checkmark & Highly feasible \\
+Medium Load & 20,000 & 5,000 names/h & 2 hours & \checkmark & Recommended \\
+Heavy Load & 40,000 & 10,000 names/h & 4 hours & \checkmark & Within window \\
+Peak Load & 100,000 & 25,000 names/h & 10 hours & $\triangle$ & Needs optimization \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Performance Benchmark Basis (from real experiments)}
+\label{tab:smbu_benchmark}
+\begin{tabular}{lrc}
+\toprule
+Metric & Value & Source \\
+\midrule
+Measured Throughput & 166.7 names/sec & 301K experiment \\
+Hourly Capacity & 600,120 names/h & Extrapolated \\
+4-Hour Window Capacity & 2,400,480 names & Calculated \\
+Dataset Size & 301,559 records & crossref\_authors.json \\
+Processing Time (single config) & $\sim$5 min & Measured \\
+Total Configs & 6 & Ablation study \\
+Experiment ID & evidence\_chain\_301k\_STRICT & run\_manifest.json \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{SMBU Integration Scenarios (Design Study)}
+\label{tab:smbu_scenarios}
+\begin{tabular}{llp{6cm}}
+\toprule
+Component & Mode & Description \\
+\midrule
+Data Sources & Multi-source & Crossref, ORCID, Preprints, Institutional Repo \\
+Processing Schedule & Nightly batch & 02:00 - 06:00 UTC+8 (4-hour window) \\
+Target Throughput & 10,000 names/h & Conservative estimate for production \\
+Review Queue & Human-in-the-loop & confidence $<$ 0.7, unknown, margin $<$ 0.2 \\
+Evidence Chain & Full & prediction + confidence + reasons + modules \\
+Statistical Monitoring & Weekly & accuracy, coverage, unknown\_rate \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Optimization Strategies for Peak Load}
+\label{tab:smbu_optimization}
+\begin{tabular}{lp{5cm}r}
+\toprule
+Strategy & Description & Est. Speedup \\
+\midrule
+Multi-process Parallel & N parallel workers & $\times$ N\_cores \\
+Incremental Processing & Only changed records & 50\% - 80\% reduction \\
+Decision Caching & Cache historical decisions & 30\% - 50\% reduction \\
+GPU Acceleration & For feature extraction (if applicable) & $\times$ 2 - 5 \\
+Database Indexing & Optimized query for batch consistency & 20\% - 30\% reduction \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% Notes for paper
+% 注释说明（论文使用）:
+%
+% 1. 吞吐量数据来源 / Throughput data source:
+%    真实301K实验实测: 166.7 names/sec
+%    Real 301K experiment measured: 166.7 names/sec
+%    实验ID: evidence_chain_301k_STRICT
+%    Experiment ID: evidence_chain_301k_STRICT
+%
+% 2. SMBU场景为设计研究 / SMBU scenarios are design study:
+%    未实际部署，基于性能基准推算
+%    Not actually deployed, extrapolated from performance benchmarks
+%
+% 3. 容量估算保守 / Capacity estimation is conservative:
+%    目标吞吐量10,000 names/h远低于实测容量600,120 names/h
+%    Target throughput 10,000 names/h is much lower than measured capacity 600,120 names/h
+%
+% 4. 优化策略为理论分析 / Optimization strategies are theoretical:
+%    未实测，基于并行计算和缓存理论
+%    Not measured, based on parallel computing and caching theory

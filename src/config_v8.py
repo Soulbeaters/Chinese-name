@@ -185,6 +185,13 @@ CHINESE_FEATURE_WEIGHTS = {
     # 特殊模式
     "TWO_TOKENS_CN_SURNAME_LAST": 0.7, # 两token且last是姓
     "TWO_TOKENS_SINGLE_SYLLABLE": 0.3, # 两token且有单音节
+    "FIELD_SPLIT_EXACT_FAMILY": 3.0,
+    "FIELD_SPLIT_EXACT_GIVEN": 3.0,
+    "FIELD_FAMILY_MATCHES_FULL_NAME": 0.35,
+    "FIELD_FAMILY_FULLNAME_GIVEN_CJK": 0.75,
+    "FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME": 0.4,
+    "FIELD_GIVEN_COMPOUND_SURNAME_PREFIX": 0.2,
+    "FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN": 0.05,
 }
 
 
@@ -200,6 +207,13 @@ WESTERN_FEATURE_WEIGHTS = {
 
     # 默认推断
     "NO_CN_EVIDENCE_DEFAULT": 1.0,     # 无中文证据,默认given-first
+    "FIELD_SPLIT_EXACT_FAMILY": 3.0,
+    "FIELD_SPLIT_EXACT_GIVEN": 3.0,
+    "FIELD_FAMILY_MATCHES_FULL_NAME": 0.25,
+    "FIELD_FAMILY_FULLNAME_GIVEN_CJK": 0.45,
+    "FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME": 0.25,
+    "FIELD_GIVEN_COMPOUND_SURNAME_PREFIX": 0.1,
+    "FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN": 0.02,
 }
 
 
@@ -209,9 +223,85 @@ MIXED_FEATURE_WEIGHTS = {
     "CN_SURNAME_LAST_CN_AFFIL": 1.5,
     "CN_SURNAME_ONLY": 1.0,
     "NO_MATCH_DEFAULT": 0.5,
+    "FIELD_SPLIT_EXACT_FAMILY": 3.0,
+    "FIELD_SPLIT_EXACT_GIVEN": 3.0,
+    "FIELD_FAMILY_MATCHES_FULL_NAME": 0.3,
+    "FIELD_FAMILY_FULLNAME_GIVEN_CJK": 0.6,
+    "FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME": 0.35,
+    "FIELD_GIVEN_COMPOUND_SURNAME_PREFIX": 0.15,
+    "FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN": 0.03,
 }
 
 
 def sigmoid(x: float) -> float:
     """Sigmoid函数用于置信度归一化 / Sigmoid for confidence normalization"""
     return 1.0 / (1.0 + math.exp(-x))
+
+
+# === 消融实验配置 Ablation Configuration ===
+
+@dataclass
+class AblationConfig:
+    """
+    消融实验配置 / Ablation experiment configuration
+    用于控制算法中的各个组件开关 / Used to control algorithm component switches
+    """
+    # 数据源先验开关 / Source prior switch
+    disable_source_prior: bool = False
+
+    # 西方姓氏排除规则开关 / Western exclusion switch
+    disable_western_exclusion: bool = False
+
+    # 批量一致性调整开关 / Batch consistency switch
+    disable_batch_consistency: bool = False
+
+    # 双姓频率策略 / Dual-surname frequency strategy
+    # share_ratio: current default, based on aggregated population share ratio
+    # rank_gap: legacy rule based on rank difference > 20
+    # freq_disabled: reproduce the mentor branch by suppressing the
+    #   non-ISTINA double-surname frequency signal and falling back to
+    #   family_first by default
+    surname_freq_strategy: str = "share_ratio"
+    # Threshold for the share-based rule; 1.0 means any non-tied known-share
+    # comparison can trigger the frequency bonus.
+    surname_share_ratio_threshold: float = 1.0
+    enable_strong_dual_single_rescue: bool = False
+    strong_dual_single_rescue_ratio: float = 23.0
+    strong_dual_single_rescue_given_min_share: float = 2.0
+    strong_dual_single_rescue_family_max_share: float = 0.1
+    strong_dual_single_rescue_confidence_cap: float = 0.75
+    strong_dual_single_rescue_require_cn_context: bool = True
+    enable_publication_candidate_group_correction: bool = True
+    publication_candidate_group_min_count: int = 2
+    publication_candidate_group_min_share: float = 0.50
+    publication_candidate_group_min_strong_count: int = 1
+    publication_candidate_group_min_strength_sum: float = 1.0
+    publication_candidate_group_strong_threshold: float = 1.0
+    enable_publication_external_split_confidence_guard: bool = True
+
+    # 作者级一致性开关 / Person-level consistency switch
+    enable_person_consistency: bool = True
+
+    # 文章级一致性开关 / Publication-level consistency switch
+    enable_pub_consistency: bool = True
+
+
+# 全局消融配置实例（默认全部启用）/ Global ablation config instance
+_global_ablation_config = AblationConfig()
+
+
+def set_ablation_config(config: AblationConfig) -> None:
+    """设置全局消融配置 / Set global ablation configuration"""
+    global _global_ablation_config
+    _global_ablation_config = config
+
+
+def get_ablation_config() -> AblationConfig:
+    """获取当前消融配置 / Get current ablation configuration"""
+    return _global_ablation_config
+
+
+def reset_ablation_config() -> None:
+    """重置消融配置为默认值 / Reset ablation config to default"""
+    global _global_ablation_config
+    _global_ablation_config = AblationConfig()

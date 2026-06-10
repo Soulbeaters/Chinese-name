@@ -13,16 +13,19 @@ v8.0中文姓氏位置识别算法 / v8.0 Chinese Surname Position Identifier
 """
 
 import re
-from typing import Optional, Tuple, List, Dict
-from dataclasses import dataclass, field
-from collections import defaultdict
+from typing import Any, Optional, Tuple, List, Dict
+from dataclasses import dataclass, field, replace
+from collections import Counter, defaultdict
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from data.surname_pinyin_db import is_surname_pinyin, get_surname_from_pinyin
-from data.surname_frequency import get_surname_frequency_rank
+from data.surname_frequency import (
+    compare_surname_frequency_share,
+    get_surname_frequency_rank,
+)
 from data.western_name_features import (
     has_western_suffix,
     has_western_consonant_cluster,
@@ -34,12 +37,102 @@ from src.pinyin_validator import is_valid_pinyin_name
 from src.affiliation_analyzer import analyze_affiliation, AffiliationInfo
 from src.config_v8 import (
     get_config,
+    get_ablation_config,
     SourceConfig,
     CHINESE_FEATURE_WEIGHTS,
     WESTERN_FEATURE_WEIGHTS,
     MIXED_FEATURE_WEIGHTS,
     sigmoid,
 )
+
+ISTINA_SOURCE_NAMES = {"ISTINA", "istina", "袠小孝袠袧袗"}
+
+
+def _format_share_value(share: float) -> str:
+    """Format share values for compact reason codes."""
+    return f"{share:.4f}".rstrip("0").rstrip(".")
+
+
+def _apply_double_surname_frequency_rule(
+    first_token: "Token",
+    last_token: "Token",
+) -> Tuple[float, float, str]:
+    """
+    Apply the configured double-surname frequency rule for non-ISTINA sources.
+    """
+    ablation_config = get_ablation_config()
+    strategy = ablation_config.surname_freq_strategy
+    share_ratio_threshold = ablation_config.surname_share_ratio_threshold
+
+    if strategy == "share_ratio":
+        share_comparison = compare_surname_frequency_share(first_token.ascii, last_token.ascii)
+        share1 = share_comparison["share1"]
+        share2 = share_comparison["share2"]
+        has_share1 = share_comparison["has_share1"]
+        has_share2 = share_comparison["has_share2"]
+
+        if has_share1 and has_share2 and share_comparison["share_ratio"] >= share_ratio_threshold:
+            if share1 > share2:
+                return (
+                    CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                    0.0,
+                    f"CN_SURNAME_DOUBLE_FREQ_FIRST({_format_share_value(share1)}>{_format_share_value(share2)})",
+                )
+            if share2 > share1:
+                return (
+                    0.0,
+                    CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                    f"CN_SURNAME_DOUBLE_FREQ_LAST({_format_share_value(share2)}>{_format_share_value(share1)})",
+                )
+        elif has_share1 != has_share2:
+            known_share = share1 if has_share1 else share2
+            if known_share >= 0.10:
+                if has_share1:
+                    return (
+                        CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                        0.0,
+                        f"CN_SURNAME_DOUBLE_FREQ_FIRST({_format_share_value(share1)}>{_format_share_value(share2)})",
+                    )
+                return (
+                    0.0,
+                    CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                    f"CN_SURNAME_DOUBLE_FREQ_LAST({_format_share_value(share2)}>{_format_share_value(share1)})",
+                )
+
+        return (
+            CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"],
+            0.0,
+            "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+        )
+
+    if strategy == "freq_disabled":
+        return (
+            CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"],
+            0.0,
+            "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+        )
+
+    r_first = get_surname_frequency_rank(first_token.ascii)
+    r_last = get_surname_frequency_rank(last_token.ascii)
+
+    if abs(r_first - r_last) > 20:
+        if r_last < r_first:
+            return (
+                0.0,
+                CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+                f"CN_SURNAME_DOUBLE_FREQ_LAST({r_last}<{r_first})",
+            )
+        return (
+            CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"],
+            0.0,
+            f"CN_SURNAME_DOUBLE_FREQ_FIRST({r_first}<{r_last})",
+        )
+
+    return (
+        CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"],
+        0.0,
+        "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+    )
 
 
 # ========== 数据结构 Data Structures ==========
@@ -88,6 +181,20 @@ class Features:
     cn_affiliation: bool = False
     west_affiliation: bool = False
 
+    has_split_fields: bool = False
+    field_split_exact_family_first: bool = False
+    field_split_exact_given_first: bool = False
+    field_split_mismatch: bool = False
+    field_family_matches_full_name: bool = False
+    field_family_multitoken: bool = False
+    field_given_family_duplicate: bool = False
+    field_firstname_has_cjk: bool = False
+    field_lastname_has_cjk: bool = False
+    field_family_fullname_given_cjk: bool = False
+    field_given_compound_surname_prefix: bool = False
+    field_given_compound_surname_single_token: bool = False
+    field_given_head_surname_family_non_surname: bool = False
+
 
 @dataclass
 class NameDecision:
@@ -99,6 +206,35 @@ class NameDecision:
 
 
 @dataclass
+class PublicationContext:
+    """Structured same-publication evidence used by conservative rescues."""
+    has_cn_affiliation: bool = False
+    cn_affiliation_count: int = 0
+    complete_split_count: int = 0
+    cn_surname_token_count: int = 0
+    field_family_first_candidate_count: int = 0
+    cjk_split_hint_count: int = 0
+    source_record_count: int = 0
+
+
+@dataclass
+class PublicationCandidateCorrection:
+    """Audit record for publication-level candidate-group correction."""
+    record_id: str
+    publication_id: str
+    candidate_count: int
+    complete_count: int
+    candidate_share: float
+    before: NameDecision
+    after: NameDecision
+    strong_candidate_count: int = 0
+    weighted_candidate_strength_sum: float = 0.0
+    candidate_strength: float = 0.0
+    suppressed: bool = False
+    suppression_reason: Optional[str] = None
+
+
+@dataclass
 class NameRecord:
     """姓名记录 / Name record"""
     record_id: str
@@ -106,8 +242,13 @@ class NameRecord:
     person_id: Optional[str] = None
     publication_id: Optional[str] = None
     name_raw: str = ""
+    firstname_raw: Optional[str] = None
+    lastname_raw: Optional[str] = None
     affiliation_raw: Optional[str] = None
+    publication_context_raw: Optional[str] = None
+    publication_context: PublicationContext = field(default_factory=PublicationContext)
     lang_hint: Optional[str] = None
+    field_only: bool = False
 
 
 # ========== 辅助函数 Utility Functions ==========
@@ -144,6 +285,7 @@ def preprocess_name(name_raw: str) -> ParsedName:
     # 1. 正规化
     s = name_raw.strip()
     s = re.sub(r'[,\(\)\[\]]', ' ', s)
+    s = re.sub(r'\b([A-Z])\.(?=[A-Z][a-z])', r'\1. ', s)
     s = re.sub(r'\s+', ' ', s).strip()
 
     # 2. 分词
@@ -190,6 +332,314 @@ def preprocess_name(name_raw: str) -> ParsedName:
 
 
 # ========== 模块2: 模式识别 Module 2: Mode Detection ==========
+
+def _normalize_field_text(value: Optional[str]) -> str:
+    """Normalize split-field content before secondary parsing."""
+    if not value:
+        return ""
+    return re.sub(r"\s+", " ", value.strip())
+
+
+def _parsed_field(value: Optional[str]) -> ParsedName:
+    """Parse a firstname/lastname field with the main tokenizer."""
+    return preprocess_name(_normalize_field_text(value))
+
+
+def _token_ascii_sequence(tokens: List[Token]) -> List[str]:
+    """Return a lowercased token sequence for exact-order checks."""
+    return [tok.ascii.lower() for tok in tokens if tok.ascii]
+
+
+def _contains_cjk_text(value: Optional[str]) -> bool:
+    """Detect Han characters in split fields."""
+    return bool(value and re.search(r"[\u4e00-\u9fff]", value))
+
+
+def _cjk_token_is_cn_surname(token: Token) -> bool:
+    """Best-effort check for a Han-character surname token."""
+    if token.char_script != "CJK" or not token.raw:
+        return False
+    try:
+        from pypinyin import lazy_pinyin
+    except ImportError:
+        return False
+
+    pinyin = "".join(lazy_pinyin(token.raw)).lower()
+    return bool(pinyin and is_surname_pinyin(pinyin))
+
+
+def _is_compound_surname_pinyin(text: str) -> bool:
+    """Check whether a pinyin form maps to a compound Chinese surname."""
+    if not text:
+        return False
+    return any(len(surname) > 1 for surname in get_surname_from_pinyin(text))
+
+
+def _extract_compound_surname_prefix(tokens: List[Token]) -> Optional[str]:
+    """Return a compound-surname prefix at the start of a given-name field."""
+    if not tokens:
+        return None
+
+    candidates = [tokens[0].ascii.lower()]
+    if len(tokens) >= 2:
+        head1 = tokens[0].ascii.lower()
+        head2 = tokens[1].ascii.lower()
+        candidates.extend([head1 + head2, f"{head1} {head2}"])
+
+    for candidate in candidates:
+        if _is_compound_surname_pinyin(candidate):
+            return candidate
+    return None
+
+
+def _is_initial_token(token: Token) -> bool:
+    """Return True for one-letter or dotted-initial field tokens."""
+    return bool(re.fullmatch(r"[A-Za-z](\.[A-Za-z])*\.?", token.raw))
+
+
+def _non_initial_tokens(tokens: List[Token]) -> List[Token]:
+    """Keep content tokens and drop initials used as given/family abbreviations."""
+    return [tok for tok in tokens if not _is_initial_token(tok)]
+
+
+def _joined_ascii(tokens: List[Token]) -> str:
+    """Join a token list into a compact ASCII key."""
+    return "".join(tok.ascii.lower() for tok in tokens if tok.ascii)
+
+
+def _head_or_joined_is_cn_surname(tokens: List[Token]) -> bool:
+    """Check whether a field head or compact multi-token form is a Chinese surname."""
+    content = _non_initial_tokens(tokens)
+    if not content:
+        content = tokens
+    if not content:
+        return False
+
+    head = content[0].ascii.lower()
+    joined = _joined_ascii(content)
+    return is_surname_pinyin(head) or is_surname_pinyin(joined)
+
+
+def _field_has_cjk_surname_hint(value: Optional[str], tokens: List[Token]) -> bool:
+    """Detect explicit Han-character surname hints inside a split field."""
+    if not _contains_cjk_text(value):
+        return False
+    return (
+        _head_or_joined_is_cn_surname(tokens)
+        or any(_cjk_token_is_cn_surname(tok) for tok in tokens)
+    )
+
+
+def _single_cn_surname_ascii(tokens: List[Token]) -> Optional[str]:
+    """Return a single-token Chinese surname pinyin key, otherwise None."""
+    content = _non_initial_tokens(tokens)
+    if len(content) != 1:
+        return None
+    head = content[0].ascii.lower()
+    return head if head and is_surname_pinyin(head) else None
+
+
+def _head_is_western_surname_like(tokens: List[Token]) -> bool:
+    """Detect strong western/Russian surname evidence in the field head."""
+    content = _non_initial_tokens(tokens)
+    if not content:
+        return False
+    head = content[0].ascii.lower()
+    return is_common_western_surname(head) or has_western_suffix(head)
+
+
+def _field_looks_like_cn_given(tokens: List[Token]) -> bool:
+    """Detect a Chinese romanized given-name field without using full-name order."""
+    content = _non_initial_tokens(tokens)
+    if not content:
+        return False
+    if len(content) > 2:
+        return False
+
+    if len(content) == 1:
+        token = content[0]
+        is_valid, syl_count, _ = is_valid_pinyin_name(token.ascii)
+        return is_valid and 2 <= syl_count <= 3 and not is_surname_pinyin(token.ascii)
+
+    joined = _joined_ascii(content)
+    is_valid, syl_count, _ = is_valid_pinyin_name(joined)
+    return is_valid and 2 <= syl_count <= 3
+
+
+def _all_tokens_are_initials(tokens: List[Token]) -> bool:
+    """Check whether a split field contains only initials."""
+    return bool(tokens) and all(_is_initial_token(tok) for tok in tokens)
+
+
+def _field_share_score(share_ratio: float) -> float:
+    """Convert a dual-surname population-share gap into bounded evidence."""
+    if share_ratio >= 20.0:
+        return 1.8
+    if share_ratio >= 8.0:
+        return 1.55
+    if share_ratio >= 3.0:
+        return 1.30
+    return 1.05
+
+
+def _field_confidence_from_delta(delta: float) -> float:
+    """Map split-field score separation to a conservative confidence value."""
+    return min(0.95, 0.5 + min(delta * 0.16, 0.45))
+
+
+def _has_field_family_first_candidate(reason_codes: List[str]) -> bool:
+    """Detect field-only evidence that should be promoted only with group support."""
+    return _field_family_first_candidate_strength(reason_codes) > 0.0
+
+
+def _field_family_first_candidate_strength(reason_codes: List[str]) -> float:
+    """Score candidate strength for publication-level family-first correction."""
+    strength = 0.0
+    if "FIELD_GIVEN_WEST_SURNAME_FAMILY_INITIALS" in reason_codes:
+        strength += 2.0
+    if any(code.startswith("FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE") for code in reason_codes):
+        strength += 2.0
+    if "FIELD_GIVEN_CN_SURNAME_FAMILY_CN_GIVEN" in reason_codes:
+        strength += 1.0
+    if any(code.startswith("FIELD_DUAL_CN_SURNAME_FREQ_GIVEN(") for code in reason_codes):
+        strength += 0.5
+    if strength > 0.0 and "CN_AFFILIATION" in reason_codes:
+        strength += 0.5
+    return strength
+
+
+def _publication_override_suppression_reason(decision: NameDecision) -> Optional[str]:
+    """Protect high-confidence external split evidence from weak DOI propagation."""
+    if decision.order != "given_first":
+        return None
+    if decision.confidence < 0.66:
+        return None
+    if "FIELD_EXTERNAL_SPLIT_DEFAULT_GIVEN" not in decision.reason_codes:
+        return None
+    has_strong_counterevidence = (
+        any(code.startswith("FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE") for code in decision.reason_codes)
+        or "FIELD_GIVEN_WEST_SURNAME_FAMILY_INITIALS" in decision.reason_codes
+        or "FIELD_FAMILY_CJK_SURNAME_HINT" in decision.reason_codes
+    )
+    if has_strong_counterevidence:
+        return None
+    return "PUB_PATTERN_OVERRIDE_SUPPRESSED_BY_EXTERNAL_SPLIT_CONFIDENCE"
+
+
+def _field_tokens_have_western_surface(tokens: List[Token]) -> bool:
+    """Detect surface evidence that should block Chinese single-token rescue."""
+    for token in _non_initial_tokens(tokens):
+        text = token.raw or token.ascii
+        ascii_text = token.ascii.lower()
+        if token.has_diacritics or has_latin_extended_chars(text):
+            return True
+        if ascii_text and has_western_suffix(ascii_text):
+            return True
+    return False
+
+
+def _has_cn_affiliation(affiliation_raw: Optional[str]) -> bool:
+    """Return True when a single affiliation field contains Chinese context."""
+    affil_info = analyze_affiliation(affiliation_raw) if affiliation_raw else None
+    return bool(affil_info and affil_info.is_chinese)
+
+
+def _strong_rescue_context_subtype(
+    affiliation_raw: Optional[str],
+    publication_context: PublicationContext,
+    require_cn_context: bool,
+) -> Optional[str]:
+    """Explain which context condition allows strong dual-surname rescue."""
+    if not require_cn_context:
+        return "NO_CONTEXT"
+    if _has_cn_affiliation(affiliation_raw):
+        return "AUTHOR_CN_AFFIL"
+    if publication_context.cn_affiliation_count >= 1:
+        return "DOI_CN_AFFIL"
+    if publication_context.cn_surname_token_count >= 2:
+        return "DOI_CN_SURNAME_DENSITY"
+    if publication_context.field_family_first_candidate_count >= 2:
+        return "DOI_CANDIDATE_SUPPORT"
+    if publication_context.cjk_split_hint_count >= 1:
+        return "DOI_CJK_SPLIT_HINT"
+    return None
+
+
+def _strong_dual_cn_surname_single_rescue(
+    given_tokens: List[Token],
+    family_tokens: List[Token],
+    share_comparison: Dict[str, Any],
+    given_west_surname: bool,
+    family_west_surname: bool,
+    family_all_initials: bool,
+    source: Optional[str],
+    affiliation_raw: Optional[str],
+    publication_context: PublicationContext,
+) -> Tuple[bool, List[str], float]:
+    """
+    Conservative single-record rescue for dual single-token Chinese surnames.
+
+    It promotes family_first only when the given-slot surname population share
+    is much larger than the family-slot surname share and no western/initial
+    surface evidence makes the external split unsafe to override.
+    """
+    ablation = get_ablation_config()
+    if not ablation.enable_strong_dual_single_rescue:
+        return False, [], 0.0
+    if not _is_external_metadata_source(source):
+        return False, [], 0.0
+    if family_all_initials or given_west_surname or family_west_surname:
+        return False, [], 0.0
+    if _field_tokens_have_western_surface(given_tokens) or _field_tokens_have_western_surface(family_tokens):
+        return False, [], 0.0
+    if not (share_comparison.get("has_share1") and share_comparison.get("has_share2")):
+        return False, [], 0.0
+
+    share1 = share_comparison["share1"]
+    share2 = share_comparison["share2"]
+    share_ratio = share_comparison["share_ratio"]
+    if share1 <= share2:
+        return False, [], 0.0
+    if share_ratio < ablation.strong_dual_single_rescue_ratio:
+        return False, [], 0.0
+    if share1 < ablation.strong_dual_single_rescue_given_min_share:
+        return False, [], 0.0
+    if share2 > ablation.strong_dual_single_rescue_family_max_share:
+        return False, [], 0.0
+
+    family_content = _non_initial_tokens(family_tokens)
+    if len(family_content) != 1:
+        return False, [], 0.0
+    family_valid_pinyin, family_syllable_count, _ = is_valid_pinyin_name(family_content[0].ascii)
+    if not family_valid_pinyin or family_syllable_count != 1:
+        return False, [], 0.0
+
+    context_subtype = _strong_rescue_context_subtype(
+        affiliation_raw,
+        publication_context,
+        ablation.strong_dual_single_rescue_require_cn_context,
+    )
+    if not context_subtype:
+        return False, [], 0.0
+
+    confidence = min(max(ablation.strong_dual_single_rescue_confidence_cap, 0.70), 0.78)
+    return (
+        True,
+        [
+            (
+                f"FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE_{context_subtype}"
+                f"({_format_share_value(share1)}>{_format_share_value(share2)};"
+                f"ratio={share_ratio:.1f})"
+            )
+        ],
+        confidence,
+    )
+
+
+def _is_external_metadata_source(source: Optional[str]) -> bool:
+    """External metadata can use stronger split-field evidence than ISTINA."""
+    return (source or "DEFAULT") not in ISTINA_SOURCE_NAMES
+
 
 def detect_mode(
     record: NameRecord,
@@ -310,6 +760,71 @@ def extract_features(
             f.cn_affiliation = affil_info.is_chinese
             f.west_affiliation = not affil_info.is_chinese and bool(affil_info.country)
 
+    split_first = _parsed_field(record.firstname_raw)
+    split_last = _parsed_field(record.lastname_raw)
+    split_first_tokens = split_first.tokens
+    split_last_tokens = split_last.tokens
+
+    if split_first_tokens or split_last_tokens:
+        f.has_split_fields = True
+
+    original_ascii = _token_ascii_sequence(parsed.tokens)
+    split_first_ascii = _token_ascii_sequence(split_first_tokens)
+    split_last_ascii = _token_ascii_sequence(split_last_tokens)
+
+    if split_first_ascii and split_last_ascii:
+        if original_ascii == split_last_ascii + split_first_ascii:
+            f.field_split_exact_family_first = True
+        elif original_ascii == split_first_ascii + split_last_ascii:
+            f.field_split_exact_given_first = True
+
+    if split_last_ascii and split_last_ascii == original_ascii and split_first_ascii:
+        f.field_family_matches_full_name = True
+
+    f.field_family_multitoken = len(split_last_tokens) >= 2
+    f.field_firstname_has_cjk = _contains_cjk_text(record.firstname_raw)
+    f.field_lastname_has_cjk = _contains_cjk_text(record.lastname_raw)
+    f.field_given_family_duplicate = bool(
+        split_first_ascii and split_last_ascii and split_first_ascii == split_last_ascii
+    )
+
+    if (
+        f.field_family_matches_full_name
+        and f.field_firstname_has_cjk
+        and not f.field_lastname_has_cjk
+    ):
+        f.field_family_fullname_given_cjk = True
+
+    compound_prefix = _extract_compound_surname_prefix(split_first_tokens)
+    if compound_prefix:
+        if len(split_first_tokens) >= 2:
+            f.field_given_compound_surname_prefix = True
+        else:
+            f.field_given_compound_surname_single_token = True
+
+    if split_first_tokens and split_last_tokens:
+        first_head = split_first_tokens[0].ascii.lower()
+        last_head = split_last_tokens[0].ascii.lower()
+        last_joined = "".join(tok.ascii.lower() for tok in split_last_tokens if tok.ascii)
+        lastname_looks_like_surname = is_surname_pinyin(last_head) or is_surname_pinyin(last_joined)
+        if is_surname_pinyin(first_head) and not lastname_looks_like_surname:
+            if len(split_first_tokens) >= 2 or f.field_given_compound_surname_prefix:
+                f.field_given_head_surname_family_non_surname = True
+
+    if (
+        f.has_split_fields
+        and not f.field_split_exact_family_first
+        and not f.field_split_exact_given_first
+        and (
+            f.field_family_matches_full_name
+            or f.field_given_family_duplicate
+            or f.field_family_fullname_given_cjk
+            or f.field_given_compound_surname_prefix
+            or f.field_given_head_surname_family_non_surname
+        )
+    ):
+        f.field_split_mismatch = True
+
     # 中文姓氏
     f.first_is_cn_surname = is_surname_pinyin(first.ascii)
     f.last_is_cn_surname = is_surname_pinyin(last.ascii)
@@ -328,6 +843,58 @@ def extract_features(
     f.last_pinyin_syllables = syl_last
 
     return f
+
+
+def _apply_field_structure_evidence(
+    record: NameRecord,
+    f: Features,
+    weight_map: Dict[str, float],
+    score_fam: float,
+    score_giv: float,
+    reasons: List[str],
+) -> Tuple[float, float]:
+    """Translate split-field checks into soft, explainable evidence."""
+    if not f.has_split_fields:
+        return score_fam, score_giv
+
+    source_multiplier = 1.0 if _is_external_metadata_source(record.source) else 0.35
+
+    if f.field_split_exact_family_first:
+        reasons.append("FIELD_SPLIT_EXACT_FAMILY_DIAG")
+
+    if f.field_split_exact_given_first:
+        reasons.append("FIELD_SPLIT_EXACT_GIVEN_DIAG")
+
+    if f.field_family_matches_full_name:
+        score_fam += weight_map["FIELD_FAMILY_MATCHES_FULL_NAME"] * source_multiplier
+        reasons.append("FIELD_FAMILY_MATCHES_FULL_NAME")
+
+    if f.field_family_fullname_given_cjk:
+        score_fam += weight_map["FIELD_FAMILY_FULLNAME_GIVEN_CJK"] * source_multiplier
+        reasons.append("FIELD_FAMILY_FULLNAME_GIVEN_CJK")
+
+    if f.field_given_head_surname_family_non_surname:
+        score_fam += weight_map["FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME"] * source_multiplier
+        reasons.append("FIELD_GIVEN_HEAD_SURNAME_FAMILY_NON_SURNAME")
+
+    if f.field_given_compound_surname_prefix:
+        score_fam += weight_map["FIELD_GIVEN_COMPOUND_SURNAME_PREFIX"] * source_multiplier
+        reasons.append("FIELD_GIVEN_COMPOUND_SURNAME_PREFIX")
+
+    if f.field_given_compound_surname_single_token:
+        score_fam += weight_map["FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN"] * source_multiplier
+        reasons.append("FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN_DIAG")
+
+    if f.field_family_multitoken:
+        reasons.append("FIELD_FAMILY_MULTITOKEN")
+
+    if f.field_given_family_duplicate:
+        reasons.append("FIELD_GIVEN_FAMILY_DUPLICATE")
+
+    if f.field_split_mismatch:
+        reasons.append("FIELD_SPLIT_MISMATCH")
+
+    return score_fam, score_giv
 
 
 # ========== 模块4: 决策引擎 Module 4: Decision Engine ==========
@@ -377,20 +944,13 @@ def decide_chinese(
             reasons.append("CN_SURNAME_DOUBLE_DEFAULT_FAM_ISTINA")
         else:
             # 其他数据源: 使用频率逻辑
-            r_first = get_surname_frequency_rank(first_token.ascii)
-            r_last = get_surname_frequency_rank(last_token.ascii)
-
-            if r_first and r_last and abs(r_first - r_last) > 20:
-                if r_last < r_first:  # last更常见
-                    score_giv += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"]
-                    reasons.append(f"CN_SURNAME_DOUBLE_FREQ_LAST({r_last}<{r_first})")
-                else:  # first更常见
-                    score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_FREQ"]
-                    reasons.append(f"CN_SURNAME_DOUBLE_FREQ_FIRST({r_first}<{r_last})")
-            else:
-                # 频率差距不大,默认family_first
-                score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"]
-                reasons.append("CN_SURNAME_DOUBLE_DEFAULT_FAM")
+            fam_delta, giv_delta, reason = _apply_double_surname_frequency_rule(
+                first_token,
+                last_token,
+            )
+            score_fam += fam_delta
+            score_giv += giv_delta
+            reasons.append(reason)
 
     # === 特征2: 拼音名字模式 ===
 
@@ -428,6 +988,15 @@ def decide_chinese(
         else:
             score_giv += CHINESE_FEATURE_WEIGHTS["TWO_TOKENS_SINGLE_SYLLABLE"]
             reasons.append("TWO_TOKENS_CN_SURNAME_LAST_ISTINA")
+
+    score_fam, score_giv = _apply_field_structure_evidence(
+        record,
+        f,
+        CHINESE_FEATURE_WEIGHTS,
+        score_fam,
+        score_giv,
+        reasons,
+    )
 
     # === 决策 ===
 
@@ -489,6 +1058,15 @@ def decide_western(
         score_giv += WESTERN_FEATURE_WEIGHTS["NO_CN_EVIDENCE_DEFAULT"]
         reasons.append("NO_CN_EVIDENCE_DEFAULT_GIVEN")
 
+    score_fam, score_giv = _apply_field_structure_evidence(
+        record,
+        f,
+        WESTERN_FEATURE_WEIGHTS,
+        score_fam,
+        score_giv,
+        reasons,
+    )
+
     # === 决策 ===
 
     delta = score_fam - score_giv
@@ -546,6 +1124,15 @@ def decide_mixed(
         score_giv += MIXED_FEATURE_WEIGHTS["NO_MATCH_DEFAULT"]
         reasons.append("NO_MATCH_DEFAULT_GIVEN")
 
+    score_fam, score_giv = _apply_field_structure_evidence(
+        record,
+        f,
+        MIXED_FEATURE_WEIGHTS,
+        score_fam,
+        score_giv,
+        reasons,
+    )
+
     # === 决策 ===
 
     delta = score_fam - score_giv
@@ -562,6 +1149,247 @@ def decide_mixed(
         return NameDecision("given_first", conf, "MIXED", reasons)
 
 
+def decide_from_split_fields(record: NameRecord, cfg: SourceConfig) -> NameDecision:
+    """
+    Decide from split metadata fields only.
+
+    This path intentionally does not inspect record.name_raw/original_name. It
+    treats the constructed order as firstname/given field followed by
+    lastname/family field:
+    - given_first: family/lastname field appears to contain the surname.
+    - family_first: firstname/given field appears to contain the surname.
+    - unknown: evidence is insufficient or ambiguous.
+    """
+    given = _parsed_field(record.firstname_raw)
+    family = _parsed_field(record.lastname_raw)
+    given_tokens = given.tokens
+    family_tokens = family.tokens
+    reasons: List[str] = ["FIELD_ONLY_INPUT"]
+
+    if not given_tokens or not family_tokens:
+        return NameDecision("unknown", 0.0, "FIELD_ONLY", reasons + ["MISSING_SPLIT_FIELD"])
+
+    given_ascii = _token_ascii_sequence(given_tokens)
+    family_ascii = _token_ascii_sequence(family_tokens)
+    if given_ascii and family_ascii and given_ascii == family_ascii:
+        return NameDecision("unknown", 0.5, "FIELD_ONLY", reasons + ["FIELD_GIVEN_FAMILY_DUPLICATE"])
+
+    given_cn_surname = _head_or_joined_is_cn_surname(given_tokens)
+    family_cn_surname = _head_or_joined_is_cn_surname(family_tokens)
+    given_cn_given = _field_looks_like_cn_given(given_tokens)
+    family_cn_given = _field_looks_like_cn_given(family_tokens)
+    given_west_surname = _head_is_western_surname_like(given_tokens)
+    family_west_surname = _head_is_western_surname_like(family_tokens)
+    given_all_initials = _all_tokens_are_initials(given_tokens)
+    family_all_initials = _all_tokens_are_initials(family_tokens)
+    family_cjk_surname_hint = _field_has_cjk_surname_hint(record.lastname_raw, family_tokens)
+    given_single_surname = _single_cn_surname_ascii(given_tokens)
+    family_single_surname = _single_cn_surname_ascii(family_tokens)
+
+    # Scores are hypothesis scores, not direct field scores:
+    # - given_first: lastname/family field carries the surname.
+    # - family_first: firstname/given field carries the surname.
+    score_given_first = 0.0
+    score_family_first = 0.0
+
+    if _is_external_metadata_source(record.source):
+        score_given_first += 0.20
+        reasons.append("FIELD_SOURCE_SPLIT_PRIOR")
+
+    if family_all_initials:
+        reasons.append("FIELD_FAMILY_INITIALS_ONLY")
+    if given_all_initials:
+        reasons.append("FIELD_GIVEN_INITIALS_ONLY")
+
+    compound_prefix = _extract_compound_surname_prefix(given_tokens)
+    given_content_tokens = _non_initial_tokens(given_tokens)
+    given_compound_single_token = bool(compound_prefix and len(given_content_tokens) == 1)
+    if compound_prefix:
+        if len(given_content_tokens) >= 2:
+            reasons.append("FIELD_GIVEN_COMPOUND_SURNAME_PREFIX")
+        else:
+            reasons.append("FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN_DIAG")
+
+    given_cn_surname_decisive = given_cn_surname and not given_compound_single_token
+
+    if record.affiliation_raw:
+        affil_info = analyze_affiliation(record.affiliation_raw)
+        if affil_info and affil_info.is_chinese:
+            reasons.append("CN_AFFILIATION")
+
+    # Explicit Han-character surname hints in the family field are the
+    # strongest field evidence. The same signal is not symmetric: Han
+    # characters inside a given-name field can be ordinary given-name
+    # characters with pinyin that also maps to a surname.
+    if family_cjk_surname_hint:
+        score_given_first += 2.60
+        reasons.append("FIELD_FAMILY_CJK_SURNAME_HINT")
+
+    # Strong swapped-field evidence: the given slot starts with a surname-like
+    # token while the family slot is initials or a Chinese given-name pattern.
+    if given_west_surname and family_all_initials:
+        score_family_first += 2.20
+        reasons.append("FIELD_GIVEN_WEST_SURNAME_FAMILY_INITIALS")
+
+    if given_cn_surname_decisive and not family_cn_surname and family_cn_given:
+        score_family_first += 2.20
+        reasons.append("FIELD_GIVEN_CN_SURNAME_FAMILY_CN_GIVEN")
+
+    # Strong valid-field evidence: the family slot carries surname evidence and
+    # the given slot carries given-name evidence or initials.
+    if family_west_surname and not given_west_surname:
+        score_given_first += 1.75
+        reasons.append("FIELD_FAMILY_WEST_SURNAME")
+
+    dual_single_cn_surname = (
+        bool(given_single_surname)
+        and bool(family_single_surname)
+        and not given_compound_single_token
+        and not _contains_cjk_text(record.firstname_raw)
+        and not _contains_cjk_text(record.lastname_raw)
+    )
+    dual_share_decisive = False
+    share_comparison: Optional[Dict[str, Any]] = None
+
+    if dual_single_cn_surname:
+        share_comparison = compare_surname_frequency_share(given_single_surname, family_single_surname)
+        share1 = share_comparison["share1"]
+        share2 = share_comparison["share2"]
+        min_ratio = max(get_ablation_config().surname_share_ratio_threshold, 2.0)
+        if (
+            share_comparison["has_share1"]
+            and share_comparison["has_share2"]
+            and share_comparison["share_ratio"] >= min_ratio
+            and share1 != share2
+        ):
+            dual_share_decisive = True
+            share_score = _field_share_score(share_comparison["share_ratio"])
+            if share1 > share2:
+                score_family_first += share_score
+                reasons.append(
+                    f"FIELD_DUAL_CN_SURNAME_FREQ_GIVEN({_format_share_value(share1)}>{_format_share_value(share2)})"
+                )
+            else:
+                score_given_first += share_score
+                reasons.append(
+                    f"FIELD_DUAL_CN_SURNAME_FREQ_FAMILY({_format_share_value(share2)}>{_format_share_value(share1)})"
+                )
+        else:
+            reasons.append("FIELD_DUAL_CN_SURNAME_AMBIGUOUS")
+
+    if (
+        _is_external_metadata_source(record.source)
+        and not dual_single_cn_surname
+        and not family_all_initials
+    ):
+        score_given_first += 0.75
+        reasons.append("FIELD_EXTERNAL_SPLIT_DEFAULT_GIVEN")
+
+    if not dual_single_cn_surname:
+        if family_cn_surname and not given_cn_surname_decisive and (
+            given_cn_given or given_compound_single_token or given_all_initials
+        ):
+            score_given_first += 1.60
+            reasons.append("FIELD_FAMILY_CN_SURNAME_GIVEN_CN_NAME")
+        elif family_cn_surname and given_cn_given:
+            score_given_first += 1.35
+            reasons.append("FIELD_FAMILY_CN_SURNAME_GIVEN_CN_NAME")
+        elif family_cn_surname or family_west_surname:
+            score_given_first += 0.85
+            reasons.append("FIELD_FAMILY_SURNAME_WEAK")
+
+        if (
+            given_cn_surname_decisive
+            and family_cn_given
+            and "FIELD_GIVEN_CN_SURNAME_FAMILY_CN_GIVEN" not in reasons
+        ):
+            score_family_first += 1.60
+            reasons.append("FIELD_GIVEN_CN_SURNAME_FAMILY_CN_GIVEN")
+        elif given_cn_surname_decisive or given_west_surname:
+            score_family_first += 0.45
+            reasons.append("FIELD_GIVEN_SURNAME_WEAK")
+
+    if given_cn_given:
+        score_given_first += 0.35
+    if family_cn_given:
+        score_family_first += 0.35
+    if given_all_initials:
+        score_given_first += 0.35
+
+    # Initial-only family fields are common in metadata but are unsafe unless
+    # independent evidence strongly places the surname in the given field.
+    if family_all_initials and score_family_first < 1.20:
+        return NameDecision(
+            "unknown",
+            0.5,
+            "FIELD_ONLY",
+            reasons + ["FIELD_INITIALS_AMBIGUOUS"],
+        )
+
+    if dual_single_cn_surname and dual_share_decisive and share_comparison:
+        strong_rescue, rescue_reasons, rescue_confidence = _strong_dual_cn_surname_single_rescue(
+            given_tokens=given_tokens,
+            family_tokens=family_tokens,
+            share_comparison=share_comparison,
+            given_west_surname=given_west_surname,
+            family_west_surname=family_west_surname,
+            family_all_initials=family_all_initials,
+            source=record.source,
+            affiliation_raw=record.affiliation_raw,
+            publication_context=record.publication_context,
+        )
+        if strong_rescue:
+            return NameDecision(
+                "family_first",
+                rescue_confidence,
+                "FIELD_ONLY",
+                reasons + rescue_reasons,
+            )
+
+    if dual_single_cn_surname and not dual_share_decisive:
+        if _is_external_metadata_source(record.source):
+            return NameDecision(
+                "given_first",
+                0.66,
+                "FIELD_ONLY",
+                reasons + ["FIELD_EXTERNAL_SPLIT_DEFAULT_GIVEN"],
+            )
+        return NameDecision(
+            "unknown",
+            0.5,
+            "FIELD_ONLY",
+            reasons,
+        )
+
+    delta = score_given_first - score_family_first
+    if abs(delta) < 0.65:
+        if _is_external_metadata_source(record.source) and not family_all_initials:
+            return NameDecision(
+                "given_first",
+                0.66,
+                "FIELD_ONLY",
+                reasons + ["FIELD_EXTERNAL_SPLIT_DEFAULT_GIVEN"],
+            )
+        return NameDecision("unknown", 0.5, "FIELD_ONLY", reasons + ["FIELD_SCORE_DELTA_SMALL"])
+
+    confidence = _field_confidence_from_delta(abs(delta))
+    if delta > 0:
+        return NameDecision("given_first", confidence, "FIELD_ONLY", reasons)
+
+    if (
+        _is_external_metadata_source(record.source)
+        and "FIELD_GIVEN_WEST_SURNAME_FAMILY_INITIALS" not in reasons
+    ):
+        return NameDecision(
+            "given_first",
+            min(confidence, 0.72),
+            "FIELD_ONLY",
+            reasons + ["FIELD_FAMILY_FIRST_CANDIDATE_DEFERRED"],
+        )
+
+    return NameDecision("family_first", confidence, "FIELD_ONLY", reasons)
+
+
 # ========== 模块5: 局部决策 Module 5: Local Decision ==========
 
 def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
@@ -576,6 +1404,9 @@ def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
     Returns:
         NameDecision对象
     """
+    if record.field_only:
+        return decide_from_split_fields(record, cfg)
+
     # 1. 预处理
     parsed = preprocess_name(record.name_raw)
 
@@ -587,20 +1418,41 @@ def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
     abbrev_pattern = r'^[A-Z](\.[A-Z])*\.?$'
     single_letter_pattern = r'^[A-Z]$'  # 单字母也算缩写
     tokens = parsed.tokens
+    second_token_is_abbrev = (
+        len(tokens) == 2
+        and (
+            re.match(abbrev_pattern, tokens[1].raw)
+            or re.match(single_letter_pattern, tokens[1].raw)
+        )
+    )
+    first_token_is_abbrev = (
+        len(tokens) == 2
+        and (
+            re.match(abbrev_pattern, tokens[0].raw)
+            or re.match(single_letter_pattern, tokens[0].raw)
+        )
+    )
+    tail_tokens_are_abbrev = (
+        len(tokens) >= 3
+        and all(
+            re.match(abbrev_pattern, t.raw) or re.match(single_letter_pattern, t.raw)
+            for t in tokens[1:]
+        )
+    )
 
     if len(tokens) == 2:
         # 检测第二个token是否是缩写
-        if re.match(abbrev_pattern, tokens[1].raw) or re.match(single_letter_pattern, tokens[1].raw):
+        if second_token_is_abbrev:
             return NameDecision("family_first", 1.0, "ABBREVIATION",
                                [f"ABBREV_{tokens[0].raw}_{tokens[1].raw}"])
         # 检测第一个token是否是缩写（倒置情况）
-        if re.match(abbrev_pattern, tokens[0].raw) or re.match(single_letter_pattern, tokens[0].raw):
+        if first_token_is_abbrev:
             return NameDecision("given_first", 0.85, "ABBREVIATION",
                                [f"ABBREV_{tokens[0].raw}_{tokens[1].raw}_REVERSED"])
 
     if len(tokens) >= 3:
         # 所有非第一个token都是缩写
-        if all(re.match(abbrev_pattern, t.raw) or re.match(single_letter_pattern, t.raw) for t in tokens[1:]):
+        if tail_tokens_are_abbrev:
             return NameDecision("family_first", 1.0, "ABBREVIATION",
                                [f"ABBREV_{tokens[0].raw}_+"])
 
@@ -621,6 +1473,25 @@ def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
 
 # ========== 模块6: 批量一致性 Module 6: Batch Consistency ==========
 
+def _has_reason_prefix(decision: NameDecision, prefix: str) -> bool:
+    return any(code.startswith(prefix) for code in decision.reason_codes)
+
+
+def _is_raw_chinese_family_first_candidate(
+    record: NameRecord,
+    decision: NameDecision,
+) -> bool:
+    if record.field_only or not record.name_raw:
+        return False
+    if decision.mode != "CHINESE" or decision.order != "family_first":
+        return False
+    return (
+        _has_reason_prefix(decision, "CN_SURNAME_DOUBLE_FREQ_FIRST")
+        or "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision.reason_codes
+        or "CN_SURNAME_FIRST_ONLY" in decision.reason_codes
+    )
+
+
 def adjust_by_person(
     records: List[NameRecord],
     decisions: Dict[str, NameDecision],
@@ -634,9 +1505,10 @@ def adjust_by_person(
     groups = defaultdict(list)
     for rec in records:
         if rec.person_id:
-            groups[rec.person_id].append(rec.record_id)
+            groups[rec.person_id].append(rec)
 
-    for pid, rec_ids in groups.items():
+    for pid, group_records in groups.items():
+        rec_ids = [rec.record_id for rec in group_records]
         # 收集高置信度决策
         local_decisions = [decisions[rid] for rid in rec_ids
                            if rid in decisions and decisions[rid].order != "unknown"]
@@ -667,6 +1539,58 @@ def adjust_by_person(
                     reason_codes=d.reason_codes + ["PERSON_CONSISTENCY_OVERRIDE"]
                 )
 
+        candidate_ids = {
+            rec.record_id
+            for rec in group_records
+            if rec.record_id in decisions
+            and _is_raw_chinese_family_first_candidate(rec, decisions[rec.record_id])
+        }
+        if not candidate_ids:
+            continue
+
+        giv = [
+            decisions[rec.record_id]
+            for rec in group_records
+            if rec.record_id in decisions
+            and decisions[rec.record_id].order == "given_first"
+            and decisions[rec.record_id].confidence >= cfg.person_conf_thresh
+        ]
+        fam = [
+            decisions[rec.record_id]
+            for rec in group_records
+            if rec.record_id in decisions
+            and rec.record_id not in candidate_ids
+            and decisions[rec.record_id].order == "family_first"
+            and decisions[rec.record_id].confidence >= cfg.person_conf_thresh
+        ]
+
+        evidence_count = len(giv) + len(fam)
+        if evidence_count == 0:
+            continue
+
+        given_share = len(giv) / evidence_count
+        if len(giv) < 1:
+            continue
+        if len(giv) <= len(fam):
+            continue
+        if given_share < 0.60:
+            continue
+
+        for rid in candidate_ids:
+            d = decisions[rid]
+            decisions[rid] = NameDecision(
+                order="given_first",
+                confidence=max(d.confidence, cfg.person_override_conf),
+                mode=d.mode,
+                reason_codes=d.reason_codes + [
+                    (
+                        f"PERSON_RAW_GIVEN_MAJORITY_OVERRIDE("
+                        f"{len(giv)}/{evidence_count}={given_share:.3f})"
+                    ),
+                    "PERSON_CONSISTENCY_OVERRIDE",
+                ],
+            )
+
     return decisions
 
 
@@ -683,15 +1607,63 @@ def adjust_by_publication(
     groups = defaultdict(list)
     for rec in records:
         if rec.publication_id:
-            groups[rec.publication_id].append(rec.record_id)
+            groups[rec.publication_id].append(rec)
 
-    for pub_id, rec_ids in groups.items():
+    for pub_id, group_records in groups.items():
+        rec_ids = [rec.record_id for rec in group_records]
+        records_by_id = {rec.record_id: rec for rec in group_records}
         fam = [decisions[rid] for rid in rec_ids if rid in decisions
                and decisions[rid].order == "family_first"
                and decisions[rid].confidence >= cfg.pub_conf_thresh]
         giv = [decisions[rid] for rid in rec_ids if rid in decisions
                and decisions[rid].order == "given_first"
                and decisions[rid].confidence >= cfg.pub_conf_thresh]
+
+        candidate_ids = {
+            rec.record_id
+            for rec in group_records
+            if rec.record_id in decisions
+            and _is_raw_chinese_family_first_candidate(rec, decisions[rec.record_id])
+        }
+        if candidate_ids:
+            raw_giv = [
+                decisions[rec.record_id]
+                for rec in group_records
+                if rec.record_id in decisions
+                and decisions[rec.record_id].order == "given_first"
+                and decisions[rec.record_id].confidence >= cfg.pub_conf_thresh
+            ]
+            raw_fam = [
+                decisions[rec.record_id]
+                for rec in group_records
+                if rec.record_id in decisions
+                and rec.record_id not in candidate_ids
+                and decisions[rec.record_id].order == "family_first"
+                and decisions[rec.record_id].confidence >= cfg.pub_conf_thresh
+            ]
+
+            evidence_count = len(raw_giv) + len(raw_fam)
+            given_share = len(raw_giv) / evidence_count if evidence_count else 0.0
+            if (
+                evidence_count > 0
+                and len(raw_giv) >= cfg.pub_dominance_min_diff
+                and len(raw_giv) - len(raw_fam) >= cfg.pub_dominance_min_diff
+                and given_share >= 0.70
+            ):
+                for rid in candidate_ids:
+                    d = decisions[rid]
+                    decisions[rid] = NameDecision(
+                        order="given_first",
+                        confidence=max(d.confidence, cfg.pub_override_conf),
+                        mode=d.mode,
+                        reason_codes=d.reason_codes + [
+                            (
+                                f"PUB_RAW_GIVEN_MAJORITY_OVERRIDE("
+                                f"{len(raw_giv)}/{evidence_count}={given_share:.3f})"
+                            ),
+                            "PUB_PATTERN_OVERRIDE",
+                        ],
+                    )
 
         if len(fam) == 0 and len(giv) == 0:
             continue
@@ -703,6 +1675,8 @@ def adjust_by_publication(
 
         for rid in rec_ids:
             if rid not in decisions:
+                continue
+            if records_by_id[rid].field_only:
                 continue
             d = decisions[rid]
             if d.order == "unknown" and d.confidence <= cfg.pub_override_thresh:
@@ -717,6 +1691,123 @@ def adjust_by_publication(
 
 
 # ========== 主接口 Main Interface ==========
+
+def adjust_by_publication_high_share(
+    records: List[NameRecord],
+    decisions: Dict[str, NameDecision],
+    cfg: SourceConfig
+) -> Dict[str, NameDecision]:
+    """
+    Promote split-field correction candidates with publication-level support.
+
+    Crossref-style split fields are usually reliable, so single-record Chinese
+    surname evidence is treated as a candidate rather than an immediate
+    correction. A publication-level correction is applied only when multiple
+    authors in the same DOI show the same swapped-field pattern. Only candidate
+    records are corrected; unrelated coauthors in the same DOI are not touched.
+    """
+    for correction in _publication_candidate_group_corrections(records, decisions, cfg):
+        decisions[correction.record_id] = correction.after
+
+    return decisions
+
+
+def _publication_candidate_group_corrections(
+    records: List[NameRecord],
+    decisions: Dict[str, NameDecision],
+    cfg: SourceConfig,
+) -> List[PublicationCandidateCorrection]:
+    """Return publication candidate-group corrections without mutating decisions."""
+    ablation = get_ablation_config()
+    if not ablation.enable_publication_candidate_group_correction:
+        return []
+
+    groups = defaultdict(list)
+    for rec in records:
+        if rec.publication_id:
+            groups[rec.publication_id].append(rec.record_id)
+
+    corrections: List[PublicationCandidateCorrection] = []
+    for pub_id, rec_ids in groups.items():
+        complete = [
+            rid for rid in rec_ids
+            if rid in decisions and decisions[rid].order != "unknown"
+        ]
+        if not complete:
+            continue
+
+        candidate_strengths = {
+            rid: _field_family_first_candidate_strength(decisions[rid].reason_codes)
+            for rid in complete
+        }
+        candidates = [rid for rid, strength in candidate_strengths.items() if strength > 0.0]
+        if len(candidates) < ablation.publication_candidate_group_min_count:
+            continue
+
+        candidate_share = len(candidates) / len(complete)
+        if candidate_share < ablation.publication_candidate_group_min_share:
+            continue
+        strong_candidate_count = sum(
+            1
+            for rid in candidates
+            if candidate_strengths[rid] >= ablation.publication_candidate_group_strong_threshold
+        )
+        if strong_candidate_count < ablation.publication_candidate_group_min_strong_count:
+            continue
+        weighted_candidate_strength_sum = sum(candidate_strengths[rid] for rid in candidates)
+        if weighted_candidate_strength_sum < ablation.publication_candidate_group_min_strength_sum:
+            continue
+
+        for rid in candidates:
+            if rid not in decisions:
+                continue
+            d = decisions[rid]
+            suppression_reason = (
+                _publication_override_suppression_reason(d)
+                if ablation.enable_publication_external_split_confidence_guard
+                else None
+            )
+            if suppression_reason:
+                after = NameDecision(
+                    order=d.order,
+                    confidence=d.confidence,
+                    mode=d.mode,
+                    reason_codes=d.reason_codes + [suppression_reason],
+                )
+            else:
+                after = NameDecision(
+                    order="family_first",
+                    confidence=max(d.confidence, cfg.pub_override_conf, 0.66),
+                    mode=d.mode,
+                    reason_codes=d.reason_codes + [
+                        (
+                            f"PUB_CANDIDATE_GROUP_CORRECTION("
+                            f"{len(candidates)}/{len(complete)}={candidate_share:.3f};"
+                            f"strong={strong_candidate_count};"
+                            f"strength={weighted_candidate_strength_sum:.1f})"
+                        ),
+                        "PUB_PATTERN_OVERRIDE",
+                    ]
+                )
+            corrections.append(
+                PublicationCandidateCorrection(
+                    record_id=rid,
+                    publication_id=str(pub_id),
+                    candidate_count=len(candidates),
+                    complete_count=len(complete),
+                    candidate_share=candidate_share,
+                    before=d,
+                    after=after,
+                    strong_candidate_count=strong_candidate_count,
+                    weighted_candidate_strength_sum=weighted_candidate_strength_sum,
+                    candidate_strength=candidate_strengths[rid],
+                    suppressed=bool(suppression_reason),
+                    suppression_reason=suppression_reason,
+                )
+            )
+
+    return corrections
+
 
 def identify_surname_position_v8(
     original_name: str,
@@ -754,6 +1845,8 @@ def identify_surname_position_v8(
         person_id=person_id,
         publication_id=publication_id,
         name_raw=original_name,
+        firstname_raw=firstname,
+        lastname_raw=lastname,
         affiliation_raw=affiliation,
         lang_hint=mode_hint,
     )
@@ -770,11 +1863,208 @@ def identify_surname_position_v8(
     return (decision.order, decision.confidence, reason)
 
 
+def identify_surname_position_from_fields_v8(
+    firstname: Optional[str] = None,
+    lastname: Optional[str] = None,
+    affiliation: Optional[str] = None,
+    mode_hint: Optional[str] = None,
+    source: Optional[str] = None,
+    person_id: Optional[str] = None,
+    publication_id: Optional[str] = None,
+) -> Tuple[Optional[str], float, str]:
+    """
+    v8.0 split-field validation interface.
+
+    This is the production-safe path for Crossref-style metadata when only
+    given/family fields are available. It intentionally does not accept or use
+    original_name.
+    """
+    record = NameRecord(
+        record_id="single",
+        source=source or "DEFAULT",
+        person_id=person_id,
+        publication_id=publication_id,
+        name_raw="",
+        firstname_raw=firstname,
+        lastname_raw=lastname,
+        affiliation_raw=affiliation,
+        lang_hint=mode_hint,
+        field_only=True,
+    )
+    decision = local_decision(record, get_config(source))
+    reason = f"{decision.mode}: {', '.join(decision.reason_codes)}"
+    return (decision.order, decision.confidence, reason)
+
+
+def _coerce_batch_record(
+    record: Any,
+    index: int,
+    default_source: Optional[str] = None,
+    force_field_only_when_split_fields: bool = True,
+) -> NameRecord:
+    """Accept NameRecord or common Crossref-style dicts in the batch API."""
+    if isinstance(record, NameRecord):
+        updates: Dict[str, Any] = {}
+        if default_source and (not record.source or record.source == "DEFAULT"):
+            updates["source"] = default_source
+        has_split = bool(record.firstname_raw or record.lastname_raw)
+        if force_field_only_when_split_fields and has_split:
+            updates["name_raw"] = ""
+            updates["field_only"] = True
+        return replace(record, **updates) if updates else record
+
+    if not isinstance(record, dict):
+        raise TypeError(
+            "batch_identify_surname_position_v8 expects NameRecord or dict records"
+        )
+
+    firstname_raw = (
+        record.get("firstname_raw")
+        or record.get("firstname")
+        or record.get("given")
+        or record.get("given_name")
+    )
+    lastname_raw = (
+        record.get("lastname_raw")
+        or record.get("lastname")
+        or record.get("family")
+        or record.get("family_name")
+        or record.get("surname")
+    )
+    name_raw = (
+        record.get("name_raw")
+        or record.get("name")
+        or record.get("full_name")
+        or ""
+    )
+    has_split = bool(firstname_raw or lastname_raw)
+    if force_field_only_when_split_fields and has_split:
+        name_raw = ""
+        field_only = True
+    else:
+        field_only = not bool(name_raw) and has_split
+    raw_publication_context = record.get("publication_context")
+    publication_context = (
+        raw_publication_context
+        if isinstance(raw_publication_context, PublicationContext)
+        else PublicationContext()
+    )
+    publication_context_raw = record.get("publication_context_raw")
+    if publication_context_raw is None and isinstance(raw_publication_context, str):
+        publication_context_raw = raw_publication_context
+
+    return NameRecord(
+        record_id=str(record.get("record_id") or record.get("id") or index),
+        source=record.get("source") or default_source or "DEFAULT",
+        person_id=record.get("person_id") or record.get("orcid"),
+        publication_id=record.get("publication_id") or record.get("doi"),
+        name_raw=name_raw,
+        firstname_raw=firstname_raw,
+        lastname_raw=lastname_raw,
+        affiliation_raw=record.get("affiliation_raw") or record.get("affiliation"),
+        publication_context_raw=publication_context_raw,
+        publication_context=publication_context,
+        lang_hint=record.get("lang_hint"),
+        field_only=bool(record.get("field_only", field_only)),
+    )
+
+
+def _record_has_cn_surname_split_token(record: NameRecord) -> bool:
+    """Detect whether split fields contain at least one Chinese surname token."""
+    given = _parsed_field(record.firstname_raw)
+    family = _parsed_field(record.lastname_raw)
+    return (
+        _head_or_joined_is_cn_surname(given.tokens)
+        or _head_or_joined_is_cn_surname(family.tokens)
+        or bool(_single_cn_surname_ascii(given.tokens))
+        or bool(_single_cn_surname_ascii(family.tokens))
+    )
+
+
+def _record_has_cjk_split_hint(record: NameRecord) -> bool:
+    """Detect explicit Han-character surname hints in split fields."""
+    given = _parsed_field(record.firstname_raw)
+    family = _parsed_field(record.lastname_raw)
+    return (
+        _field_has_cjk_surname_hint(record.firstname_raw, given.tokens)
+        or _field_has_cjk_surname_hint(record.lastname_raw, family.tokens)
+    )
+
+
+def _record_has_field_family_first_candidate_static(record: NameRecord) -> bool:
+    """Static approximation of family-first split-field candidate evidence."""
+    given = _parsed_field(record.firstname_raw)
+    family = _parsed_field(record.lastname_raw)
+    given_tokens = given.tokens
+    family_tokens = family.tokens
+    if not given_tokens or not family_tokens:
+        return False
+
+    given_cn_surname = _head_or_joined_is_cn_surname(given_tokens)
+    family_cn_surname = _head_or_joined_is_cn_surname(family_tokens)
+    family_cn_given = _field_looks_like_cn_given(family_tokens)
+    given_west_surname = _head_is_western_surname_like(given_tokens)
+    family_all_initials = _all_tokens_are_initials(family_tokens)
+    given_single_surname = _single_cn_surname_ascii(given_tokens)
+    family_single_surname = _single_cn_surname_ascii(family_tokens)
+    compound_prefix = _extract_compound_surname_prefix(given_tokens)
+    given_content_tokens = _non_initial_tokens(given_tokens)
+    given_compound_single_token = bool(compound_prefix and len(given_content_tokens) == 1)
+
+    if given_west_surname and family_all_initials:
+        return True
+    if given_cn_surname and not given_compound_single_token and not family_cn_surname and family_cn_given:
+        return True
+    if given_single_surname and family_single_surname and not given_compound_single_token:
+        share_comparison = compare_surname_frequency_share(given_single_surname, family_single_surname)
+        return (
+            share_comparison["has_share1"]
+            and share_comparison["has_share2"]
+            and share_comparison["share1"] > share_comparison["share2"]
+            and share_comparison["share_ratio"] >= max(get_ablation_config().surname_share_ratio_threshold, 2.0)
+        )
+    return False
+
+
+def _build_publication_context(group_records: List[NameRecord]) -> PublicationContext:
+    """Build structured DOI-level context without using original/name fields."""
+    cn_affiliation_count = sum(1 for rec in group_records if _has_cn_affiliation(rec.affiliation_raw))
+    complete_split_count = sum(1 for rec in group_records if rec.firstname_raw and rec.lastname_raw)
+    cn_surname_token_count = sum(1 for rec in group_records if _record_has_cn_surname_split_token(rec))
+    field_family_first_candidate_count = sum(
+        1 for rec in group_records if _record_has_field_family_first_candidate_static(rec)
+    )
+    cjk_split_hint_count = sum(1 for rec in group_records if _record_has_cjk_split_hint(rec))
+    return PublicationContext(
+        has_cn_affiliation=cn_affiliation_count > 0,
+        cn_affiliation_count=cn_affiliation_count,
+        complete_split_count=complete_split_count,
+        cn_surname_token_count=cn_surname_token_count,
+        field_family_first_candidate_count=field_family_first_candidate_count,
+        cjk_split_hint_count=cjk_split_hint_count,
+        source_record_count=len(group_records),
+    )
+
+
+def _attach_publication_context(records: List[NameRecord]) -> None:
+    """Attach structured same-DOI evidence to every record in that DOI."""
+    groups = defaultdict(list)
+    for rec in records:
+        if rec.publication_id:
+            groups[rec.publication_id].append(rec)
+
+    for group_records in groups.values():
+        publication_context = _build_publication_context(group_records)
+        for group_rec in group_records:
+            group_rec.publication_context = publication_context
+
+
 def batch_identify_surname_position_v8(
-    records: List[NameRecord],
+    records: List[Any],
     source: Optional[str] = None,
     enable_person_consistency: bool = True,
     enable_pub_consistency: bool = True,
+    force_field_only_when_split_fields: bool = True,
 ) -> Dict[str, NameDecision]:
     """
     v8.0 批量姓氏位置识别（支持一致性调整）
@@ -793,6 +2083,17 @@ def batch_identify_surname_position_v8(
     cfg = get_config(source)
 
     # 1. 局部决策
+    records = [
+        _coerce_batch_record(
+            record,
+            index,
+            source,
+            force_field_only_when_split_fields=force_field_only_when_split_fields,
+        )
+        for index, record in enumerate(records)
+    ]
+    _attach_publication_context(records)
+
     decisions = {}
     for rec in records:
         rec_cfg = get_config(rec.source) if rec.source else cfg
@@ -804,6 +2105,13 @@ def batch_identify_surname_position_v8(
 
     if enable_pub_consistency:
         decisions = adjust_by_publication(records, decisions, cfg)
+
+    # Re-run person consistency after publication evidence has been normalized.
+    if enable_person_consistency:
+        decisions = adjust_by_person(records, decisions, cfg)
+
+    if enable_pub_consistency:
+        decisions = adjust_by_publication_high_share(records, decisions, cfg)
 
     return decisions
 

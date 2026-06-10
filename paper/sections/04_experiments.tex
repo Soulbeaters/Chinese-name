@@ -1,0 +1,89 @@
+% Глава 4: Экспериментальные результаты / Chapter 4: Experimental Results
+
+\chapter{Экспериментальные результаты}
+\label{ch:experiments}
+
+\section{Датасет Crossref Evidence Chain}
+\label{sec:exp:dataset}
+
+[TODO: Описать датасет Crossref: N=301,586 input records; 301,559 simple proxy-labeled rows for sanity checks; not manual ground truth]
+
+\subsection{Описание данных}
+\label{subsec:exp:data_description}
+
+[TODO: Подробное описание состава данных]
+
+\subsection{Разметка ground truth}
+\label{subsec:exp:ground_truth}
+
+[TODO: Описать процесс разметки, источники меток (ORCID, аффилиации)]
+
+\section{Метрики оценки}
+\label{sec:exp:metrics}
+
+[TODO: Описать метрики: Accuracy, Precision, Recall, F1, Coverage]
+
+\subsection{Глобальные метрики}
+\label{subsec:exp:global_metrics}
+
+[TODO: Описать метрики на всей выборке]
+
+\subsection{Условные метрики}
+\label{subsec:exp:conditional_metrics}
+
+[TODO: Описать метрики при условии срабатывания модулей]
+
+\section{Результаты на полном датасете}
+\label{sec:exp:results_full}
+
+[TODO: Представить основные результаты]
+
+\subsection{Точность (Accuracy)}
+\label{subsec:exp:accuracy}
+
+Основные результаты sanity-check оценки на датасете Crossref (N=301,586 input records; 301,559 simple proxy-labeled rows, not manual ground truth) представлены в Таблице~\ref{tab:evidence_chain_global}.
+
+% Импорт таблицы из runs/evidence_chain_301k_P0_P5_FINAL_V2/
+\input{../runs/evidence_chain_301k_P0_P5_FINAL_V2/statistics/stats_ci_global.tex}
+
+[TODO: Анализ и интерпретация результатов точности]
+
+\subsection{Производительность}
+\label{subsec:exp:performance}
+
+[TODO: Описать производительность: throughput, latency]
+
+\section{Аблационное исследование}
+\label{sec:exp:ablation}
+
+[TODO: Описать результаты аблационного исследования: вклад каждого модуля]
+
+\subsection{Влияние отдельных модулей}
+\label{subsec:exp:module_impact}
+
+[TODO: Таблица вклада каждого модуля]
+
+\subsection{Комбинации модулей}
+\label{subsec:exp:combinations}
+
+[TODO: Анализ различных комбинаций модулей]
+
+\section{Анализ ошибок}
+\label{sec:exp:error_analysis}
+
+[TODO: Качественный анализ типичных ошибок системы]
+
+\subsection{Ложноположительные}
+\label{subsec:exp:false_positives}
+
+[TODO: Примеры и анализ FP]
+
+\subsection{Ложноотрицательные}
+\label{subsec:exp:false_negatives}
+
+[TODO: Примеры и анализ FN]
+
+\section{Выводы}
+\label{sec:exp:conclusions}
+
+[TODO: Резюме экспериментальных результатов]

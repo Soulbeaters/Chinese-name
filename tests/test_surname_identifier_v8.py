@@ -1,274 +1,1219 @@
 # -*- coding: utf-8 -*-
 """
-v8.0算法单元测试
-Unit tests for v8.0 Algorithm
-
-作者: Ma Jiaxin
-日期: 2025-11-29
+Unit tests for the v8 surname-position identifier.
 """
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.surname_identifier_v8 import (
-    identify_surname_position_v8,
-    batch_identify_surname_position_v8,
-    NameRecord,
-    preprocess_name,
-    detect_mode,
-    local_decision,
+from data.surname_frequency import (
+    compare_surname_frequency_share,
+    get_surname_frequency_share,
 )
-from src.config_v8 import get_config
+from src.config_v8 import (
+    AblationConfig,
+    get_config,
+    reset_ablation_config,
+    set_ablation_config,
+)
+from src.surname_identifier_v8 import (
+    NameRecord,
+    batch_identify_surname_position_v8,
+    detect_mode,
+    identify_surname_position_from_fields_v8,
+    identify_surname_position_v8,
+    local_decision,
+    preprocess_name,
+)
 
 
-# ========== 基础功能测试 Basic Functionality Tests ==========
+def _local_strategy_decision(
+    name_raw: str,
+    strategy: str = "share_ratio",
+    source: str = "CROSSREF",
+    share_threshold: float = 1.0,
+):
+    """Exercise a specific double-surname frequency strategy directly."""
+    set_ablation_config(
+        AblationConfig(
+            surname_freq_strategy=strategy,
+            surname_share_ratio_threshold=share_threshold,
+        )
+    )
+    try:
+        record = NameRecord(
+            record_id="share-test",
+            name_raw=name_raw,
+            source=source,
+            affiliation_raw="Tsinghua University, Beijing, China",
+        )
+        return local_decision(record, get_config(source))
+    finally:
+        reset_ablation_config()
+
 
 def test_abbreviation_detection():
-    """测试缩写检测 / Test abbreviation detection"""
-    order, conf, reason = identify_surname_position_v8("Liu W.")
-    assert order == "family_first", f"Expected family_first, got {order}"
-    assert conf == 1.0, f"Expected confidence 1.0, got {conf}"
-
-    order, conf, reason = identify_surname_position_v8("Chen J.M.")
+    order, conf, _ = identify_surname_position_v8("Liu W.")
     assert order == "family_first"
     assert conf == 1.0
 
-    order, conf, reason = identify_surname_position_v8("Wang A.B.C.")
+    order, conf, _ = identify_surname_position_v8("Chen J.M.")
+    assert order == "family_first"
+    assert conf == 1.0
+
+    order, conf, _ = identify_surname_position_v8("Wang A.B.C.")
     assert order == "family_first"
     assert conf == 1.0
 
 
 def test_chinese_mode_basic():
-    """测试Chinese模式基础功能 / Test Chinese mode basics"""
-    # 标准中文姓名（姓在前）
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Tang Tianxiang",
-        affiliation="Tsinghua University, Beijing"
-    )
-    assert order == "family_first", f"Tang Tianxiang should be family_first, got {order}"
-
-    order, conf, _ = identify_surname_position_v8(
-        "Liu Yuhui",
-        affiliation="Peking University"
+        affiliation="Tsinghua University, Beijing",
     )
     assert order == "family_first"
 
-    # 姓在后（Crossref风格）
-    order, conf, _ = identify_surname_position_v8(
-        "Tianxiang Tang",
-        source="CROSSREF"
+    order, _, _ = identify_surname_position_v8(
+        "Liu Yuhui",
+        affiliation="Peking University",
     )
-    assert order == "given_first", f"Tianxiang Tang should be given_first, got {order}"
+    assert order == "family_first"
+
+    order, _, _ = identify_surname_position_v8(
+        "Tianxiang Tang",
+        source="CROSSREF",
+    )
+    assert order == "given_first"
 
 
 def test_chinese_single_syllable_optimization():
-    """测试单音节优化（v8新特性）/ Test single syllable optimization"""
-    # 单音节姓+双音节名（姓在前）
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Li Tianming",
-        affiliation="Tsinghua University"
+        affiliation="Tsinghua University",
     )
     assert order == "family_first"
 
-    # 双音节名+单音节姓（姓在后）
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Tianming Li",
-        source="CROSSREF"
+        source="CROSSREF",
     )
     assert order == "given_first"
 
 
 def test_double_surname():
-    """测试双字姓处理 / Test double surname handling"""
-    # ISTINA源：双姓默认family_first
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Zhang Wang",
-        source="ISTINA"
+        source="ISTINA",
     )
     assert order == "family_first"
 
-    # Crossref源：按频率判断
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Zhang Wang",
-        source="CROSSREF"
+        source="CROSSREF",
     )
-    # Zhang和Wang都是常见姓，应该有明确判断
     assert order in ["family_first", "given_first"]
 
 
+def test_surname_frequency_share_lookup_and_aggregation():
+    assert get_surname_frequency_share("wang") == 7.53
+    assert get_surname_frequency_share("unknown") == 0.0
+    assert get_surname_frequency_share("yu") == 1.1978
+    assert get_surname_frequency_share("he") == 1.311
+
+    comparison = compare_surname_frequency_share("hong", "yuan")
+    assert comparison["more_common"] == "yuan"
+    assert comparison["share_ratio"] > 1.5
+    assert comparison["has_share1"] is True
+    assert comparison["has_share2"] is True
+
+
+def test_share_ratio_double_surname_regressions():
+    decision = _local_strategy_decision("Wang Wei", strategy="share_ratio")
+    assert decision.order == "family_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_FIRST(7.53>0.8375)" in decision.reason_codes
+
+    decision = _local_strategy_decision("Lu Xing", strategy="share_ratio")
+    assert decision.order == "family_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_FIRST(1.4541>0.1465)" in decision.reason_codes
+
+    decision = _local_strategy_decision("Ge Yan", strategy="share_ratio")
+    assert decision.order == "given_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_LAST(0.658>0.175)" in decision.reason_codes
+
+    decision = _local_strategy_decision("Huan He", strategy="share_ratio")
+    assert decision.order == "given_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_LAST(1.311>0)" in decision.reason_codes
+
+    decision = _local_strategy_decision("Hong Yuan", strategy="share_ratio")
+    assert decision.order == "given_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_LAST(0.5519>0.18)" in decision.reason_codes
+
+    decision = _local_strategy_decision("Zhang Wang", strategy="share_ratio")
+    assert decision.order == "given_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_LAST(7.53>6.86)" in decision.reason_codes
+
+
+def test_share_ratio_threshold_changes_boundary_trigger():
+    decision_relaxed = _local_strategy_decision(
+        "Wang Liu",
+        strategy="share_ratio",
+        share_threshold=1.0,
+    )
+    assert decision_relaxed.order == "family_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_FIRST(7.53>5.2)" in decision_relaxed.reason_codes
+
+    decision_default = _local_strategy_decision(
+        "Wang Liu",
+        strategy="share_ratio",
+        share_threshold=1.5,
+    )
+    assert decision_default.order == "family_first"
+    assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision_default.reason_codes
+    assert all(
+        not code.startswith("CN_SURNAME_DOUBLE_FREQ_")
+        for code in decision_default.reason_codes
+    )
+
+
+def test_rank_gap_legacy_double_surname_regressions():
+    decision = _local_strategy_decision("Hong Yuan", strategy="rank_gap")
+    assert decision.order == "given_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_LAST(37<999)" in decision.reason_codes
+
+    decision = _local_strategy_decision("Ge Yan", strategy="rank_gap")
+    assert decision.order == "given_first"
+    assert "CN_SURNAME_DOUBLE_FREQ_LAST(90<999)" in decision.reason_codes
+
+
+def test_freq_disabled_reproduces_remote_branch_behavior():
+    decision = _local_strategy_decision("Wang Wei", strategy="freq_disabled")
+    assert decision.order == "family_first"
+    assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision.reason_codes
+    assert all(not code.startswith("CN_SURNAME_DOUBLE_FREQ_") for code in decision.reason_codes)
+
+    decision = _local_strategy_decision("Hong Yuan", strategy="freq_disabled")
+    assert decision.order == "family_first"
+    assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision.reason_codes
+    assert all(not code.startswith("CN_SURNAME_DOUBLE_FREQ_") for code in decision.reason_codes)
+
+
 def test_western_mode():
-    """测试Western模式 / Test Western mode"""
-    # 标准西方姓名
-    order, conf, _ = identify_surname_position_v8("David Smith")
-    assert order == "given_first", f"David Smith should be given_first, got {order}"
-
-    order, conf, _ = identify_surname_position_v8("Chris Aberson")
+    order, _, _ = identify_surname_position_v8("David Smith")
     assert order == "given_first"
 
-    order, conf, _ = identify_surname_position_v8("Tuomas Savolainen")
+    order, _, _ = identify_surname_position_v8("Chris Aberson")
     assert order == "given_first"
 
-    # 西方姓名（Smith在first位置，两个都是常见名字，可能被判断为given_first）
-    # 这是一个边界情况，算法可能判断为given_first
-    order, conf, _ = identify_surname_position_v8("Smith David")
-    assert order in ["family_first", "given_first"], f"Smith David order {order} should be ambiguous"
+    order, _, _ = identify_surname_position_v8("Tuomas Savolainen")
+    assert order == "given_first"
+
+    order, _, _ = identify_surname_position_v8("Smith David")
+    assert order in ["family_first", "given_first"]
 
 
 def test_mixed_mode():
-    """测试Mixed模式 / Test Mixed mode"""
-    # 中文姓+西方名（Zhang是中文姓，但Thomas是西方名，可能被判断为Western模式）
-    # 即使有中国机构，由于Thomas是明显的西方名，算法可能判断为given_first
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Zhang Thomas",
-        affiliation="Tsinghua University, Beijing, China"
+        affiliation="Tsinghua University, Beijing, China",
     )
-    # 这是边界情况，可能是family_first或given_first，取决于算法如何权衡证据
-    assert order in ["family_first", "given_first"], f"Zhang Thomas got {order}"
+    assert order in ["family_first", "given_first"]
 
-    # 混合姓名，无明显证据
-    order, conf, _ = identify_surname_position_v8("Peter Mueller")
+    order, _, _ = identify_surname_position_v8("Peter Mueller")
     assert order in ["given_first", "unknown"]
 
 
-# ========== 数据源特定策略测试 Source-Specific Strategy Tests ==========
-
 def test_source_specific_crossref():
-    """测试Crossref数据源策略 / Test Crossref source strategy"""
-    # Crossref倾向given-first
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Yuhui Liu",
-        source="CROSSREF"
+        source="CROSSREF",
     )
     assert order == "given_first"
 
 
 def test_source_specific_istina():
-    """测试ISTINA数据源策略 / Test ISTINA source strategy"""
-    # ISTINA倾向family-first（俄中数据）
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Li Tianming",
-        source="ISTINA"
+        source="ISTINA",
     )
     assert order == "family_first"
 
 
 def test_source_specific_orcid():
-    """测试ORCID数据源策略 / Test ORCID source strategy"""
-    # ORCID类似Crossref
-    order, conf, _ = identify_surname_position_v8(
+    order, _, _ = identify_surname_position_v8(
         "Yuhui Liu",
-        source="ORCID"
+        source="ORCID",
     )
     assert order == "given_first"
 
 
-# ========== 边界情况测试 Edge Case Tests ==========
+def test_field_only_valid_crossref_chinese_split():
+    order, _, reason = identify_surname_position_from_fields_v8(
+        firstname="Yuhui",
+        lastname="Liu",
+        source="CROSSREF",
+    )
+    assert order == "given_first"
+    assert "FIELD_ONLY_INPUT" in reason
+    assert "FIELD_SPLIT_EXACT_GIVEN" not in reason
+
+
+def test_field_only_detects_swapped_chinese_split():
+    order, _, reason = identify_surname_position_from_fields_v8(
+        firstname="Zhao",
+        lastname="Hongrui",
+        affiliation="Chinese Academy of Sciences",
+        source="CROSSREF",
+    )
+    assert order == "given_first"
+    assert "FIELD_GIVEN_CN_SURNAME_FAMILY_CN_GIVEN" in reason
+    assert "FIELD_FAMILY_FIRST_CANDIDATE_DEFERRED" in reason
+    assert "FIELD_SPLIT_EXACT_GIVEN" not in reason
+
+
+def test_field_only_treats_initial_family_as_ambiguous_without_surname_evidence():
+    order, _, reason = identify_surname_position_from_fields_v8(
+        firstname="Lokesh K.",
+        lastname="N",
+        source="CROSSREF",
+    )
+    assert order == "unknown"
+    assert "FIELD_INITIALS_AMBIGUOUS" in reason
+
+
+def test_field_only_detects_western_surname_before_initials():
+    order, _, reason = identify_surname_position_from_fields_v8(
+        firstname="Poyarkov",
+        lastname="N.A.",
+        source="CROSSREF",
+    )
+    assert order == "family_first"
+    assert "FIELD_GIVEN_WEST_SURNAME_FAMILY_INITIALS" in reason
+
+
+def test_field_only_trusts_external_split_when_no_counterevidence():
+    order, confidence, reason = identify_surname_position_from_fields_v8(
+        firstname="Sarah",
+        lastname="Wulf Hanson",
+        source="CROSSREF",
+    )
+    assert order == "given_first"
+    assert 0.6 <= confidence < 0.8
+    assert "FIELD_EXTERNAL_SPLIT_DEFAULT_GIVEN" in reason
+
+
+def test_split_case_field_only_regressions():
+    cases = [
+        ("10.1038/nature14656", "M. H. Eileen", "Tan", "given_first", "FIELD_FAMILY_CN_SURNAME_GIVEN_CN_NAME"),
+        ("10.1016/j.cja.2025.103654", "Jinheng", "ZHANG", "given_first", "FIELD_FAMILY_CN_SURNAME_GIVEN_CN_NAME"),
+        ("10.3897/vz.71.e59307", "Lezhang", "Wei", "given_first", "FIELD_FAMILY_CN_SURNAME_GIVEN_CN_NAME"),
+        ("10.1063/1.2137890", "Lan", "Jin", "given_first", "FIELD_DUAL_CN_SURNAME_FREQ_FAMILY"),
+        ("10.1016/j.jmmm.2006.01.156", "Lan", "Jin", "given_first", "FIELD_DUAL_CN_SURNAME_FREQ_FAMILY"),
+        ("10.24272/j.issn.2095-8137.2021.228", "Jian-Huan", "Yang", "given_first", "FIELD_FAMILY_CN_SURNAME_GIVEN_CN_NAME"),
+        ("10.4289/0013-8797.124.2.287", "Li", "Yan", "given_first", "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN"),
+        ("10.4289/0013-8797.124.2.287", "Li", "Nan", "given_first", "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN"),
+        ("10.1515/pac-2024-0024", "Thi My Hanh Le", "Le", "given_first", "FIELD_FAMILY_SURNAME_WEAK"),
+        ("10.1117/12.733422", "Zeng-Guang", "Hou", "given_first", "FIELD_FAMILY_CN_SURNAME_GIVEN_CN_NAME"),
+        ("10.3847/1538-4365/ac4414", "Y. Sophia \u6631", "Dai \u6234", "given_first", "FIELD_FAMILY_CJK_SURNAME_HINT"),
+        ("10.1111/jvs.13235", "Michele", "Di Musciano", "given_first", "FIELD_FAMILY_CN_SURNAME_GIVEN_CN_NAME"),
+        ("10.1088/1674-1056/ad6b84", "Jin \u52b2", "Zhan \u6e5b", "given_first", "FIELD_FAMILY_CJK_SURNAME_HINT"),
+        ("10.1088/1674-1056/ad6b84", "Yi \u4e00", "Wang \u738b", "given_first", "FIELD_FAMILY_CJK_SURNAME_HINT"),
+        ("10.1088/1674-1056/ad6b84", "Yu \u90c1", "Sui \u968b", "given_first", "FIELD_FAMILY_CJK_SURNAME_HINT"),
+        ("10.1109/ton.2025.3592491", "Xu", "Shu", "given_first", "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN"),
+        ("10.1007/s12665-023-10937-9", "Wang", "Lei", "given_first", "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN"),
+    ]
+
+    for doi, firstname, lastname, expected_order, expected_reason in cases:
+        order, _, reason = identify_surname_position_from_fields_v8(
+            firstname=firstname,
+            lastname=lastname,
+            source="CROSSREF",
+        )
+        assert order == expected_order, doi
+        assert expected_reason in reason, doi
+
+
+def test_field_only_strong_dual_single_rescue_keeps_moderate_ratios_deferred():
+    order, confidence, reason = identify_surname_position_from_fields_v8(
+        firstname="Li",
+        lastname="Yan",
+        source="CROSSREF",
+    )
+    assert order == "given_first"
+    assert confidence < 0.75
+    assert "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN(" in reason
+    assert "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE" not in reason
+    assert "FIELD_FAMILY_FIRST_CANDIDATE_DEFERRED" in reason
+
+
+def test_field_only_strong_dual_single_rescue_is_threshold_configured():
+    set_ablation_config(
+        AblationConfig(
+            enable_strong_dual_single_rescue=True,
+            strong_dual_single_rescue_ratio=30.0,
+        )
+    )
+    try:
+        order, _, reason = identify_surname_position_from_fields_v8(
+            firstname="Xu",
+            lastname="Shu",
+            source="CROSSREF",
+        )
+    finally:
+        reset_ablation_config()
+
+    assert order == "given_first"
+    assert "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE" not in reason
+    assert "FIELD_FAMILY_FIRST_CANDIDATE_DEFERRED" in reason
+
+
+def test_field_only_strong_dual_single_rescue_no_context_requires_explicit_legacy_config():
+    set_ablation_config(
+        AblationConfig(
+            enable_strong_dual_single_rescue=True,
+            strong_dual_single_rescue_require_cn_context=False,
+        )
+    )
+    try:
+        order, _, reason = identify_surname_position_from_fields_v8(
+            firstname="Xu",
+            lastname="Shu",
+            source="CROSSREF",
+        )
+    finally:
+        reset_ablation_config()
+
+    assert order == "family_first"
+    assert "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE_NO_CONTEXT" in reason
+
+
+def test_field_only_strong_dual_single_rescue_can_require_chinese_context():
+    set_ablation_config(
+        AblationConfig(
+            enable_strong_dual_single_rescue=True,
+            strong_dual_single_rescue_require_cn_context=True,
+        )
+    )
+    try:
+        order_without_context, _, reason_without_context = identify_surname_position_from_fields_v8(
+            firstname="Xu",
+            lastname="Shu",
+            source="CROSSREF",
+        )
+        order_with_context, _, reason_with_context = identify_surname_position_from_fields_v8(
+            firstname="Xu",
+            lastname="Shu",
+            affiliation="Tsinghua University, Beijing, China",
+            source="CROSSREF",
+        )
+    finally:
+        reset_ablation_config()
+
+    assert order_without_context == "given_first"
+    assert "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE" not in reason_without_context
+    assert order_with_context == "family_first"
+    assert "FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE" in reason_with_context
+
+
+def test_batch_strong_dual_single_rescue_uses_doi_level_context():
+    set_ablation_config(
+        AblationConfig(
+            enable_strong_dual_single_rescue=True,
+            strong_dual_single_rescue_require_cn_context=True,
+        )
+    )
+    try:
+        decisions = batch_identify_surname_position_v8(
+            [
+                NameRecord(
+                    record_id="candidate",
+                    name_raw="",
+                    firstname_raw="Xu",
+                    lastname_raw="Shu",
+                    publication_id="doi-context",
+                    source="CROSSREF",
+                    field_only=True,
+                ),
+                NameRecord(
+                    record_id="context",
+                    name_raw="",
+                    firstname_raw="Yuhui",
+                    lastname_raw="Liu",
+                    affiliation_raw="Tsinghua University, Beijing, China",
+                    publication_id="doi-context",
+                    source="CROSSREF",
+                    field_only=True,
+                ),
+            ],
+            source="CROSSREF",
+            enable_person_consistency=False,
+            enable_pub_consistency=False,
+        )
+    finally:
+        reset_ablation_config()
+
+    decision = decisions["candidate"]
+    assert decision.order == "family_first"
+    assert any(
+        code.startswith("FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE")
+        for code in decision.reason_codes
+    )
+
+
+def test_batch_field_only_ignores_name_raw_even_when_present():
+    base = {
+        "record_id": "x1",
+        "doi": "d1",
+        "firstname": "Xu",
+        "lastname": "Shu",
+        "source": "CROSSREF",
+    }
+    with_name_raw = {
+        **base,
+        "name_raw": "some deliberately misleading original name",
+        "name": "another misleading full name",
+        "full_name": "China China",
+        "original_name": "China China",
+    }
+
+    without_name = batch_identify_surname_position_v8(
+        [base],
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=False,
+    )["x1"]
+    with_name = batch_identify_surname_position_v8(
+        [with_name_raw],
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=False,
+    )["x1"]
+
+    assert with_name.order == without_name.order
+    assert with_name.confidence == without_name.confidence
+    assert with_name.reason_codes == without_name.reason_codes
+
+
+def test_publication_context_does_not_use_name_raw_for_cn_context():
+    set_ablation_config(
+        AblationConfig(
+            enable_strong_dual_single_rescue=True,
+            strong_dual_single_rescue_require_cn_context=True,
+        )
+    )
+    try:
+        decisions = batch_identify_surname_position_v8(
+            [
+                {
+                    "record_id": "x1",
+                    "doi": "d1",
+                    "firstname": "Xu",
+                    "lastname": "Shu",
+                    "name_raw": "China China China",
+                    "source": "CROSSREF",
+                }
+            ],
+            source="CROSSREF",
+            enable_person_consistency=False,
+            enable_pub_consistency=False,
+        )
+    finally:
+        reset_ablation_config()
+
+    decision = decisions["x1"]
+    assert decision.order == "given_first"
+    assert not any(
+        code.startswith("FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE")
+        for code in decision.reason_codes
+    )
+
+
+def test_publication_context_does_not_use_text_publication_context_for_cn_context():
+    set_ablation_config(
+        AblationConfig(
+            enable_strong_dual_single_rescue=True,
+            strong_dual_single_rescue_require_cn_context=True,
+        )
+    )
+    try:
+        decisions = batch_identify_surname_position_v8(
+            [
+                {
+                    "record_id": "x1",
+                    "doi": "d1",
+                    "firstname": "Xu",
+                    "lastname": "Shu",
+                    "publication_context": "China Tsinghua Beijing",
+                    "source": "CROSSREF",
+                }
+            ],
+            source="CROSSREF",
+            enable_person_consistency=False,
+            enable_pub_consistency=False,
+        )
+    finally:
+        reset_ablation_config()
+
+    decision = decisions["x1"]
+    assert decision.order == "given_first"
+    assert not any(
+        code.startswith("FIELD_DUAL_CN_SURNAME_FREQ_GIVEN_STRONG_SINGLE")
+        for code in decision.reason_codes
+    )
+
+
+def test_field_only_dual_surnames_require_strong_share_gap():
+    order, _, reason = identify_surname_position_from_fields_v8(
+        firstname="Jing",
+        lastname="Che",
+        source="CROSSREF",
+    )
+    assert order == "given_first"
+    assert "FIELD_DUAL_CN_SURNAME_AMBIGUOUS" in reason
+    assert "FIELD_EXTERNAL_SPLIT_DEFAULT_GIVEN" in reason
+
+
+def test_batch_field_only_split_is_decisive_without_original_name():
+    records = [
+        NameRecord(
+            record_id="du-guoming",
+            name_raw="",
+            firstname_raw="DU",
+            lastname_raw="Guoming",
+            source="CROSSREF",
+            field_only=True,
+        )
+    ]
+    decision = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=False,
+    )["du-guoming"]
+    assert decision.order == "given_first"
+    assert "FIELD_GIVEN_CN_SURNAME_FAMILY_CN_GIVEN" in decision.reason_codes
+    assert "FIELD_FAMILY_FIRST_CANDIDATE_DEFERRED" in decision.reason_codes
+    assert all(not code.startswith("FIELD_SPLIT_EXACT") for code in decision.reason_codes)
+
+
+def test_batch_accepts_crossref_style_dict_records():
+    decisions = batch_identify_surname_position_v8(
+        [
+            {
+                "record_id": "dict-record",
+                "original_name": "Zhao Hongrui",
+                "firstname": "Lokesh K.",
+                "lastname": "N",
+                "source": "CROSSREF",
+            }
+        ],
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=False,
+    )
+    decision = decisions["dict-record"]
+    assert decision.order == "unknown"
+    assert "FIELD_ONLY_INPUT" in decision.reason_codes
+    assert all(not code.startswith("FIELD_SPLIT_EXACT") for code in decision.reason_codes)
+
+
+def test_batch_publication_candidate_group_corrects_only_candidates():
+    records = [
+        NameRecord(
+            record_id=f"candidate-{idx}",
+            name_raw="",
+                firstname_raw=firstname,
+                lastname_raw=lastname,
+                affiliation_raw="Chinese Academy of Sciences, Beijing, China",
+                publication_id="doi-candidate-group",
+                source="CROSSREF",
+                field_only=True,
+        )
+        for idx, (firstname, lastname) in enumerate(
+            [
+                ("Zhao", "Hongrui"),
+                ("Li", "Yan"),
+                ("Liu", "Shengdong"),
+                ("Li", "Nan"),
+                ("Meng", "Qingfan"),
+            ]
+        )
+    ]
+    records.append(
+        NameRecord(
+            record_id="western-coauthor",
+            name_raw="",
+            firstname_raw="Alexander S.",
+            lastname_raw="Prosvirov",
+            publication_id="doi-candidate-group",
+            source="CROSSREF",
+            field_only=True,
+        )
+    )
+
+    set_ablation_config(
+        AblationConfig(
+            enable_publication_candidate_group_correction=True,
+            publication_candidate_group_min_count=4,
+            publication_candidate_group_min_share=0.40,
+            publication_candidate_group_min_strong_count=0,
+            publication_candidate_group_min_strength_sum=0.0,
+            enable_publication_external_split_confidence_guard=False,
+        )
+    )
+    try:
+        decisions = batch_identify_surname_position_v8(
+            records,
+            source="CROSSREF",
+            enable_person_consistency=False,
+            enable_pub_consistency=True,
+        )
+    finally:
+        reset_ablation_config()
+
+    for idx in range(5):
+        assert decisions[f"candidate-{idx}"].order == "family_first"
+        assert any(
+            code.startswith("PUB_CANDIDATE_GROUP_CORRECTION")
+            for code in decisions[f"candidate-{idx}"].reason_codes
+        )
+    assert decisions["western-coauthor"].order == "given_first"
+    assert not any(
+        code.startswith("PUB_CANDIDATE_GROUP_CORRECTION")
+        for code in decisions["western-coauthor"].reason_codes
+    )
+
+
+def test_raw_name_publication_majority_corrects_dual_surname_candidates():
+    records = [
+        NameRecord(
+            record_id="candidate-1",
+            name_raw="Yan Peng",
+            affiliation_raw="Tsinghua University, Beijing, China",
+            publication_id="doi-raw-majority",
+            source="CROSSREF",
+        ),
+        NameRecord(
+            record_id="candidate-2",
+            name_raw="Jiang Cheng",
+            affiliation_raw="Tsinghua University, Beijing, China",
+            publication_id="doi-raw-majority",
+            source="CROSSREF",
+        ),
+        NameRecord(
+            record_id="given-1",
+            name_raw="Alice Smith",
+            publication_id="doi-raw-majority",
+            source="CROSSREF",
+        ),
+        NameRecord(
+            record_id="given-2",
+            name_raw="Robert Johnson",
+            publication_id="doi-raw-majority",
+            source="CROSSREF",
+        ),
+    ]
+
+    local = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=False,
+    )
+    corrected = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=True,
+    )
+
+    assert local["candidate-1"].order == "family_first"
+    assert corrected["candidate-1"].order == "given_first"
+    assert corrected["candidate-2"].order == "given_first"
+    assert any(
+        code.startswith("PUB_RAW_GIVEN_MAJORITY_OVERRIDE")
+        for code in corrected["candidate-1"].reason_codes
+    )
+
+
+def test_raw_name_publication_majority_requires_given_evidence():
+    records = [
+        NameRecord(
+            record_id="candidate-1",
+            name_raw="Yan Peng",
+            affiliation_raw="Tsinghua University, Beijing, China",
+            publication_id="doi-raw-no-majority",
+            source="CROSSREF",
+        ),
+        NameRecord(
+            record_id="candidate-2",
+            name_raw="Jiang Cheng",
+            affiliation_raw="Tsinghua University, Beijing, China",
+            publication_id="doi-raw-no-majority",
+            source="CROSSREF",
+        ),
+    ]
+
+    decisions = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=True,
+    )
+
+    assert decisions["candidate-1"].order == "family_first"
+    assert not any(
+        code.startswith("PUB_RAW_GIVEN_MAJORITY_OVERRIDE")
+        for code in decisions["candidate-1"].reason_codes
+    )
+
+
+def test_raw_name_person_majority_corrects_repeated_candidate():
+    records = [
+        NameRecord(
+            record_id="candidate",
+            name_raw="Yuan Tian",
+            person_id="0000-0000-raw-person",
+            source="CROSSREF",
+        ),
+        NameRecord(
+            record_id="given-evidence",
+            name_raw="Alice Smith",
+            person_id="0000-0000-raw-person",
+            source="CROSSREF",
+        ),
+    ]
+
+    local = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=False,
+    )
+    corrected = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=True,
+        enable_pub_consistency=False,
+    )
+
+    assert local["candidate"].order == "family_first"
+    assert corrected["candidate"].order == "given_first"
+    assert any(
+        code.startswith("PERSON_RAW_GIVEN_MAJORITY_OVERRIDE")
+        for code in corrected["candidate"].reason_codes
+    )
+
+
+def test_batch_publication_candidate_group_requires_group_support():
+    records = [
+        NameRecord(
+            record_id="candidate",
+            name_raw="",
+            firstname_raw="Zhao",
+            lastname_raw="Hongrui",
+            publication_id="doi-sparse-candidate",
+            source="CROSSREF",
+            field_only=True,
+        ),
+        NameRecord(
+            record_id="given-1",
+            name_raw="",
+            firstname_raw="Yuhui",
+            lastname_raw="Liu",
+            publication_id="doi-sparse-candidate",
+            source="CROSSREF",
+            field_only=True,
+        ),
+        NameRecord(
+            record_id="given-2",
+            name_raw="",
+            firstname_raw="Tianxiang",
+            lastname_raw="Tang",
+            publication_id="doi-sparse-candidate",
+            source="CROSSREF",
+            field_only=True,
+        ),
+    ]
+
+    decisions = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=True,
+    )
+
+    assert decisions["candidate"].order == "given_first"
+    assert "FIELD_FAMILY_FIRST_CANDIDATE_DEFERRED" in decisions["candidate"].reason_codes
+    assert not any(
+        code.startswith("PUB_CANDIDATE_GROUP_CORRECTION")
+        for code in decisions["candidate"].reason_codes
+    )
+
+
+def test_batch_publication_candidate_group_thresholds_are_configurable():
+    records = [
+        NameRecord(
+            record_id="candidate-1",
+            name_raw="",
+            firstname_raw="Zhao",
+            lastname_raw="Hongrui",
+            affiliation_raw="Chinese Academy of Sciences, Beijing, China",
+            publication_id="doi-configurable-candidate-group",
+            source="CROSSREF",
+            field_only=True,
+        ),
+        NameRecord(
+            record_id="candidate-2",
+            name_raw="",
+            firstname_raw="Liu",
+            lastname_raw="Shengdong",
+            affiliation_raw="Chinese Academy of Sciences, Beijing, China",
+            publication_id="doi-configurable-candidate-group",
+            source="CROSSREF",
+            field_only=True,
+        ),
+        NameRecord(
+            record_id="given",
+            name_raw="",
+            firstname_raw="Yuhui",
+            lastname_raw="Liu",
+            publication_id="doi-configurable-candidate-group",
+            source="CROSSREF",
+            field_only=True,
+        ),
+    ]
+    set_ablation_config(
+        AblationConfig(
+            enable_publication_candidate_group_correction=True,
+            publication_candidate_group_min_count=2,
+            publication_candidate_group_min_share=0.50,
+            publication_candidate_group_min_strong_count=0,
+            publication_candidate_group_min_strength_sum=0.0,
+            enable_publication_external_split_confidence_guard=False,
+        )
+    )
+    try:
+        decisions = batch_identify_surname_position_v8(
+            records,
+            source="CROSSREF",
+            enable_person_consistency=False,
+            enable_pub_consistency=True,
+        )
+    finally:
+        reset_ablation_config()
+
+    assert decisions["candidate-1"].order == "family_first"
+    assert decisions["candidate-2"].order == "family_first"
+    assert any(
+        code.startswith("PUB_CANDIDATE_GROUP_CORRECTION")
+        for code in decisions["candidate-1"].reason_codes
+    )
+
+
+def test_batch_publication_candidate_group_final_profile_is_default():
+    records = [
+        NameRecord(
+            record_id=f"candidate-{idx}",
+            name_raw="",
+            firstname_raw=firstname,
+            lastname_raw=lastname,
+            publication_id="doi-publication-default-off",
+            source="CROSSREF",
+            field_only=True,
+        )
+        for idx, (firstname, lastname) in enumerate(
+            [
+                ("Zhao", "Hongrui"),
+                ("Li", "Yan"),
+                ("Liu", "Shengdong"),
+                ("Li", "Nan"),
+            ]
+        )
+    ]
+
+    decisions = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=True,
+    )
+
+    assert decisions["candidate-0"].order == "given_first"
+    assert decisions["candidate-1"].order == "family_first"
+    assert decisions["candidate-2"].order == "given_first"
+    assert decisions["candidate-3"].order == "family_first"
+    assert any(
+        code.startswith("PUB_CANDIDATE_GROUP_CORRECTION")
+        for code in decisions["candidate-1"].reason_codes
+    )
+    assert any(
+        code.startswith("PUB_PATTERN_OVERRIDE_SUPPRESSED_BY_EXTERNAL_SPLIT_CONFIDENCE")
+        for code in decisions["candidate-0"].reason_codes
+    )
+
+
+def test_publication_candidate_group_guard_suppresses_external_split_override():
+    records = [
+        NameRecord(
+            record_id=f"candidate-{idx}",
+            name_raw="",
+            firstname_raw=firstname,
+            lastname_raw=lastname,
+            publication_id="doi-publication-guard",
+            source="CROSSREF",
+            field_only=True,
+        )
+        for idx, (firstname, lastname) in enumerate(
+            [
+                ("Zhao", "Hongrui"),
+                ("Liu", "Shengdong"),
+                ("Meng", "Qingfan"),
+                ("Guo", "Qingbiao"),
+            ]
+        )
+    ]
+    set_ablation_config(
+        AblationConfig(
+            enable_publication_candidate_group_correction=True,
+            publication_candidate_group_min_count=4,
+            publication_candidate_group_min_share=0.40,
+            publication_candidate_group_min_strong_count=0,
+            publication_candidate_group_min_strength_sum=0.0,
+        )
+    )
+    try:
+        decisions = batch_identify_surname_position_v8(
+            records,
+            source="CROSSREF",
+            enable_person_consistency=False,
+            enable_pub_consistency=True,
+        )
+    finally:
+        reset_ablation_config()
+
+    guarded = decisions["candidate-0"]
+    assert guarded.order == "given_first"
+    assert "PUB_PATTERN_OVERRIDE" not in guarded.reason_codes
+    assert "PUB_PATTERN_OVERRIDE_SUPPRESSED_BY_EXTERNAL_SPLIT_CONFIDENCE" in guarded.reason_codes
+
+
+def test_batch_publication_candidate_group_does_not_fill_unknowns():
+    records = [
+        NameRecord(
+            record_id=f"candidate-{idx}",
+            name_raw="",
+            firstname_raw=firstname,
+            lastname_raw=lastname,
+            publication_id="doi-candidate-with-unknown",
+            source="CROSSREF",
+            field_only=True,
+        )
+        for idx, (firstname, lastname) in enumerate(
+            [
+                ("Zhao", "Hongrui"),
+                ("Li", "Yan"),
+                ("Liu", "Shengdong"),
+                ("Li", "Nan"),
+            ]
+        )
+    ]
+    records.append(
+        NameRecord(
+            record_id="unknown",
+            name_raw="",
+            firstname_raw="Lokesh K.",
+            lastname_raw="N",
+            publication_id="doi-candidate-with-unknown",
+            source="CROSSREF",
+            field_only=True,
+        )
+    )
+
+    decisions = batch_identify_surname_position_v8(
+        records,
+        source="CROSSREF",
+        enable_person_consistency=False,
+        enable_pub_consistency=True,
+    )
+
+    assert decisions["unknown"].order == "unknown"
+    assert not any(
+        code.startswith("PUB_CANDIDATE_GROUP_CORRECTION")
+        for code in decisions["unknown"].reason_codes
+    )
+
+
+def test_batch_publication_candidate_group_can_correct_dual_surname_candidate():
+    records = [
+        NameRecord(
+            record_id=f"candidate-{idx}",
+            name_raw="",
+                firstname_raw=firstname,
+                lastname_raw=lastname,
+                affiliation_raw="Chinese Academy of Sciences, Beijing, China",
+                publication_id="doi-china-group",
+                source="CROSSREF",
+                field_only=True,
+        )
+        for idx, (firstname, lastname) in enumerate(
+            [
+                ("Zheng", "Meinan"),
+                ("Guo", "Qingbiao"),
+                ("Zhao", "Ruonan"),
+                ("Wang", "Lei"),
+                ("Han", "Yafang"),
+            ]
+        )
+    ]
+
+    set_ablation_config(
+        AblationConfig(
+            enable_publication_candidate_group_correction=True,
+            publication_candidate_group_min_count=4,
+            publication_candidate_group_min_share=0.40,
+            publication_candidate_group_min_strong_count=0,
+            publication_candidate_group_min_strength_sum=0.0,
+            enable_publication_external_split_confidence_guard=False,
+        )
+    )
+    try:
+        decisions = batch_identify_surname_position_v8(
+            records,
+            source="CROSSREF",
+            enable_person_consistency=False,
+            enable_pub_consistency=True,
+        )
+    finally:
+        reset_ablation_config()
+
+    assert decisions["candidate-3"].order == "family_first"
+    assert any(
+        code.startswith("PUB_CANDIDATE_GROUP_CORRECTION")
+        for code in decisions["candidate-3"].reason_codes
+    )
+
+
+def test_duplicate_split_fields_are_not_decisive():
+    order, _, reason = identify_surname_position_from_fields_v8(
+        firstname="Piradov",
+        lastname="Piradov",
+        source="CROSSREF",
+    )
+    assert order == "unknown"
+    assert "FIELD_GIVEN_FAMILY_DUPLICATE" in reason
+
+
+def test_structural_family_fullname_reason_codes():
+    decision = local_decision(
+        NameRecord(
+            record_id="structural",
+            name_raw="Zhu Yongqiang",
+            firstname_raw="朱勇强",
+            lastname_raw="Zhu Yongqiang",
+            source="CROSSREF",
+        ),
+        get_config("CROSSREF"),
+    )
+    assert "FIELD_FAMILY_MATCHES_FULL_NAME" in decision.reason_codes
+    assert "FIELD_FAMILY_FULLNAME_GIVEN_CJK" in decision.reason_codes
+    assert "FIELD_SPLIT_MISMATCH" in decision.reason_codes
+
+
+def test_given_field_compound_surname_prefix_reason_codes():
+    order, _, reason = identify_surname_position_from_fields_v8(
+        firstname="Ouyang Ming",
+        lastname="Li",
+        source="CROSSREF",
+    )
+    assert order in ["given_first", "unknown"]
+    assert "FIELD_GIVEN_COMPOUND_SURNAME_PREFIX" in reason
+
+
+def test_single_token_compound_surname_is_not_hard_error():
+    order, _, reason = identify_surname_position_from_fields_v8(
+        firstname="Chunyu",
+        lastname="Xu",
+        source="CROSSREF",
+    )
+    assert order == "given_first"
+    assert "FIELD_GIVEN_COMPOUND_SURNAME_SINGLE_TOKEN_DIAG" in reason
+
 
 def test_edge_cases():
-    """测试边界情况 / Test edge cases"""
-    # 空字符串
-    order, conf, _ = identify_surname_position_v8("")
+    order, _, _ = identify_surname_position_v8("")
     assert order == "unknown"
 
-    # 单个token
-    order, conf, _ = identify_surname_position_v8("Liu")
+    order, _, _ = identify_surname_position_v8("Liu")
     assert order == "unknown"
 
-    # 全是缩写
-    order, conf, _ = identify_surname_position_v8("A.B.")
+    order, _, _ = identify_surname_position_v8("A.B.")
     assert order == "unknown"
 
-    # 特殊字符
-    order, conf, _ = identify_surname_position_v8("Liu, Wei")
+    order, _, _ = identify_surname_position_v8("Liu, Wei")
     assert order in ["family_first", "given_first", "unknown"]
 
-    # 带连字符
-    order, conf, _ = identify_surname_position_v8("Jean-Pierre Martin")
+    order, _, _ = identify_surname_position_v8("Jean-Pierre Martin")
     assert order == "given_first"
 
 
 def test_none_handling():
-    """测试None值处理 / Test None value handling"""
-    # affiliation为None
-    order, conf, _ = identify_surname_position_v8(
-        "Liu Wei",
-        affiliation=None
-    )
+    order, _, _ = identify_surname_position_v8("Liu Wei", affiliation=None)
     assert order in ["family_first", "given_first"]
 
-    # source为None（使用默认配置）
-    order, conf, _ = identify_surname_position_v8(
-        "Liu Wei",
-        source=None
-    )
+    order, _, _ = identify_surname_position_v8("Liu Wei", source=None)
     assert order in ["family_first", "given_first"]
 
 
 def test_unicode_handling():
-    """测试Unicode处理 / Test Unicode handling"""
-    # 带变音符的姓名
-    order, conf, _ = identify_surname_position_v8("José García")
+    order, _, _ = identify_surname_position_v8("José García")
     assert order == "given_first"
 
-    # 俄语姓名
-    order, conf, _ = identify_surname_position_v8("Иванов Иван")
+    order, _, _ = identify_surname_position_v8("Иванов Иван")
     assert order in ["family_first", "given_first", "unknown"]
 
 
-# ========== 预处理测试 Preprocessing Tests ==========
-
 def test_preprocess_name():
-    """测试姓名预处理 / Test name preprocessing"""
-    # 正常姓名
     parsed = preprocess_name("Liu Wei")
     assert len(parsed.tokens) == 2
     assert parsed.first_idx == 0
     assert parsed.last_idx == 1
 
-    # 带缩写
     parsed = preprocess_name("Liu W.X.")
     assert len(parsed.tokens) == 2
     assert parsed.tokens[1].is_initial
 
-    # 带特殊字符
     parsed = preprocess_name("Liu, Wei (刘伟)")
     assert len(parsed.tokens) >= 2
 
-    # 空字符串
     parsed = preprocess_name("")
     assert len(parsed.tokens) == 0
     assert parsed.first_idx == -1
 
 
 def test_mode_detection():
-    """测试模式检测 / Test mode detection"""
     cfg = get_config("DEFAULT")
 
-    # Chinese模式
     record = NameRecord(
         record_id="1",
         name_raw="Zhang Tianxiang",
-        affiliation_raw="Tsinghua University"
+        affiliation_raw="Tsinghua University",
     )
     parsed = preprocess_name(record.name_raw)
     mode = detect_mode(record, parsed, cfg)
     assert mode == "CHINESE"
 
-    # Western模式
     record = NameRecord(
         record_id="2",
-        name_raw="David Smith"
+        name_raw="David Smith",
     )
     parsed = preprocess_name(record.name_raw)
     mode = detect_mode(record, parsed, cfg)
     assert mode == "WESTERN"
 
 
-# ========== 批量处理测试 Batch Processing Tests ==========
-
 def test_batch_processing_basic():
-    """测试批量处理基础功能 / Test batch processing basics"""
     records = [
         NameRecord(record_id="1", name_raw="Liu Wei", source="CROSSREF"),
         NameRecord(record_id="2", name_raw="David Smith", source="CROSSREF"),
@@ -278,130 +1223,118 @@ def test_batch_processing_basic():
     decisions = batch_identify_surname_position_v8(
         records,
         enable_person_consistency=False,
-        enable_pub_consistency=False
+        enable_pub_consistency=False,
     )
 
     assert len(decisions) == 3
     assert all(rid in decisions for rid in ["1", "2", "3"])
-    assert decisions["2"].order == "given_first"  # Western name
+    assert decisions["2"].order == "given_first"
 
 
 def test_batch_person_consistency():
-    """测试person一致性调整 / Test person consistency adjustment"""
-    # 同一个人的多个记录
     records = [
         NameRecord(
             record_id="1",
             name_raw="Liu Wei",
             person_id="P001",
-            source="CROSSREF"
+            source="CROSSREF",
         ),
         NameRecord(
             record_id="2",
             name_raw="Wei Liu",
             person_id="P001",
-            source="CROSSREF"
+            source="CROSSREF",
         ),
         NameRecord(
             record_id="3",
-            name_raw="Liu W.",  # 缩写，高置信度，应该是family_first
+            name_raw="Liu W.",
             person_id="P001",
-            source="CROSSREF"
+            source="CROSSREF",
         ),
     ]
 
     decisions = batch_identify_surname_position_v8(
         records,
         enable_person_consistency=True,
-        enable_pub_consistency=False
+        enable_pub_consistency=False,
     )
 
-    # 缩写"Liu W."应该是family_first（高置信度1.0）
-    # person一致性应该使其他记录趋向family_first
-    assert decisions["3"].order == "family_first", f"Liu W. should be family_first, got {decisions['3'].order}"
-    assert decisions["3"].confidence == 1.0, f"Liu W. confidence should be 1.0, got {decisions['3'].confidence}"
+    assert decisions["3"].order == "family_first"
+    assert decisions["3"].confidence == 1.0
 
 
 def test_batch_publication_consistency():
-    """测试publication一致性调整 / Test publication consistency adjustment"""
-    # 同一篇文章的多个作者
     records = [
         NameRecord(
             record_id="1",
             name_raw="Tang Tianxiang",
             publication_id="PUB001",
             source="CROSSREF",
-            affiliation_raw="Tsinghua University"
+            affiliation_raw="Tsinghua University",
         ),
         NameRecord(
             record_id="2",
             name_raw="Liu Yuhui",
             publication_id="PUB001",
             source="CROSSREF",
-            affiliation_raw="Peking University"
+            affiliation_raw="Peking University",
         ),
         NameRecord(
             record_id="3",
-            name_raw="Wang ABC",  # 不确定的名字
+            name_raw="Wang ABC",
             publication_id="PUB001",
-            source="CROSSREF"
+            source="CROSSREF",
         ),
     ]
 
     decisions = batch_identify_surname_position_v8(
         records,
         enable_person_consistency=False,
-        enable_pub_consistency=True
+        enable_pub_consistency=True,
     )
 
-    # 如果前两个作者都是family_first，第三个不确定的也应该倾向family_first
-    # （这取决于具体实现逻辑）
     assert len(decisions) == 3
 
 
-# ========== 运行所有测试 Run All Tests ==========
-
 def run_all_tests(output_file=None):
-    """运行所有测试 / Run all tests"""
-
-    # 打开输出文件（如果指定）
+    """Legacy script-style test runner."""
     if output_file:
-        f = open(output_file, 'w', encoding='utf-8')
+        f = open(output_file, "w", encoding="utf-8")
     else:
         f = None
 
     def log(msg):
         if f:
-            f.write(msg + '\n')
+            f.write(msg + "\n")
         print(msg)
 
     tests = [
-        # 基础功能
-        ("缩写检测", test_abbreviation_detection),
-        ("Chinese模式基础", test_chinese_mode_basic),
-        ("单音节优化", test_chinese_single_syllable_optimization),
-        ("双字姓处理", test_double_surname),
-        ("Western模式", test_western_mode),
-        ("Mixed模式", test_mixed_mode),
-
-        # 数据源策略
-        ("Crossref策略", test_source_specific_crossref),
-        ("ISTINA策略", test_source_specific_istina),
-        ("ORCID策略", test_source_specific_orcid),
-
-        # 边界情况
-        ("边界情况", test_edge_cases),
-        ("None值处理", test_none_handling),
-        ("Unicode处理", test_unicode_handling),
-
-        # 预处理
-        ("姓名预处理", test_preprocess_name),
-        ("模式检测", test_mode_detection),
-
-        # 批量处理
-        ("批量处理基础", test_batch_processing_basic),
-        ("Person一致性", test_batch_person_consistency),
-        ("Publication一致性", test_batch_publication_consistency),
+        ("abbreviation", test_abbreviation_detection),
+        ("chinese_mode_basic", test_chinese_mode_basic),
+        ("single_syllable_optimization", test_chinese_single_syllable_optimization),
+        ("double_surname", test_double_surname),
+        ("share_lookup_and_aggregation", test_surname_frequency_share_lookup_and_aggregation),
+        ("share_ratio_double_surname_regressions", test_share_ratio_double_surname_regressions),
+        ("western_mode", test_western_mode),
+        ("mixed_mode", test_mixed_mode),
+        ("source_specific_crossref", test_source_specific_crossref),
+        ("source_specific_istina", test_source_specific_istina),
+        ("source_specific_orcid", test_source_specific_orcid),
+        ("split_field_exact_alignment", test_split_field_exact_alignment_reason_codes),
+        ("split_field_exact_given_boundary", test_split_field_exact_given_overrides_cn_boundary_unknown),
+        ("split_field_exact_given_abbrev", test_split_field_exact_given_overrides_abbreviation_rule),
+        ("duplicate_split_fields_proxy_skip", test_duplicate_split_fields_are_not_proxy_labels),
+        ("structural_family_fullname", test_structural_family_fullname_reason_codes),
+        ("given_field_compound_prefix", test_given_field_compound_surname_prefix_reason_codes),
+        ("single_token_compound_surname_soft_signal", test_single_token_compound_surname_is_not_hard_error),
+        ("edge_cases", test_edge_cases),
+        ("none_handling", test_none_handling),
+        ("unicode_handling", test_unicode_handling),
+        ("preprocess_name", test_preprocess_name),
+        ("mode_detection", test_mode_detection),
+        ("batch_processing_basic", test_batch_processing_basic),
+        ("batch_person_consistency", test_batch_person_consistency),
+        ("batch_publication_consistency", test_batch_publication_consistency),
     ]
 
     passed = 0
@@ -419,9 +1352,9 @@ def run_all_tests(output_file=None):
             log(f"[ERROR] {name}: {e}")
             failed += 1
 
-    log(f"\n{'='*60}")
-    log(f"测试结果 / Test Results: {passed} passed, {failed} failed")
-    log(f"{'='*60}")
+    log(f"\n{'=' * 60}")
+    log(f"Test Results: {passed} passed, {failed} failed")
+    log(f"{'=' * 60}")
 
     if f:
         f.close()
@@ -429,9 +1362,10 @@ def run_all_tests(output_file=None):
     return failed == 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import os
-    output_path = os.path.join(os.path.dirname(__file__), '..', 'test_v8_results.txt')
+
+    output_path = os.path.join(os.path.dirname(__file__), "..", "test_v8_results.txt")
     success = run_all_tests(output_file=output_path)
-    print(f"\n测试结果已保存到: {output_path}")
+    print(f"\nResults saved to: {output_path}")
     sys.exit(0 if success else 1)
