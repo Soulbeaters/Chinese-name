@@ -3,6 +3,8 @@
 Generated: 2026-06-10
 Branch: `codex-share-ratio-finalize`
 Base HEAD: `300d270 fix: make split-field validation effective in batch v8`
+Final local state: clean worktree after local commit cleanup. The
+implementation/evidence changes are grouped into the four commits listed below.
 
 ## What changed
 
@@ -87,31 +89,21 @@ twice because it merges two comparison files.
 
 ## Worktree organization
 
-Tracked modified groups:
+The dirty worktree has been collapsed into local commits. The intended commit
+groups are:
 
-- Core algorithm/config/tests:
-  `src/surname_identifier_v8.py`, `src/config_v8.py`,
-  `tests/test_surname_identifier_v8.py`, `tests/test_with_json_data.py`.
-- Evaluation tooling:
-  `experiments/run_bench.py`, `experiments/evaluate_field_algorithm_variants.py`.
-- Existing project drift to review before commit:
-  `.gitignore`, `data/pinyin_syllables.py`, `src/name_order_detector.py`,
-  `src/surname_identifier.py`, and several docs.
+1. `dc8a782 fix: stabilize v8 consistency final profile`
+   - Core v8 algorithm/config/tests.
+2. `13c2ff4 fix: use explicit labels for field-only benchmarks`
+   - Field-only benchmark/evaluation scripts and tests.
+3. `f4de362 docs: record final project 1 validation evidence`
+   - Final report, paper/path audit, ISTINA docs, paper assets, figures,
+     tables, and real comparison text artifacts.
+4. `958128b chore: preserve legacy surname interface updates`
+   - Legacy surname interface/source updates and compatibility tests.
 
-Untracked groups:
-
-- `experiments/`: helper scripts for calibration, comparison, benchmarking, and report generation.
-- `docs/`: final paper/path and ISTINA pilot documentation.
-- `paper/`, `figs/`, `tables/`: manuscript and figure/table assets.
-- `v8_vs_istina_vs_split_names/`: real comparison text artifacts.
-- `runs/`: ignored generated outputs; should remain untracked.
-
-Recommended local commit grouping:
-
-1. Core final profile and tests.
-2. Evaluation scripts and explicit-label benchmark protocol.
-3. Documentation/report updates.
-4. Paper/artifact package, only after deciding which untracked assets belong in the repository.
+Generated experiment outputs under `runs/` remain ignored by `.gitignore`.
+No `runs/` files are tracked in git.
 
 ## Context-stall diagnosis
 
