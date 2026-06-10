@@ -26,6 +26,7 @@ from src.surname_identifier_v8 import (
     identify_surname_position_v8,
     local_decision,
     preprocess_name,
+    review_crossref_split_fields_v8,
 )
 
 
@@ -270,6 +271,31 @@ def test_field_only_detects_swapped_chinese_split():
     assert "FIELD_GIVEN_CN_SURNAME_FAMILY_CN_GIVEN" in reason
     assert "FIELD_FAMILY_FIRST_CANDIDATE_DEFERRED" in reason
     assert "FIELD_SPLIT_EXACT_GIVEN" not in reason
+
+
+def test_split_review_profile_is_opt_in_for_prescreened_crossref_cases():
+    production_order, _, production_reason = identify_surname_position_from_fields_v8(
+        firstname="Chen",
+        lastname="Sitong",
+        source="CROSSREF",
+    )
+    review = review_crossref_split_fields_v8(
+        firstname="Chen",
+        lastname="Sitong",
+        source="CROSSREF",
+    )
+    japanese = review_crossref_split_fields_v8(
+        firstname="Mai",
+        lastname="Ouchi",
+        source="CROSSREF",
+    )
+
+    assert production_order == "given_first"
+    assert "FIELD_EXTERNAL_SPLIT_DEFAULT_GIVEN" in production_reason
+    assert review.review_label == "likely_swapped"
+    assert "SPLIT_REVIEW_GIVEN_FIELD_CN_SURNAME_FAMILY_FIELD_PINYIN_GIVEN" in review.reason_codes
+    assert japanese.review_label == "not_swapped_or_excluded"
+    assert any("SPLIT_REVIEW_EXCLUDED_NON_CHINESE_FAMILY_FIELD" in code for code in japanese.reason_codes)
 
 
 def test_field_only_treats_initial_family_as_ambiguous_without_surname_evidence():

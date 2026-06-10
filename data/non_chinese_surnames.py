@@ -68,6 +68,11 @@ JAPANESE_SURNAMES = {
     'kobayashi',    # 小林
     'yamamoto',     # 山本
     'takahashi',    # 高桥
+    'owada',
+    'ouchi',
+    'obayashi',
+    'kawase',
+    'murayama',
     'mori',         # 森 (33次)
     'ueda',         # 上田 (20次)
     'fujii',        # 藤井 (27次)
@@ -311,6 +316,7 @@ EUROPEAN_SURNAMES = {
 
     # 西班牙语/葡萄牙语姓氏 / Испанские/португальские фамилии
     'garcia',
+    'molina',
     'martinez',
     'rodriguez',
     'lopez',

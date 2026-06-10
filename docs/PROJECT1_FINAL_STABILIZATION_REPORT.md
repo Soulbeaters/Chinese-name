@@ -29,7 +29,7 @@ implementation/evidence changes are grouped into the four commits listed below.
 
 ### Unit and static checks
 
-- `python -m pytest tests -q`: 99 passed.
+- `python -m pytest tests -q`: 102 passed.
 - `python -m py_compile src\surname_identifier_v8.py experiments\evaluate_field_algorithm_variants.py experiments\run_bench.py`: passed.
 - `git diff --check`: passed. Git only warned that several files will be
   converted from LF to CRLF when touched on Windows.
@@ -44,13 +44,13 @@ Command shape: same as the mentor's raw-name entry point:
 Results:
 
 - Rows: 301,586.
-- Mode counts: CHINESE 56,362; MIXED 126,568; WESTERN 75,520; ABBREVIATION 43,136.
-- Order counts: given_first 300,892; family_first 694.
-- Mentor metric (`mode == CHINESE and order != given_first`): 257 / 56,362.
+- Mode counts: CHINESE 56,376; MIXED 126,560; WESTERN 75,514; ABBREVIATION 43,136.
+- Order counts: given_first 300,897; family_first 689.
+- Mentor metric (`mode == CHINESE and order != given_first`): 253 / 56,376.
 - Strict frozen proxy-labeled rows: 301,146.
-- Strict frozen proxy errors: 689 / 301,146 = 0.2288%.
-- Raw publication majority overrides: 4,740 total; 4,420 strict-proxy-labeled,
-  with 4,420 proxy-good and 0 proxy-bad.
+- Strict frozen proxy errors: 684 / 301,146 = 0.2271%.
+- Raw publication majority overrides: 4,745 total; 4,425 strict-proxy-labeled,
+  with 4,425 proxy-good and 0 proxy-bad.
 - Raw person majority overrides: 527 total; 466 strict-proxy-labeled,
   with 466 proxy-good and 0 proxy-bad.
 

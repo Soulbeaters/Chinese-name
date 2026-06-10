@@ -25,7 +25,10 @@ from data.surname_pinyin_db import is_surname_pinyin, get_surname_from_pinyin
 from data.surname_frequency import (
     compare_surname_frequency_share,
     get_surname_frequency_rank,
+    get_surname_frequency_share,
 )
+from data.non_chinese_surnames import is_non_chinese_surname, get_surname_origin
+from data.pinyin_syllables import is_common_given_name_syllable
 from data.western_name_features import (
     has_western_suffix,
     has_western_consonant_cluster,
@@ -203,6 +206,15 @@ class NameDecision:
     confidence: float              # [0.0, 1.0]
     mode: str                      # "CHINESE" | "WESTERN" | "MIXED"
     reason_codes: List[str] = field(default_factory=list)  # 推理代码列表
+
+
+@dataclass
+class SplitFieldReviewDecision:
+    """Opt-in review decision for pre-screened Crossref split-field cases."""
+    review_label: str              # "likely_swapped" | "possible_swapped" | "not_swapped_or_excluded"
+    confidence: float
+    production_decision: NameDecision
+    reason_codes: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -1388,6 +1400,166 @@ def decide_from_split_fields(record: NameRecord, cfg: SourceConfig) -> NameDecis
         )
 
     return NameDecision("family_first", confidence, "FIELD_ONLY", reasons)
+
+
+def _field_review_key(tokens: List[Token]) -> str:
+    """Return a compact content key for split-field review rules."""
+    content = _non_initial_tokens(tokens)
+    if not content:
+        content = tokens
+    return _joined_ascii(content)
+
+
+def _field_non_chinese_origin(tokens: List[Token]) -> Optional[str]:
+    """Return a known non-Chinese surname origin for a split-field head/key."""
+    content = _non_initial_tokens(tokens)
+    if not content:
+        return None
+    candidates = []
+    head = content[0].ascii.lower()
+    joined = _joined_ascii(content)
+    if head:
+        candidates.append(head)
+    if joined and joined != head:
+        candidates.append(joined)
+
+    for candidate in candidates:
+        if is_non_chinese_surname(candidate):
+            return get_surname_origin(candidate)
+        if is_common_western_surname(candidate):
+            return "Western"
+    return None
+
+
+def _field_pinyin_syllable_count(tokens: List[Token]) -> Tuple[bool, int, List[str]]:
+    """Return pinyin validity for the compact content key of a split field."""
+    key = _field_review_key(tokens)
+    return is_valid_pinyin_name(key)
+
+
+def review_crossref_split_fields_v8(
+    firstname: Optional[str] = None,
+    lastname: Optional[str] = None,
+    source: Optional[str] = "CROSSREF",
+    affiliation: Optional[str] = None,
+    publication_id: Optional[str] = None,
+) -> SplitFieldReviewDecision:
+    """
+    Opt-in review classifier for pre-screened Crossref split-field candidates.
+
+    The production field-only profile stays conservative: it protects Crossref
+    split fields unless strong contextual evidence supports a correction. This
+    review profile is separate and is intended for advisor/manual audit queues
+    that are already suspected of given/family reversal.
+    """
+    record = NameRecord(
+        record_id="review",
+        source=source or "CROSSREF",
+        name_raw="",
+        firstname_raw=firstname,
+        lastname_raw=lastname,
+        affiliation_raw=affiliation,
+        publication_id=publication_id,
+        field_only=True,
+    )
+    production = decide_from_split_fields(record, get_config(source))
+    reasons = list(production.reason_codes) + ["SPLIT_REVIEW_PROFILE"]
+
+    given = _parsed_field(firstname)
+    family = _parsed_field(lastname)
+    given_tokens = given.tokens
+    family_tokens = family.tokens
+    if not given_tokens or not family_tokens:
+        return SplitFieldReviewDecision(
+            "not_swapped_or_excluded",
+            0.0,
+            production,
+            reasons + ["SPLIT_REVIEW_MISSING_FIELD"],
+        )
+
+    if production.order == "family_first":
+        return SplitFieldReviewDecision(
+            "likely_swapped",
+            max(production.confidence, 0.80),
+            production,
+            reasons + ["SPLIT_REVIEW_PRODUCTION_FAMILY_FIRST"],
+        )
+
+    family_non_chinese_origin = _field_non_chinese_origin(family_tokens)
+    if family_non_chinese_origin:
+        return SplitFieldReviewDecision(
+            "not_swapped_or_excluded",
+            0.78,
+            production,
+            reasons + [f"SPLIT_REVIEW_EXCLUDED_NON_CHINESE_FAMILY_FIELD({family_non_chinese_origin})"],
+        )
+
+    given_is_cn_surname = _head_or_joined_is_cn_surname(given_tokens)
+    family_is_cn_given = _field_looks_like_cn_given(family_tokens)
+    if given_is_cn_surname and family_is_cn_given:
+        return SplitFieldReviewDecision(
+            "likely_swapped",
+            0.82,
+            production,
+            reasons + ["SPLIT_REVIEW_GIVEN_FIELD_CN_SURNAME_FAMILY_FIELD_PINYIN_GIVEN"],
+        )
+
+    family_valid_pinyin, family_syllable_count, _ = _field_pinyin_syllable_count(family_tokens)
+    given_key = _field_review_key(given_tokens)
+    given_share = get_surname_frequency_share(given_key)
+    given_is_common_given_syllable = is_common_given_name_syllable(given_key)
+    family_key = _field_review_key(family_tokens)
+    family_is_single_letter = len(family_key) == 1
+
+    family_is_short_single_token = bool(family_key) and len(family_key) <= 5 and " " not in family_key
+    family_can_be_single_syllable_review = (
+        (family_valid_pinyin and family_syllable_count == 1)
+        or family_is_short_single_token
+    )
+
+    if given_is_cn_surname and family_can_be_single_syllable_review:
+        if given_share >= 1.0:
+            return SplitFieldReviewDecision(
+                "likely_swapped",
+                0.74,
+                production,
+                reasons + [f"SPLIT_REVIEW_SINGLE_SYLLABLE_HIGH_FREQ_SURNAME({given_key})"],
+            )
+        if given_share >= 0.40 and not given_is_common_given_syllable:
+            return SplitFieldReviewDecision(
+                "likely_swapped",
+                0.72,
+                production,
+                reasons + [f"SPLIT_REVIEW_SINGLE_SYLLABLE_MEDIUM_FREQ_SURNAME({given_key})"],
+            )
+        if family_is_single_letter and given_share >= 0.40:
+            return SplitFieldReviewDecision(
+                "likely_swapped",
+                0.70,
+                production,
+                reasons + [f"SPLIT_REVIEW_SINGLE_LETTER_FAMILY_FIELD_SURNAME({given_key})"],
+            )
+        return SplitFieldReviewDecision(
+            "possible_swapped",
+            0.58,
+            production,
+            reasons + ["SPLIT_REVIEW_SINGLE_SYLLABLE_AMBIGUOUS"],
+        )
+
+    if _has_field_family_first_candidate(production.reason_codes):
+        return SplitFieldReviewDecision(
+            "possible_swapped",
+            0.58,
+            production,
+            reasons + ["SPLIT_REVIEW_DEFERRED_PRODUCTION_CANDIDATE"],
+        )
+
+    return SplitFieldReviewDecision(
+        "not_swapped_or_excluded",
+        max(0.5, production.confidence),
+        production,
+        reasons + ["SPLIT_REVIEW_NO_STRONG_SWAP_SIGNAL"],
+    )
 
 
 # ========== 模块5: 局部决策 Module 5: Local Decision ==========

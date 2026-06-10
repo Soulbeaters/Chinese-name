@@ -29,6 +29,7 @@ from src.surname_identifier_v8 import (
     _non_initial_tokens,
     batch_identify_surname_position_v8,
     preprocess_name,
+    review_crossref_split_fields_v8,
 )
 
 
@@ -190,6 +191,9 @@ class CaseResult:
     confidence: float
     mode: str
     reason_codes: List[str]
+    review_label: str
+    review_confidence: float
+    review_reason_codes: List[str]
     audit_signals: Dict[str, Any]
     corrected_name_if_swapped: str
 
@@ -295,6 +299,11 @@ def evaluate_dataset(dataset: str, pairs: Sequence[Pair]) -> List[CaseResult]:
     results: List[CaseResult] = []
     for idx, (family_field, given_field) in enumerate(pairs):
         decision = decisions[f"{dataset}-{idx}"]
+        review = review_crossref_split_fields_v8(
+            firstname=given_field,
+            lastname=family_field,
+            source="CROSSREF",
+        )
         results.append(
             CaseResult(
                 dataset=dataset,
@@ -307,6 +316,9 @@ def evaluate_dataset(dataset: str, pairs: Sequence[Pair]) -> List[CaseResult]:
                 confidence=round(decision.confidence, 6),
                 mode=decision.mode,
                 reason_codes=list(decision.reason_codes),
+                review_label=review.review_label,
+                review_confidence=round(review.confidence, 6),
+                review_reason_codes=list(review.reason_codes),
                 audit_signals=audit_signals(family_field, given_field, decision.reason_codes),
                 corrected_name_if_swapped=f"{given_field} {family_field}",
             )
@@ -330,6 +342,7 @@ def summarize_dataset(dataset: str, results: List[CaseResult]) -> Dict[str, Any]
         "total": len(results),
         "manual_counts": dict(Counter(item.manual_label for item in results)),
         "production_counts": dict(Counter(item.production_label for item in results)),
+        "review_counts": dict(Counter(item.review_label for item in results)),
         "production_reliable_swapped_found": sum(
             item.production_label == "swapped" for item in reliable
         ),
@@ -337,6 +350,28 @@ def summarize_dataset(dataset: str, results: List[CaseResult]) -> Dict[str, Any]
         "production_non_reliable_marked_swapped": sum(
             item.production_label == "swapped" for item in non_reliable
         ),
+        "review_likely_reliable_found": sum(
+            item.review_label == "likely_swapped" for item in reliable
+        ),
+        "review_likely_reliable_total": len(reliable),
+        "review_likely_non_reliable_marked": [
+            {
+                "family_field": item.family_field,
+                "given_field": item.given_field,
+                "manual_label": item.manual_label,
+            }
+            for item in non_reliable
+            if item.review_label == "likely_swapped"
+        ],
+        "review_likely_reliable_missed": [
+            {
+                "family_field": item.family_field,
+                "given_field": item.given_field,
+                "manual_label": item.manual_label,
+            }
+            for item in reliable
+            if item.review_label != "likely_swapped"
+        ],
         "review_signal": review_key,
         "review_signal_counts": count_by_manual(
             results,
@@ -386,16 +421,17 @@ def render_markdown(results: List[CaseResult], summaries: List[Dict[str, Any]]) 
         "",
         "## Summary",
         "",
-        "| Dataset | Total | Manual labels | Production labels | Review signal | Review signal by manual label |",
-        "|---|---:|---|---|---|---|",
+        "| Dataset | Total | Manual labels | Production labels | Opt-in review labels | Review signal | Review signal by manual label |",
+        "|---|---:|---|---|---|---|---|",
     ]
     for summary in summaries:
         lines.append(
-            "| {dataset} | {total} | {manual} | {prod} | {signal} | {review} |".format(
+            "| {dataset} | {total} | {manual} | {prod} | {review_labels} | {signal} | {review} |".format(
                 dataset=summary["dataset"],
                 total=summary["total"],
                 manual=json.dumps(summary["manual_counts"], ensure_ascii=False),
                 prod=json.dumps(summary["production_counts"], ensure_ascii=False),
+                review_labels=json.dumps(summary["review_counts"], ensure_ascii=False),
                 signal=summary["review_signal"],
                 review=json.dumps(summary["review_signal_counts"], ensure_ascii=False),
             )
@@ -424,13 +460,14 @@ def render_markdown(results: List[CaseResult], summaries: List[Dict[str, Any]]) 
                 if item.audit_signals[name]
             ]
             lines.append(
-                "| {idx} | {family} | {given} | {manual} | {prod} ({order}) | {conf:.3f} | {flags} | {reason} |".format(
+                "| {idx} | {family} | {given} | {manual} | {prod} ({order}); review={review_label} | {conf:.3f} | {flags} | {reason} |".format(
                     idx=item.index,
                     family=item.family_field,
                     given=item.given_field,
                     manual=item.manual_label,
                     prod=item.production_label,
                     order=item.production_order,
+                    review_label=item.review_label,
                     conf=item.confidence,
                     flags=", ".join(flags),
                     reason=truncate_reason(item.reason_codes).replace("|", "/"),
