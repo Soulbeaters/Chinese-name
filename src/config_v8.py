@@ -265,6 +265,19 @@ class AblationConfig:
     # Threshold for the share-based rule; 1.0 means any non-tied known-share
     # comparison can trigger the frequency bonus.
     surname_share_ratio_threshold: float = 1.0
+    enable_strong_dual_single_rescue: bool = False
+    strong_dual_single_rescue_ratio: float = 23.0
+    strong_dual_single_rescue_given_min_share: float = 2.0
+    strong_dual_single_rescue_family_max_share: float = 0.1
+    strong_dual_single_rescue_confidence_cap: float = 0.75
+    strong_dual_single_rescue_require_cn_context: bool = True
+    enable_publication_candidate_group_correction: bool = True
+    publication_candidate_group_min_count: int = 2
+    publication_candidate_group_min_share: float = 0.50
+    publication_candidate_group_min_strong_count: int = 1
+    publication_candidate_group_min_strength_sum: float = 1.0
+    publication_candidate_group_strong_threshold: float = 1.0
+    enable_publication_external_split_confidence_guard: bool = True
 
     # 作者级一致性开关 / Person-level consistency switch
     enable_person_consistency: bool = True
