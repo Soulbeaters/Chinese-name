@@ -30,7 +30,6 @@ from src.surname_identifier_v8 import (
     identify_surname_position_v8,
     batch_identify_surname_position_v8,
     NameRecord,
-    preprocess_name,
 )
 from src.config_v8 import (
     AblationConfig,
@@ -184,34 +183,21 @@ def load_dataset(file_path: str) -> List[Dict[str, Any]]:
     return records
 
 
-def _name_tokens(value: Optional[str]) -> List[str]:
-    """Normalize a name field to tokenizer-level comparison tokens."""
-    return [tok.ascii.lower() for tok in preprocess_name(value or "").tokens if tok.ascii]
+VALID_ORDER_LABELS = {"family_first", "given_first"}
 
 
-def infer_proxy_order(record: Dict[str, Any]) -> Optional[str]:
-    """Infer pseudo-label order from split fields using token-level alignment."""
-    original_tokens = _name_tokens(record.get('original_name'))
-    lastname_tokens = _name_tokens(record.get('lastname'))
-    firstname_tokens = _name_tokens(record.get('firstname'))
+def get_true_order(record: Dict[str, Any]) -> Optional[str]:
+    """Read an explicit human-provided order label; never infer it from names."""
+    label = (record.get("true_position") or "").strip().lower()
+    return label if label in VALID_ORDER_LABELS else None
 
-    if not original_tokens or not lastname_tokens or not firstname_tokens:
-        return None
 
-    if lastname_tokens == firstname_tokens:
-        return None
-
-    if original_tokens == lastname_tokens + firstname_tokens:
-        return "family_first"
-    if original_tokens == firstname_tokens + lastname_tokens:
-        return "given_first"
-
-    if original_tokens[:len(lastname_tokens)] == lastname_tokens:
-        return "family_first"
-    if original_tokens[:len(firstname_tokens)] == firstname_tokens:
-        return "given_first"
-
-    return None
+def get_label_skip_reason(record: Dict[str, Any]) -> str:
+    if not record.get("firstname") or not record.get("lastname"):
+        return "missing_split_fields"
+    if "true_position" not in record or not record.get("true_position"):
+        return "missing_true_position"
+    return "invalid_true_position"
 
 
 def build_field_reason_summary(
@@ -239,7 +225,6 @@ def build_field_reason_summary(
                 continue
             bucket.append({
                 "record_id": i,
-                "original_name": rec.get('original_name', ''),
                 "lastname": rec.get('lastname', ''),
                 "firstname": rec.get('firstname', ''),
                 "predicted": decision.order,
@@ -279,13 +264,14 @@ def evaluate_algorithm(
     for i, rec in enumerate(records):
         name_records.append(NameRecord(
             record_id=str(i),
-            name_raw=rec.get('original_name', ''),
+            name_raw="",
             firstname_raw=rec.get('firstname'),
             lastname_raw=rec.get('lastname'),
             affiliation_raw=rec.get('affiliation'),
             source=force_source or rec.get('source', 'CROSSREF'),
             person_id=rec.get('person_id'),
-            publication_id=rec.get('doi')
+            publication_id=rec.get('doi'),
+            field_only=True,
         ))
 
     # 性能监控 / Performance monitoring
@@ -310,60 +296,58 @@ def evaluate_algorithm(
         decision = decisions[str(i)]
 
         # 判断正确性 / Check correctness
-        if 'lastname' in rec and 'firstname' in rec:
-            # 推断ground truth
-            original_name = rec.get('original_name', '')
-
-            gt_order = infer_proxy_order(rec)
-            if gt_order is None:
-                skipped_count += 1
-                if len(skipped_samples) < 100:
-                    skipped_samples.append({
-                        "record_id": i,
-                        "original_name": original_name,
-                        "lastname": rec.get('lastname', ''),
-                        "firstname": rec.get('firstname', ''),
-                        "predicted": decision.order,
-                        "confidence": decision.confidence,
-                        "reason": ", ".join(decision.reason_codes),
-                        "affiliation": rec.get('affiliation', ''),
-                        "doi": rec.get('doi'),
-                        "source": force_source or rec.get('source', ''),
-                        "skip_reason": "split_fields_not_token_aligned",
-                    })
-                continue
-
-            total += 1
-
-            if decision.order == "unknown":
-                unknown_count += 1
-                # 记录unknown错误
-                error_samples.append({
+        gt_order = get_true_order(rec)
+        if gt_order is None:
+            skipped_count += 1
+            if len(skipped_samples) < 100:
+                skipped_samples.append({
                     "record_id": i,
-                    "original_name": original_name,
-                    "predicted": "unknown",
-                    "ground_truth": gt_order,
-                    "confidence": decision.confidence,
-                    "reason": ", ".join(decision.reason_codes),
-                    "affiliation": rec.get('affiliation', ''),
-                    "doi": rec.get('doi'),
-                    "source": force_source or rec.get('source', '')
-                })
-            elif decision.order != gt_order:
-                # 记录预测错误
-                error_samples.append({
-                    "record_id": i,
-                    "original_name": original_name,
+                    "lastname": rec.get('lastname', ''),
+                    "firstname": rec.get('firstname', ''),
+                    "true_position": rec.get("true_position"),
                     "predicted": decision.order,
-                    "ground_truth": gt_order,
                     "confidence": decision.confidence,
                     "reason": ", ".join(decision.reason_codes),
                     "affiliation": rec.get('affiliation', ''),
                     "doi": rec.get('doi'),
-                    "source": force_source or rec.get('source', '')
+                    "source": force_source or rec.get('source', ''),
+                    "skip_reason": get_label_skip_reason(rec),
                 })
-            else:
-                correct += 1
+            continue
+
+        total += 1
+
+        if decision.order == "unknown":
+            unknown_count += 1
+            # 记录unknown错误
+            error_samples.append({
+                "record_id": i,
+                "lastname": rec.get('lastname', ''),
+                "firstname": rec.get('firstname', ''),
+                "predicted": "unknown",
+                "ground_truth": gt_order,
+                "confidence": decision.confidence,
+                "reason": ", ".join(decision.reason_codes),
+                "affiliation": rec.get('affiliation', ''),
+                "doi": rec.get('doi'),
+                "source": force_source or rec.get('source', '')
+            })
+        elif decision.order != gt_order:
+            # 记录预测错误
+            error_samples.append({
+                "record_id": i,
+                "lastname": rec.get('lastname', ''),
+                "firstname": rec.get('firstname', ''),
+                "predicted": decision.order,
+                "ground_truth": gt_order,
+                "confidence": decision.confidence,
+                "reason": ", ".join(decision.reason_codes),
+                "affiliation": rec.get('affiliation', ''),
+                "doi": rec.get('doi'),
+                "source": force_source or rec.get('source', '')
+            })
+        else:
+            correct += 1
 
     accuracy = correct / total if total > 0 else 0.0
     unknown_rate = unknown_count / total if total > 0 else 0.0
@@ -387,6 +371,8 @@ def evaluate_algorithm(
         "peak_rss_mb": metrics.peak_rss_mb,
         "names_per_sec": metrics.names_per_sec,
         "force_source": force_source or "dataset_default",
+        "input_mode": "field_only_firstname_lastname",
+        "label_mode": "explicit_true_position_only",
         "warmup": warmup
     }
 
@@ -466,6 +452,8 @@ def run_benchmark(
         "datasets": [str(p) for p in dataset_paths],
         "n_repeats": n_repeats,
         "force_source": force_source or "dataset_default",
+        "input_mode": "field_only_firstname_lastname",
+        "label_mode": "explicit_true_position_only",
     }
 
     with open(output_dir / "run_manifest.json", 'w', encoding='utf-8') as f:
@@ -530,6 +518,12 @@ def run_benchmark(
                 disable_batch_consistency=config_dict.get('disable_batch_consistency', False),
                 surname_freq_strategy=config_dict.get('surname_freq_strategy', 'share_ratio'),
                 surname_share_ratio_threshold=config_dict.get('surname_share_ratio_threshold', 1.0),
+                enable_strong_dual_single_rescue=config_dict.get('enable_strong_dual_single_rescue', False),
+                strong_dual_single_rescue_ratio=config_dict.get('strong_dual_single_rescue_ratio', 23.0),
+                strong_dual_single_rescue_given_min_share=config_dict.get('strong_dual_single_rescue_given_min_share', 2.0),
+                strong_dual_single_rescue_family_max_share=config_dict.get('strong_dual_single_rescue_family_max_share', 0.1),
+                strong_dual_single_rescue_confidence_cap=config_dict.get('strong_dual_single_rescue_confidence_cap', 0.75),
+                strong_dual_single_rescue_require_cn_context=config_dict.get('strong_dual_single_rescue_require_cn_context', True),
                 enable_person_consistency=config_dict.get('enable_person_consistency', True),
                 enable_pub_consistency=config_dict.get('enable_pub_consistency', True)
             )
@@ -587,6 +581,8 @@ def run_benchmark(
                     "correct_count": run_results[0]['correct_count'],
                     "unknown_count": run_results[0]['unknown_count'],
                     "force_source": run_results[0]['force_source'],
+                    "input_mode": run_results[0]['input_mode'],
+                    "label_mode": run_results[0]['label_mode'],
                 }
 
                 for metric in metrics_to_avg:
@@ -600,6 +596,8 @@ def run_benchmark(
                     "dataset": dataset_name,
                     "config_name": config_dict['name'],
                     "force_source": run_results[0]['force_source'],
+                    "input_mode": run_results[0]['input_mode'],
+                    "label_mode": run_results[0]['label_mode'],
                     "n_records": run_results[0]['n_records'],
                     "labeled_total": run_results[0]['labeled_total'],
                     "skipped_count": run_results[0]['skipped_count'],
