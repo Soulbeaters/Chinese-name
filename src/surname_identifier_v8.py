@@ -33,7 +33,7 @@ from data.western_name_features import (
     is_likely_western_name,
     is_common_western_surname,
 )
-from src.pinyin_validator import is_valid_pinyin_name
+from src.pinyin_validator import is_valid_pinyin_name, is_common_given_name_syllable
 from src.affiliation_analyzer import analyze_affiliation, AffiliationInfo
 from src.config_v8 import (
     get_config,
@@ -383,7 +383,7 @@ def detect_mode(
     if is_surname_pinyin(first.ascii):
         score_cn += 0.4
     if is_surname_pinyin(last.ascii):
-        score_cn += 0.2
+        score_cn += 0.4 # FIXED
 
     # CN3: 拼音合法性
     for tok in [first, last]:
@@ -395,7 +395,7 @@ def detect_mode(
     if record.affiliation_raw:
         affil_info = analyze_affiliation(record.affiliation_raw)
         if affil_info and affil_info.is_chinese:
-            score_cn += 0.4
+            score_cn += 0.1
 
     # === 西方证据 Western Evidence ===
 
@@ -545,7 +545,7 @@ def extract_features(
     f.last_is_west_surname = is_common_western_surname(last.ascii) or is_likely_western_name(last.ascii)
 
     # 拼音合法性
-    is_valid_first, syl_first, _ = is_valid_pinyin_name(first.ascii)
+    is_valid_first, syl_first, _ = is_valid_pinyin_name(first.ascii) or is_common_given_name_syllable(first.ascii)
     is_valid_last, syl_last, _ = is_valid_pinyin_name(last.ascii)
 
     f.first_pinyin_ok = is_valid_first
@@ -1046,7 +1046,7 @@ def adjust_by_person(
             if rid not in decisions:
                 continue
             d = decisions[rid]
-            if d.order == "unknown" or d.confidence < cfg.person_override_thresh:
+            if d.order == "unknown" and d.confidence < cfg.person_override_thresh:
                 decisions[rid] = NameDecision(
                     order=target_order,
                     confidence=max(d.confidence, cfg.person_override_conf),
@@ -1245,11 +1245,11 @@ def batch_identify_surname_position_v8(
         decisions[rec.record_id] = local_decision(rec, rec_cfg)
 
     # 2. 一致性调整
-    if enable_person_consistency:
-        decisions = adjust_by_person(records, decisions, cfg)
-
     if enable_pub_consistency:
         decisions = adjust_by_publication(records, decisions, cfg)
+
+    if enable_person_consistency:
+        decisions = adjust_by_person(records, decisions, cfg)
 
     return decisions
 

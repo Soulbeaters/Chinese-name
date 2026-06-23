@@ -171,7 +171,7 @@ CHINESE_FEATURE_WEIGHTS = {
     "CN_SURNAME_FIRST_ONLY": 2.0,      # first是姓,last不是
     "CN_SURNAME_LAST_ONLY": 2.0,       # last是姓,first不是
     "CN_SURNAME_DOUBLE_FREQ": 1.5,     # 双姓,按频率
-    "CN_SURNAME_DOUBLE_DEFAULT": 1.5,  # 双姓,默认
+    "CN_SURNAME_DOUBLE_DEFAULT": 0.0,  # 双姓,默认
 
     # 拼音名字证据
     "FIRST_VALID_PY_NAME": 0.8,        # first是合法拼音名(2-3音节)
@@ -180,7 +180,7 @@ CHINESE_FEATURE_WEIGHTS = {
     "LAST_SINGLE_SYLLABLE": 0.4,       # last是单音节
 
     # 机构证据
-    "CN_AFFILIATION": 0.5,             # 中国机构
+    "CN_AFFILIATION": 0.05,             # 中国机构
 
     # 特殊模式
     "TWO_TOKENS_CN_SURNAME_LAST": 0.7, # 两token且last是姓

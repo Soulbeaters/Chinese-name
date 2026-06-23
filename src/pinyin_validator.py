@@ -64,7 +64,7 @@ def segment_pinyin(token: str) -> Tuple[bool, int, List[str]]:
             continue
 
         # 尝试从位置i开始匹配音节
-        for syllable in PINYIN_SYLLABLES:
+        for syllable in PINYIN_SYLLABLES | COMMON_GIVEN_NAME_SYLLABLES:
             syl_len = len(syllable)
             if i + syl_len > n:
                 continue
