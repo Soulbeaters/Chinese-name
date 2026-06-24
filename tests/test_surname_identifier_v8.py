@@ -27,6 +27,7 @@ from src.surname_identifier_v8 import (
     identify_surname_position_v8,
     local_decision,
     preprocess_name,
+    review_crossref_split_fields_v8,
 )
 
 
@@ -438,6 +439,55 @@ def test_batch_accepts_crossref_style_dict_records():
     decision = decisions["dict-record"]
     assert decision.order == "given_first"
     assert "FIELD_SPLIT_EXACT_GIVEN" in decision.reason_codes
+
+
+def test_publication_consistency_overrides_weak_but_not_strong_order():
+    records = [
+        NameRecord(record_id="fam-1", publication_id="doi", name_raw="Li Ming"),
+        NameRecord(record_id="fam-2", publication_id="doi", name_raw="Wang Wei"),
+        NameRecord(record_id="fam-3", publication_id="doi", name_raw="Zhang Hua"),
+        NameRecord(record_id="weak", publication_id="doi", name_raw="Kawamura Taichi"),
+        NameRecord(record_id="strong", publication_id="doi", name_raw="Smith John"),
+    ]
+    decisions = {
+        "fam-1": NameDecision("family_first", 0.9, "CHINESE", ["CN_SURNAME_FIRST_ONLY"]),
+        "fam-2": NameDecision("family_first", 0.9, "CHINESE", ["CN_SURNAME_FIRST_ONLY"]),
+        "fam-3": NameDecision("family_first", 0.9, "CHINESE", ["CN_SURNAME_FIRST_ONLY"]),
+        "weak": NameDecision("given_first", 0.65, "MIXED", ["NO_MATCH_DEFAULT_GIVEN"]),
+        "strong": NameDecision("given_first", 0.9, "WESTERN", ["WEST_SURNAME_LAST"]),
+    }
+
+    adjusted = adjust_by_publication(records, decisions, get_config("CROSSREF"))
+
+    assert adjusted["weak"].order == "family_first"
+    assert "PUB_WEAK_DECISION_OVERRIDE" in adjusted["weak"].reason_codes
+    assert adjusted["strong"].order == "given_first"
+
+
+def test_western_surname_position_supports_both_orders():
+    family_first = local_decision(
+        NameRecord(record_id="family", name_raw="Poutanen Juri", source="CROSSREF"),
+        get_config("CROSSREF"),
+    )
+    given_first = local_decision(
+        NameRecord(record_id="given", name_raw="Juri Poutanen", source="CROSSREF"),
+        get_config("CROSSREF"),
+    )
+
+    assert family_first.order == "family_first"
+    assert "WEST_SURNAME_FIRST" in family_first.reason_codes
+    assert given_first.order == "given_first"
+    assert "WEST_SURNAME_LAST" in given_first.reason_codes
+
+
+def test_crossref_split_review_flags_only_strong_swap_candidates():
+    for firstname, lastname in (("Li", "Yan"), ("Li", "Nan"), ("Xu", "Shu"), ("Wang", "Lei")):
+        review = review_crossref_split_fields_v8(firstname, lastname)
+        assert review.review_label == "likely_swapped"
+        assert "SPLIT_REVIEW_GIVEN_SURNAME_SHARE_DOMINATES" in review.reason_codes[-1]
+
+    assert review_crossref_split_fields_v8("Lan", "Jin").review_label != "likely_swapped"
+    assert review_crossref_split_fields_v8("Mai", "Ouchi").review_label == "not_swapped_or_excluded"
 
 
 def test_duplicate_split_fields_are_not_proxy_labels():

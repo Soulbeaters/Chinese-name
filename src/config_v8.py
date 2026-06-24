@@ -63,7 +63,7 @@ CROSSREF_CONFIG = SourceConfig(
     pub_conf_thresh=0.7,
     pub_override_thresh=0.5,
     pub_override_conf=0.65,
-    pub_dominance_min_diff=2,
+    pub_dominance_min_diff=1,
 )
 
 
@@ -200,7 +200,7 @@ CHINESE_FEATURE_WEIGHTS = {
 WESTERN_FEATURE_WEIGHTS = {
     # 西方姓氏证据
     "WEST_SURNAME_LAST": 2.0,          # last是西方姓
-    "WEST_SURNAME_FIRST": 0.5,         # first是西方姓(罕见)
+    "WEST_SURNAME_FIRST": 1.0,         # first是西方姓,支持倒置格式
 
     # 中文证据（反向）
     "CN_SURNAME_FIRST_WITH_CN_AFFIL": 2.0,  # first是中文姓+中国机构

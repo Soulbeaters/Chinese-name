@@ -57,6 +57,16 @@ are used only to construct the two known test orientations.
    abstentions.
 7. Fix the dead tuple-`or` pinyin expression and legacy `Ming Zhang` handling.
 8. Repair the pytest harness so JSON-backed checks run as actual assertions.
+9. Allow a publication-level majority to correct any conflicting decision
+   below the publication voting confidence threshold, while protecting strong
+   local evidence.
+10. Set the Crossref publication dominance margin to one vote; ORCID and
+    ISTINA retain their previous thresholds because no equivalent validation
+    data was available for those sources.
+11. Make Western surname-position evidence symmetric enough to recognize both
+    `given surname` and `surname given` formats.
+12. Add an opt-in Crossref split-field review API for strong swap candidates;
+    it does not silently alter production decisions.
 
 ## Full Crossref result
 
@@ -85,21 +95,54 @@ visible when a non-Chinese surname is presented in family-first order.
 | family-first | errors | 646 | 608 | -38 |
 | family-first | UNKNOWN | 874 | 872 | -2 |
 
+## Second optimization pass
+
+All rows below use the same dataset hashes and the `person_publication` context
+profile. `Error + UNKNOWN` is the primary selection metric; changes were kept
+only when the full Crossref corpus and advisor DOI corpus agreed in direction.
+
+| Iteration | Full Crossref errors | UNKNOWN | Error + UNKNOWN | Advisor errors | UNKNOWN | Error + UNKNOWN | Decision |
+|---|---:|---:|---:|---:|---:|---:|---|
+| First-pass optimized | 3,671 | 6,300 | 9,971 | 705 | 1,747 | 2,452 | Starting point |
+| Weak-default publication override | 2,582 | 6,300 | 8,882 | 441 | 1,747 | 2,188 | Keep |
+| All weak decisions override | 2,525 | 6,300 | 8,825 | 437 | 1,747 | 2,184 | Keep |
+| Crossref one-vote dominance | 2,109 | 2,722 | 4,831 | 343 | 1,006 | 1,349 | Keep |
+| Symmetric Western surname evidence | 1,927 | 2,725 | 4,652 | 324 | 1,008 | 1,332 | Keep |
+| Same-cultural-mode publication only | 3,014 | 3,203 | 6,217 | 570 | 1,118 | 1,688 | Reject |
+| Opt-in split review API | 1,927 | 2,725 | 4,652 | 324 | 1,008 | 1,332 | Keep; production-neutral |
+
+Final full Crossref orientation details:
+
+| Orientation | Errors | UNKNOWN |
+|---|---:|---:|
+| given-first | 362 | 1,351 |
+| family-first | 1,565 | 1,374 |
+| combined | 1,927 | 2,725 |
+
+Relative to the mentor baseline, combined errors fell from 4,468 to 1,927
+(-56.9%), while `error + UNKNOWN` fell from 10,844 to 4,652 (-57.1%).
+The independent advisor corpus changed from 744 errors and 1,751 UNKNOWN to
+324 errors and 1,008 UNKNOWN.
+
 ## Acceptance checks
 
-- `python -m pytest -q tests`: 79 passed.
+- `python -m pytest -q tests`: 82 passed.
 - Static compilation: passed.
 - `git diff --check`: passed (line-ending warnings only).
-- Hand-audited 19-row challenge: 15 / 19. The remaining four cases are split
-  fields known to be swapped, but the mentor branch's exact split-field override
-  trusts the aligned `original_name`. This limitation predates the optimization
-  and is intentionally reported rather than hidden.
+- Default production path on the hand-audited challenge: 15 / 19. The opt-in
+  split-field review flags exactly the four known swapped cases and reaches
+  19 / 19 when used as a review step. Production remains conservative rather
+  than auto-flipping all dual-surname fields.
 
 ## Remaining work
 
-- Replace the exact split-field override with a field-only review/correction
-  path and revalidate the four challenge failures on a larger manually labeled
-  swapped-field set.
+- Build a larger manually labeled split-field set before promoting review
+  signals into automatic production corrections.
 - Audit the 13 non-Chinese-dictionary records still classified in CHINESE mode.
+- Replace hand-maintained non-Chinese surname expansion with a train/dev/test
+  lexicon workflow or an independently sourced surname model.
+- Evaluate learned publication-order inference on publications with genuinely
+  mixed author-name formats; the synthetic stress test assumes one orientation
+  per publication.
 - Reconcile the paper's 97,582 candidate count with the current 97,810 count.
 - Update paper tables only after the final branch and dataset hashes are frozen.

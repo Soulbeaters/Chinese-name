@@ -209,6 +209,14 @@ class NameDecision:
 
 
 @dataclass
+class SplitFieldReviewDecision:
+    """Opt-in audit result for suspected Crossref given/family swaps."""
+    review_label: str
+    confidence: float
+    reason_codes: List[str] = field(default_factory=list)
+
+
+@dataclass
 class NameRecord:
     """姓名记录 / Name record"""
     record_id: str
@@ -353,6 +361,70 @@ def _extract_compound_surname_prefix(tokens: List[Token]) -> Optional[str]:
 def _is_external_metadata_source(source: Optional[str]) -> bool:
     """External metadata can use stronger split-field evidence than ISTINA."""
     return (source or "DEFAULT") not in ISTINA_SOURCE_NAMES
+
+
+def review_crossref_split_fields_v8(
+    firstname: Optional[str],
+    lastname: Optional[str],
+    source: Optional[str] = "CROSSREF",
+) -> SplitFieldReviewDecision:
+    """Flag strong dual-surname swap candidates without changing production output."""
+    reasons = ["SPLIT_REVIEW_PROFILE"]
+    if not _is_external_metadata_source(source):
+        return SplitFieldReviewDecision(
+            "not_swapped_or_excluded",
+            0.0,
+            reasons + ["SPLIT_REVIEW_NON_EXTERNAL_SOURCE"],
+        )
+
+    given = _parsed_field(firstname)
+    family = _parsed_field(lastname)
+    if len(given.tokens) != 1 or len(family.tokens) != 1:
+        return SplitFieldReviewDecision(
+            "not_swapped_or_excluded",
+            0.0,
+            reasons + ["SPLIT_REVIEW_REQUIRES_SINGLE_TOKENS"],
+        )
+
+    given_key = given.tokens[0].ascii.lower()
+    family_key = family.tokens[0].ascii.lower()
+    if is_strong_non_chinese_surname(family_key):
+        return SplitFieldReviewDecision(
+            "not_swapped_or_excluded",
+            0.8,
+            reasons + ["SPLIT_REVIEW_EXCLUDED_NON_CHINESE_FAMILY"],
+        )
+
+    family_pinyin_ok, _, _ = is_valid_pinyin_name(family_key)
+    if not is_surname_pinyin(given_key) or not family_pinyin_ok:
+        return SplitFieldReviewDecision(
+            "not_swapped_or_excluded",
+            0.5,
+            reasons + ["SPLIT_REVIEW_NO_STRONG_SWAP_SIGNAL"],
+        )
+
+    comparison = compare_surname_frequency_share(given_key, family_key)
+    if (
+        comparison["has_share1"]
+        and comparison["share1"] >= 1.0
+        and comparison["share1"] > comparison["share2"]
+        and comparison["share_ratio"] >= 2.0
+    ):
+        return SplitFieldReviewDecision(
+            "likely_swapped",
+            0.74,
+            reasons + [
+                "SPLIT_REVIEW_GIVEN_SURNAME_SHARE_DOMINATES"
+                f"({_format_share_value(comparison['share1'])}>"
+                f"{_format_share_value(comparison['share2'])})"
+            ],
+        )
+
+    return SplitFieldReviewDecision(
+        "possible_swapped",
+        0.55,
+        reasons + ["SPLIT_REVIEW_DUAL_PINYIN_AMBIGUOUS"],
+    )
 
 
 def detect_mode(
@@ -798,6 +870,8 @@ def decide_western(
     if not (
         f.first_is_cn_surname
         or f.last_is_cn_surname
+        or f.first_is_west_surname
+        or f.last_is_west_surname
         or f.first_is_known_non_chinese_surname
         or f.last_is_known_non_chinese_surname
         or f.cn_affiliation
@@ -1153,10 +1227,20 @@ def adjust_by_publication(
                 continue
             d = decisions[rid]
             target_order = target_by_mode.get(d.mode if same_mode_only else "*")
+            weak_decision_candidate = (
+                target_order
+                and d.order != target_order
+                and d.confidence < cfg.pub_conf_thresh
+            )
             if (
                 target_order
-                and d.order == "unknown"
-                and d.confidence <= cfg.pub_override_thresh
+                and (
+                    (
+                        d.order == "unknown"
+                        and d.confidence <= cfg.pub_override_thresh
+                    )
+                    or weak_decision_candidate
+                )
             ):
                 decisions[rid] = NameDecision(
                     order=target_order,
@@ -1165,6 +1249,7 @@ def adjust_by_publication(
                     reason_codes=(
                         d.reason_codes
                         + ["PUB_PATTERN_OVERRIDE"]
+                        + (["PUB_WEAK_DECISION_OVERRIDE"] if weak_decision_candidate else [])
                         + (["PUB_SAME_MODE_EVIDENCE"] if same_mode_only else [])
                     )
                 )
