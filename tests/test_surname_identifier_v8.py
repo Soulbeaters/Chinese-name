@@ -490,6 +490,21 @@ def test_crossref_split_review_flags_only_strong_swap_candidates():
     assert review_crossref_split_fields_v8("Mai", "Ouchi").review_label == "not_swapped_or_excluded"
 
 
+def test_corpus_role_model_only_refines_weak_crossref_default():
+    record = NameRecord(record_id="role", name_raw="Pierce Angela", source="CROSSREF")
+    enabled = local_decision(record, get_config("CROSSREF"))
+
+    set_ablation_config(AblationConfig(enable_corpus_role_model=False))
+    try:
+        disabled = local_decision(record, get_config("CROSSREF"))
+    finally:
+        reset_ablation_config()
+
+    assert enabled.order == "family_first"
+    assert any(code.startswith("CORPUS_ROLE_LOG_ODDS") for code in enabled.reason_codes)
+    assert disabled.order == "given_first"
+
+
 def test_duplicate_split_fields_are_not_proxy_labels():
     from experiments.run_bench import infer_proxy_order
 

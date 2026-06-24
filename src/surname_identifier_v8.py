@@ -27,6 +27,7 @@ from data.surname_frequency import (
     get_surname_frequency_rank,
 )
 from data.non_chinese_surnames import is_strong_non_chinese_surname
+from data.name_role_model import get_token_role
 from data.western_name_features import (
     has_western_suffix,
     has_western_consonant_cluster,
@@ -972,6 +973,51 @@ def decide_mixed(
 
 # ========== 模块5: 局部决策 Module 5: Local Decision ==========
 
+def _apply_corpus_role_model(
+    record: NameRecord,
+    parsed: ParsedName,
+    decision: NameDecision,
+    cfg: SourceConfig,
+) -> NameDecision:
+    """Refine weak Crossref defaults with held-out token role statistics."""
+    if not get_ablation_config().enable_corpus_role_model:
+        return decision
+    if record.source not in ("CROSSREF", "crossref", "Crossref"):
+        return decision
+    if decision.confidence >= cfg.pub_conf_thresh:
+        return decision
+    eligible_reasons = {
+        "NO_MATCH_DEFAULT_GIVEN",
+        "NO_CN_EVIDENCE_DEFAULT_GIVEN",
+        "FORCED_GIVEN_ON_TIE",
+        "DELTA_SMALL_MIXED",
+    }
+    if not any(code in eligible_reasons for code in decision.reason_codes):
+        return decision
+
+    first = parsed.tokens[parsed.first_idx].ascii.lower()
+    last = parsed.tokens[parsed.last_idx].ascii.lower()
+    first_role = get_token_role(first)
+    last_role = get_token_role(last)
+    if not first_role or not last_role:
+        return decision
+
+    first_log_odds, first_support = first_role
+    last_log_odds, last_support = last_role
+    if first_support < 3 or last_support < 3:
+        return decision
+    delta = first_log_odds - last_log_odds
+    if abs(delta) < 1.0:
+        return decision
+
+    order = "family_first" if delta > 0 else "given_first"
+    return NameDecision(
+        order=order,
+        confidence=0.72,
+        mode=decision.mode,
+        reason_codes=decision.reason_codes + [f"CORPUS_ROLE_LOG_ODDS({delta:.2f})"],
+    )
+
 def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
     """
     单条记录局部决策
@@ -1107,11 +1153,13 @@ def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
 
     # 5. 决策
     if mode == "CHINESE":
-        return decide_chinese(record, parsed, feats, cfg)
+        decision = decide_chinese(record, parsed, feats, cfg)
     elif mode == "WESTERN":
-        return decide_western(record, parsed, feats, cfg)
+        decision = decide_western(record, parsed, feats, cfg)
     else:
-        return decide_mixed(record, parsed, feats, cfg)
+        decision = decide_mixed(record, parsed, feats, cfg)
+
+    return _apply_corpus_role_model(record, parsed, decision, cfg)
 
 
 # ========== 模块6: 批量一致性 Module 6: Batch Consistency ==========

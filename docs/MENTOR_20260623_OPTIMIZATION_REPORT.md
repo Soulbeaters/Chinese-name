@@ -124,9 +124,43 @@ Relative to the mentor baseline, combined errors fell from 4,468 to 1,927
 The independent advisor corpus changed from 744 errors and 1,751 UNKNOWN to
 324 errors and 1,008 UNKNOWN.
 
+## Third optimization pass: dictionary-limit mitigation
+
+This pass addresses the mentor's observation that a fixed surname dictionary
+works but has limited coverage for non-Chinese names. A frozen token-role model
+was trained from split Crossref fields, but exact normalized name pairs were
+hash-partitioned before training:
+
+- buckets 0-2: 58,728 training records;
+- bucket 3: 19,036 development records used for threshold selection;
+- bucket 4: 20,046 untouched test records, 5,874 unique name pairs;
+- the model contains 3,761 tokens with at least three observations;
+- the source dataset hash remains
+  `3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806`.
+
+The model is restricted to weak Crossref defaults and cannot override strong
+dictionary, abbreviation, Chinese-surname, or split-field evidence.
+
+| Evaluation | Configuration | Errors | UNKNOWN | Error + UNKNOWN |
+|---|---|---:|---:|---:|
+| Name-pair-disjoint test | model disabled | 526 | 3,965 | 4,491 |
+| Name-pair-disjoint test | model enabled | 506 | 3,963 | 4,469 |
+| Advisor DOI | model disabled | 324 | 1,008 | 1,332 |
+| Advisor DOI | model enabled | 315 | 1,007 | 1,322 |
+
+The full-corpus production run with the model enabled reports 1,484 errors and
+2,647 UNKNOWN. That figure is descriptive only because the full corpus includes
+the model's training partition; the held-out and advisor rows above are the
+valid selection evidence.
+
+A character-suffix model was also tested to generalize to surnames absent from
+the frozen token table. It improved the name-pair-disjoint test from 4,469 to
+4,412 combined failures, but worsened the advisor corpus from 1,322 to 1,327.
+It was therefore rejected and is not part of production code.
+
 ## Acceptance checks
 
-- `python -m pytest -q tests`: 82 passed.
+- `python -m pytest -q tests`: 83 passed.
 - Static compilation: passed.
 - `git diff --check`: passed (line-ending warnings only).
 - Default production path on the hand-audited challenge: 15 / 19. The opt-in
@@ -140,7 +174,11 @@ The independent advisor corpus changed from 744 errors and 1,751 UNKNOWN to
   signals into automatic production corrections.
 - Audit the 13 non-Chinese-dictionary records still classified in CHINESE mode.
 - Replace hand-maintained non-Chinese surname expansion with a train/dev/test
-  lexicon workflow or an independently sourced surname model.
+  lexicon workflow or an independently sourced surname model. The token-role
+  model is a first controlled step, but it still cannot generalize to unseen
+  surnames without external evidence.
+- Do not enable the tested character-suffix model unless another independent
+  corpus confirms it; its advisor DOI result regressed.
 - Evaluate learned publication-order inference on publications with genuinely
   mixed author-name formats; the synthetic stress test assumes one orientation
   per publication.

@@ -82,6 +82,16 @@ def load_candidates(path: Path) -> List[Dict[str, Any]]:
     ]
 
 
+def name_pair_bucket(row: Dict[str, Any]) -> int:
+    """Assign a normalized name pair to a deterministic five-way split."""
+    key = (
+        " ".join(normalized_tokens(str(row["firstname"])))
+        + "|"
+        + " ".join(normalized_tokens(str(row["lastname"])))
+    ).encode("utf-8")
+    return int.from_bytes(hashlib.sha256(key).digest()[:4], "big") % 5
+
+
 def build_records(
     rows: Iterable[Dict[str, Any]],
     order: str,
@@ -175,15 +185,20 @@ def evaluate(
     surname_frequency_strategy: str,
     surname_share_ratio_threshold: float,
     publication_same_mode_only: bool,
+    pair_hash_bucket: int | None = None,
+    enable_corpus_role_model: bool = True,
 ) -> Dict[str, Any]:
     set_ablation_config(
         AblationConfig(
             surname_freq_strategy=surname_frequency_strategy,
             surname_share_ratio_threshold=surname_share_ratio_threshold,
             publication_same_mode_only=publication_same_mode_only,
+            enable_corpus_role_model=enable_corpus_role_model,
         )
     )
     rows = load_candidates(path)
+    if pair_hash_bucket is not None:
+        rows = [row for row in rows if name_pair_bucket(row) == pair_hash_bucket]
     results: Dict[str, Any] = {
         "dataset": str(path),
         "dataset_sha256": sha256_file(path),
@@ -198,6 +213,8 @@ def evaluate(
         "surname_frequency_strategy": surname_frequency_strategy,
         "surname_share_ratio_threshold": surname_share_ratio_threshold,
         "publication_same_mode_only": publication_same_mode_only,
+        "pair_hash_bucket": pair_hash_bucket,
+        "enable_corpus_role_model": enable_corpus_role_model,
         "results": {},
     }
 
@@ -238,6 +255,8 @@ def main() -> None:
     )
     parser.add_argument("--surname-share-ratio-threshold", type=float, default=1.0)
     parser.add_argument("--publication-same-mode-only", action="store_true")
+    parser.add_argument("--pair-hash-bucket", type=int, choices=range(5))
+    parser.add_argument("--disable-corpus-role-model", action="store_true")
     args = parser.parse_args()
 
     result = evaluate(
@@ -246,6 +265,8 @@ def main() -> None:
         args.surname_frequency_strategy,
         args.surname_share_ratio_threshold,
         args.publication_same_mode_only,
+        args.pair_hash_bucket,
+        not args.disable_corpus_role_model,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -256,6 +277,8 @@ def main() -> None:
         "surname_frequency_strategy": result["surname_frequency_strategy"],
         "surname_share_ratio_threshold": result["surname_share_ratio_threshold"],
         "publication_same_mode_only": result["publication_same_mode_only"],
+        "pair_hash_bucket": result["pair_hash_bucket"],
+        "enable_corpus_role_model": result["enable_corpus_role_model"],
         "results": {
             order: {
                 mode: {

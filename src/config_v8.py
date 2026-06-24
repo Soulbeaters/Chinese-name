@@ -270,6 +270,9 @@ class AblationConfig:
     # detected cultural mode only. Off by default to preserve coverage.
     publication_same_mode_only: bool = False
 
+    # Frozen Crossref token-role model trained on name-pair-disjoint records.
+    enable_corpus_role_model: bool = True
+
     # 作者级一致性开关 / Person-level consistency switch
     enable_person_consistency: bool = True
 
