@@ -19,7 +19,9 @@ from src.config_v8 import (
     set_ablation_config,
 )
 from src.surname_identifier_v8 import (
+    NameDecision,
     NameRecord,
+    adjust_by_publication,
     batch_identify_surname_position_v8,
     detect_mode,
     identify_surname_position_v8,
@@ -112,7 +114,7 @@ def test_double_surname():
         "Zhang Wang",
         source="CROSSREF",
     )
-    assert order in ["family_first", "given_first"]
+    assert order == "unknown"
 
 
 def test_surname_frequency_share_lookup_and_aggregation():
@@ -143,7 +145,7 @@ def test_share_ratio_double_surname_regressions():
 
     decision = _local_strategy_decision("Huan He", strategy="share_ratio")
     assert decision.order == "given_first"
-    assert "CN_SURNAME_DOUBLE_FREQ_LAST(1.311>0)" in decision.reason_codes
+    assert "CN_SURNAME_LAST_ONLY" in decision.reason_codes
 
     decision = _local_strategy_decision("Hong Yuan", strategy="share_ratio")
     assert decision.order == "given_first"
@@ -168,7 +170,7 @@ def test_share_ratio_threshold_changes_boundary_trigger():
         strategy="share_ratio",
         share_threshold=1.5,
     )
-    assert decision_default.order == "family_first"
+    assert decision_default.order == "unknown"
     assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision_default.reason_codes
     assert all(
         not code.startswith("CN_SURNAME_DOUBLE_FREQ_")
@@ -179,21 +181,21 @@ def test_share_ratio_threshold_changes_boundary_trigger():
 def test_rank_gap_legacy_double_surname_regressions():
     decision = _local_strategy_decision("Hong Yuan", strategy="rank_gap")
     assert decision.order == "given_first"
-    assert "CN_SURNAME_DOUBLE_FREQ_LAST(37<999)" in decision.reason_codes
+    assert "CN_SURNAME_DOUBLE_FREQ_LAST(37<100)" in decision.reason_codes
 
     decision = _local_strategy_decision("Ge Yan", strategy="rank_gap")
-    assert decision.order == "given_first"
-    assert "CN_SURNAME_DOUBLE_FREQ_LAST(90<999)" in decision.reason_codes
+    assert decision.order == "unknown"
+    assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision.reason_codes
 
 
 def test_freq_disabled_reproduces_remote_branch_behavior():
     decision = _local_strategy_decision("Wang Wei", strategy="freq_disabled")
-    assert decision.order == "family_first"
+    assert decision.order == "unknown"
     assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision.reason_codes
     assert all(not code.startswith("CN_SURNAME_DOUBLE_FREQ_") for code in decision.reason_codes)
 
     decision = _local_strategy_decision("Hong Yuan", strategy="freq_disabled")
-    assert decision.order == "family_first"
+    assert decision.order == "unknown"
     assert "CN_SURNAME_DOUBLE_DEFAULT_FAM" in decision.reason_codes
     assert all(not code.startswith("CN_SURNAME_DOUBLE_FREQ_") for code in decision.reason_codes)
 
@@ -210,6 +212,95 @@ def test_western_mode():
 
     order, _, _ = identify_surname_position_v8("Smith David")
     assert order in ["family_first", "given_first"]
+
+
+def test_known_non_chinese_surnames_are_symmetric_order_evidence():
+    surnames_and_given_names = [
+        ("Owada", "Mao"),
+        ("Molina", "Chai"),
+        ("Ouchi", "Mai"),
+        ("Kawase", "Jin"),
+        ("Melin", "Bo"),
+    ]
+
+    for surname, given_name in surnames_and_given_names:
+        family_first, _, family_reason = identify_surname_position_v8(
+            f"{surname} {given_name}",
+            source="CROSSREF",
+        )
+        given_first, _, given_reason = identify_surname_position_v8(
+            f"{given_name} {surname}",
+            source="CROSSREF",
+        )
+
+        assert family_first == "family_first", family_reason
+        assert given_first == "given_first", given_reason
+
+
+def test_cross_cultural_surname_tokens_do_not_override_chinese_order():
+    for given_name, surname in (("Bowen", "Li"), ("Le", "Zhang")):
+        given_first, _, given_reason = identify_surname_position_v8(
+            f"{given_name} {surname}",
+            source="CROSSREF",
+        )
+        family_first, _, family_reason = identify_surname_position_v8(
+            f"{surname} {given_name}",
+            source="CROSSREF",
+        )
+
+        assert given_first in {"given_first", "unknown"}, given_reason
+        assert family_first in {"family_first", "unknown"}, family_reason
+
+
+def test_publication_consistency_does_not_mix_cultural_modes():
+    set_ablation_config(AblationConfig(publication_same_mode_only=True))
+    records = [
+        NameRecord(record_id="target", publication_id="doi", name_raw="Wang Wei"),
+        NameRecord(record_id="cn-fam-1", publication_id="doi", name_raw="Zhang Ming"),
+        NameRecord(record_id="cn-fam-2", publication_id="doi", name_raw="Li Hua"),
+        NameRecord(record_id="west-giv-1", publication_id="doi", name_raw="John Smith"),
+        NameRecord(record_id="west-giv-2", publication_id="doi", name_raw="Jane Miller"),
+        NameRecord(record_id="west-giv-3", publication_id="doi", name_raw="Paul Martin"),
+        NameRecord(record_id="west-giv-4", publication_id="doi", name_raw="Mary Taylor"),
+    ]
+    decisions = {
+        "target": NameDecision("unknown", 0.5, "CHINESE", []),
+        "cn-fam-1": NameDecision("family_first", 0.9, "CHINESE", []),
+        "cn-fam-2": NameDecision("family_first", 0.9, "CHINESE", []),
+        "west-giv-1": NameDecision("given_first", 0.9, "WESTERN", []),
+        "west-giv-2": NameDecision("given_first", 0.9, "WESTERN", []),
+        "west-giv-3": NameDecision("given_first", 0.9, "WESTERN", []),
+        "west-giv-4": NameDecision("given_first", 0.9, "WESTERN", []),
+    }
+
+    try:
+        adjusted = adjust_by_publication(records, decisions, get_config("CROSSREF"))
+        assert adjusted["target"].order == "family_first"
+        assert "PUB_SAME_MODE_EVIDENCE" in adjusted["target"].reason_codes
+    finally:
+        reset_ablation_config()
+
+
+def test_publication_consistency_requires_same_mode_evidence():
+    set_ablation_config(AblationConfig(publication_same_mode_only=True))
+    records = [
+        NameRecord(record_id="target", publication_id="doi", name_raw="Wang Wei"),
+        NameRecord(record_id="west-1", publication_id="doi", name_raw="John Smith"),
+        NameRecord(record_id="west-2", publication_id="doi", name_raw="Jane Miller"),
+        NameRecord(record_id="west-3", publication_id="doi", name_raw="Paul Martin"),
+    ]
+    decisions = {
+        "target": NameDecision("unknown", 0.5, "CHINESE", []),
+        "west-1": NameDecision("given_first", 0.9, "WESTERN", []),
+        "west-2": NameDecision("given_first", 0.9, "WESTERN", []),
+        "west-3": NameDecision("given_first", 0.9, "WESTERN", []),
+    }
+
+    try:
+        adjusted = adjust_by_publication(records, decisions, get_config("CROSSREF"))
+        assert adjusted["target"].order == "unknown"
+    finally:
+        reset_ablation_config()
 
 
 def test_mixed_mode():
@@ -419,10 +510,10 @@ def test_edge_cases():
 
 def test_none_handling():
     order, _, _ = identify_surname_position_v8("Liu Wei", affiliation=None)
-    assert order in ["family_first", "given_first"]
+    assert order in ["family_first", "given_first", "unknown"]
 
     order, _, _ = identify_surname_position_v8("Liu Wei", source=None)
-    assert order in ["family_first", "given_first"]
+    assert order in ["family_first", "given_first", "unknown"]
 
 
 def test_unicode_handling():

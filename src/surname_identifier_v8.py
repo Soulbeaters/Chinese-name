@@ -26,6 +26,7 @@ from data.surname_frequency import (
     compare_surname_frequency_share,
     get_surname_frequency_rank,
 )
+from data.non_chinese_surnames import is_strong_non_chinese_surname
 from data.western_name_features import (
     has_western_suffix,
     has_western_consonant_cluster,
@@ -33,7 +34,7 @@ from data.western_name_features import (
     is_likely_western_name,
     is_common_western_surname,
 )
-from src.pinyin_validator import is_valid_pinyin_name, is_common_given_name_syllable
+from src.pinyin_validator import is_valid_pinyin_name
 from src.affiliation_analyzer import analyze_affiliation, AffiliationInfo
 from src.config_v8 import (
     get_config,
@@ -170,6 +171,8 @@ class Features:
     # 西方姓氏
     first_is_west_surname: bool = False
     last_is_west_surname: bool = False
+    first_is_known_non_chinese_surname: bool = False
+    last_is_known_non_chinese_surname: bool = False
 
     # 拼音合法性
     first_pinyin_ok: bool = False
@@ -372,6 +375,8 @@ def detect_mode(
 
     first = parsed.tokens[parsed.first_idx]
     last = parsed.tokens[parsed.last_idx]
+    first_is_known_non_chinese = is_strong_non_chinese_surname(first.ascii)
+    last_is_known_non_chinese = is_strong_non_chinese_surname(last.ascii)
 
     # === 中文证据 Chinese Evidence ===
 
@@ -398,6 +403,12 @@ def detect_mode(
             score_cn += 0.1
 
     # === 西方证据 Western Evidence ===
+
+    # W0: curated non-Chinese surname evidence. This is deliberately stronger
+    # than pinyin compatibility, which is shared by some Japanese, Korean, and
+    # Vietnamese romanizations.
+    if first_is_known_non_chinese or last_is_known_non_chinese:
+        score_west += 0.8
 
     # W1: 西方姓氏后缀
     for tok in [first, last]:
@@ -541,11 +552,21 @@ def extract_features(
     f.last_is_cn_surname = is_surname_pinyin(last.ascii)
 
     # 西方姓氏
-    f.first_is_west_surname = is_common_western_surname(first.ascii) or is_likely_western_name(first.ascii)
-    f.last_is_west_surname = is_common_western_surname(last.ascii) or is_likely_western_name(last.ascii)
+    f.first_is_known_non_chinese_surname = is_strong_non_chinese_surname(first.ascii)
+    f.last_is_known_non_chinese_surname = is_strong_non_chinese_surname(last.ascii)
+    f.first_is_west_surname = (
+        f.first_is_known_non_chinese_surname
+        or is_common_western_surname(first.ascii)
+        or is_likely_western_name(first.ascii)
+    )
+    f.last_is_west_surname = (
+        f.last_is_known_non_chinese_surname
+        or is_common_western_surname(last.ascii)
+        or is_likely_western_name(last.ascii)
+    )
 
     # 拼音合法性
-    is_valid_first, syl_first, _ = is_valid_pinyin_name(first.ascii) or is_common_given_name_syllable(first.ascii)
+    is_valid_first, syl_first, _ = is_valid_pinyin_name(first.ascii)
     is_valid_last, syl_last, _ = is_valid_pinyin_name(last.ascii)
 
     f.first_pinyin_ok = is_valid_first
@@ -653,7 +674,7 @@ def decide_chinese(
     if f.first_is_cn_surname and f.last_is_cn_surname:
         # ISTINA数据源: 强制family_first (俄中数据以中文顺序为主)
         if record.source in ("ISTINA", "istina", "ИСТИНА"):
-            score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_DEFAULT"]
+            score_fam += CHINESE_FEATURE_WEIGHTS["CN_SURNAME_DOUBLE_ISTINA_DEFAULT"]
             reasons.append("CN_SURNAME_DOUBLE_DEFAULT_FAM_ISTINA")
         else:
             # 其他数据源: 使用频率逻辑
@@ -755,6 +776,13 @@ def decide_western(
         score_fam += WESTERN_FEATURE_WEIGHTS["WEST_SURNAME_FIRST"]
         reasons.append("WEST_SURNAME_FIRST")
 
+    if (
+        f.first_is_known_non_chinese_surname
+        and not f.last_is_known_non_chinese_surname
+    ):
+        score_fam += 1.0
+        reasons.append("KNOWN_NON_CHINESE_SURNAME_FIRST")
+
     # === 特征2: 中文证据（反向） ===
 
     if f.first_is_cn_surname and f.cn_affiliation:
@@ -767,7 +795,13 @@ def decide_western(
 
     # === 特征3: 默认推断 (v7.0核心特性保留) ===
 
-    if not (f.first_is_cn_surname or f.last_is_cn_surname or f.cn_affiliation):
+    if not (
+        f.first_is_cn_surname
+        or f.last_is_cn_surname
+        or f.first_is_known_non_chinese_surname
+        or f.last_is_known_non_chinese_surname
+        or f.cn_affiliation
+    ):
         score_giv += WESTERN_FEATURE_WEIGHTS["NO_CN_EVIDENCE_DEFAULT"]
         reasons.append("NO_CN_EVIDENCE_DEFAULT_GIVEN")
 
@@ -1073,31 +1107,66 @@ def adjust_by_publication(
             groups[rec.publication_id].append(rec.record_id)
 
     for pub_id, rec_ids in groups.items():
-        fam = [decisions[rid] for rid in rec_ids if rid in decisions
-               and decisions[rid].order == "family_first"
-               and decisions[rid].confidence >= cfg.pub_conf_thresh]
-        giv = [decisions[rid] for rid in rec_ids if rid in decisions
-               and decisions[rid].order == "given_first"
-               and decisions[rid].confidence >= cfg.pub_conf_thresh]
+        # A publication may mix Chinese and non-Chinese authors whose normal
+        # writing orders differ. Derive a majority separately for each detected
+        # cultural mode so Western coauthors cannot rewrite an ambiguous Chinese
+        # record (and vice versa).
+        same_mode_only = get_ablation_config().publication_same_mode_only
+        target_by_mode: Dict[str, str] = {}
+        modes = (
+            {
+                decisions[rid].mode
+                for rid in rec_ids
+                if rid in decisions
+            }
+            if same_mode_only
+            else {"*"}
+        )
+        for mode in modes:
+            fam = [
+                decisions[rid]
+                for rid in rec_ids
+                if rid in decisions
+                and (mode == "*" or decisions[rid].mode == mode)
+                and decisions[rid].order == "family_first"
+                and decisions[rid].confidence >= cfg.pub_conf_thresh
+            ]
+            giv = [
+                decisions[rid]
+                for rid in rec_ids
+                if rid in decisions
+                and (mode == "*" or decisions[rid].mode == mode)
+                and decisions[rid].order == "given_first"
+                and decisions[rid].confidence >= cfg.pub_conf_thresh
+            ]
 
-        if len(fam) == 0 and len(giv) == 0:
-            continue
-
-        if abs(len(fam) - len(giv)) < cfg.pub_dominance_min_diff:
-            continue  # 无明显多数
-
-        target_order = "family_first" if len(fam) > len(giv) else "given_first"
+            if not fam and not giv:
+                continue
+            if abs(len(fam) - len(giv)) < cfg.pub_dominance_min_diff:
+                continue
+            target_by_mode[mode] = (
+                "family_first" if len(fam) > len(giv) else "given_first"
+            )
 
         for rid in rec_ids:
             if rid not in decisions:
                 continue
             d = decisions[rid]
-            if d.order == "unknown" and d.confidence <= cfg.pub_override_thresh:
+            target_order = target_by_mode.get(d.mode if same_mode_only else "*")
+            if (
+                target_order
+                and d.order == "unknown"
+                and d.confidence <= cfg.pub_override_thresh
+            ):
                 decisions[rid] = NameDecision(
                     order=target_order,
                     confidence=cfg.pub_override_conf,
                     mode=d.mode,
-                    reason_codes=d.reason_codes + ["PUB_PATTERN_OVERRIDE"]
+                    reason_codes=(
+                        d.reason_codes
+                        + ["PUB_PATTERN_OVERRIDE"]
+                        + (["PUB_SAME_MODE_EVIDENCE"] if same_mode_only else [])
+                    )
                 )
 
     return decisions

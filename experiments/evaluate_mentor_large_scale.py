@@ -174,11 +174,13 @@ def evaluate(
     source: str,
     surname_frequency_strategy: str,
     surname_share_ratio_threshold: float,
+    publication_same_mode_only: bool,
 ) -> Dict[str, Any]:
     set_ablation_config(
         AblationConfig(
             surname_freq_strategy=surname_frequency_strategy,
             surname_share_ratio_threshold=surname_share_ratio_threshold,
+            publication_same_mode_only=publication_same_mode_only,
         )
     )
     rows = load_candidates(path)
@@ -195,6 +197,7 @@ def evaluate(
         "source": source,
         "surname_frequency_strategy": surname_frequency_strategy,
         "surname_share_ratio_threshold": surname_share_ratio_threshold,
+        "publication_same_mode_only": publication_same_mode_only,
         "results": {},
     }
 
@@ -234,6 +237,7 @@ def main() -> None:
         default="share_ratio",
     )
     parser.add_argument("--surname-share-ratio-threshold", type=float, default=1.0)
+    parser.add_argument("--publication-same-mode-only", action="store_true")
     args = parser.parse_args()
 
     result = evaluate(
@@ -241,6 +245,7 @@ def main() -> None:
         args.source,
         args.surname_frequency_strategy,
         args.surname_share_ratio_threshold,
+        args.publication_same_mode_only,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -250,6 +255,7 @@ def main() -> None:
         "unique_name_pairs": result["unique_name_pairs"],
         "surname_frequency_strategy": result["surname_frequency_strategy"],
         "surname_share_ratio_threshold": result["surname_share_ratio_threshold"],
+        "publication_same_mode_only": result["publication_same_mode_only"],
         "results": {
             order: {
                 mode: {

@@ -6,7 +6,7 @@ baseline:
   disable_source_prior: false
   disable_western_exclusion: false
   disable_batch_consistency: false
-  surname_freq_strategy: "rank_gap"
+  surname_freq_strategy: "freq_disabled"
   enable_person_consistency: true
   enable_pub_consistency: true
 

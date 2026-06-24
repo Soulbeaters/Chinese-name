@@ -172,6 +172,7 @@ CHINESE_FEATURE_WEIGHTS = {
     "CN_SURNAME_LAST_ONLY": 2.0,       # last是姓,first不是
     "CN_SURNAME_DOUBLE_FREQ": 1.5,     # 双姓,按频率
     "CN_SURNAME_DOUBLE_DEFAULT": 0.0,  # 双姓,默认
+    "CN_SURNAME_DOUBLE_ISTINA_DEFAULT": 1.5,  # ISTINA默认姓在前
 
     # 拼音名字证据
     "FIRST_VALID_PY_NAME": 0.8,        # first是合法拼音名(2-3音节)
@@ -256,15 +257,18 @@ class AblationConfig:
     disable_batch_consistency: bool = False
 
     # 双姓频率策略 / Dual-surname frequency strategy
-    # share_ratio: current default, based on aggregated population share ratio
+    # share_ratio: opt-in strategy based on aggregated population share ratio
     # rank_gap: legacy rule based on rank difference > 20
-    # freq_disabled: reproduce the mentor branch by suppressing the
-    #   non-ISTINA double-surname frequency signal and falling back to
-    #   family_first by default
-    surname_freq_strategy: str = "share_ratio"
+    # freq_disabled: conservative mentor default; ambiguous non-ISTINA cases
+    #   abstain instead of guessing from surname frequency.
+    surname_freq_strategy: str = "freq_disabled"
     # Threshold for the share-based rule; 1.0 means any non-tied known-share
     # comparison can trigger the frequency bonus.
     surname_share_ratio_threshold: float = 1.0
+
+    # Conservative publication propagation: use evidence from the same
+    # detected cultural mode only. Off by default to preserve coverage.
+    publication_same_mode_only: bool = False
 
     # 作者级一致性开关 / Person-level consistency switch
     enable_person_consistency: bool = True

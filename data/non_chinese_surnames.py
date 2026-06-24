@@ -68,6 +68,11 @@ JAPANESE_SURNAMES = {
     'kobayashi',    # 小林
     'yamamoto',     # 山本
     'takahashi',    # 高桥
+    'owada',
+    'ouchi',
+    'obayashi',
+    'kawase',
+    'murayama',
     'mori',         # 森 (33次)
     'ueda',         # 上田 (20次)
     'fujii',        # 藤井 (27次)
@@ -311,6 +316,7 @@ EUROPEAN_SURNAMES = {
 
     # 西班牙语/葡萄牙语姓氏 / Испанские/португальские фамилии
     'garcia',
+    'molina',
     'martinez',
     'rodriguez',
     'lopez',
@@ -447,6 +453,17 @@ ALL_NON_CHINESE_SURNAMES = (
     INDIAN_SURNAMES
 )
 
+# These tokens are valid surnames in other cultures but also occur frequently
+# as Chinese given names or pinyin forms. They remain useful for audit labels,
+# but must not act as hard order evidence by themselves.
+AMBIGUOUS_NON_CHINESE_SURNAMES = {
+    'bowen',
+    'dao',
+    'junge',
+    'le',
+    'rana',
+}
+
 
 def is_non_chinese_surname(surname: str) -> bool:
     """
@@ -471,6 +488,15 @@ def is_non_chinese_surname(surname: str) -> bool:
         False
     """
     return surname.lower().strip() in ALL_NON_CHINESE_SURNAMES
+
+
+def is_strong_non_chinese_surname(surname: str) -> bool:
+    """Return True only for exclusion entries safe as direct order evidence."""
+    normalized = surname.lower().strip()
+    return (
+        normalized in ALL_NON_CHINESE_SURNAMES
+        and normalized not in AMBIGUOUS_NON_CHINESE_SURNAMES
+    )
 
 
 def get_surname_origin(surname: str) -> str:

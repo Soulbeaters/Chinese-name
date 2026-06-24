@@ -164,6 +164,10 @@ def detect_order(name_string, surname_db=None):
         # 如果中间有明显的名字特征，第一个应该是姓
         if len(names) > 2 and any(name_map[1:-1]):
             return 1
+        # If the first part looks like a given name and the last does not,
+        # prefer given-name-first (for example, "Ming Zhang").
+        if len(names) == 2 and name_map[0] and not name_map[1]:
+            return -1
         # 如果第二个部分像名字，第一个是姓
         if len(names) >= 2 and name_map[1]:
             return 1
