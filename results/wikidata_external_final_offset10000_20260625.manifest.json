@@ -1,0 +1,30 @@
+{
+  "created_at_utc": "2026-06-24T17:58:47.148839+00:00",
+  "source": "Wikidata Query Service",
+  "endpoint": "https://query.wikidata.org/sparql",
+  "license": "CC0-1.0",
+  "properties": {
+    "given_name": "P735",
+    "family_name": "P734"
+  },
+  "query": "SELECT DISTINCT ?person ?givenLabel ?familyLabel WHERE {\n  ?person wdt:P31 wd:Q5;\n          wdt:P735 ?given;\n          wdt:P734 ?family.\n  ?given rdfs:label ?givenLabel.\n  ?family rdfs:label ?familyLabel.\n  FILTER(LANG(?givenLabel) = \"en\")\n  FILTER(LANG(?familyLabel) = \"en\")\n}\nLIMIT 10000\nOFFSET 10000",
+  "query_limit": 10000,
+  "query_offset": 10000,
+  "raw_bindings": 10000,
+  "rejected_non_latin_or_compound": 245,
+  "rejected_local_pair_overlap": 6937,
+  "unique_output_pairs": 1660,
+  "response_sha256": "498d288621b8b57889579269d1fd00d1009ce7f04b97fd598118f1937bfc91b0",
+  "output_sha256": "d7536b3ba2d5e212c38181813a55e7fbc64896ad047cabae6af19b808231a7c0",
+  "excluded_datasets": [
+    {
+      "path": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806"
+    },
+    {
+      "path": "results\\wikidata_external_names_20260625.json",
+      "sha256": "74b2a2581893263f219303919a310fb3b8c435b92fdc3763a3d22e9465c149b4"
+    }
+  ],
+  "evaluation_note": "Names are structured by Wikidata P735/P734. Both display orders are generated during evaluation; no Wikidata record is used to train or tune the model."
+}

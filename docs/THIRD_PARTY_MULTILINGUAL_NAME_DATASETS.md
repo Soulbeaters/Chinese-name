@@ -332,3 +332,24 @@
 - JMnedict 不是 CC0；复制或发布派生数据时必须遵守 CC BY-SA 4.0 和 EDRDG 署名/更新条件。
 - US Census 数据应引用官方数据页和 Comenetz (2016) 技术文档。
 - 在论文提交前重新检查所有网页、版本号、访问日期和许可页面；本清单记录的是 2026-06-25 核对到的状态。
+
+## 14. Additional source used in the final optimization: SSA National Names
+
+- Official download: [National baby-name data](https://www.ssa.gov/oact/babynames/names.zip)
+- Official file documentation: [Beyond the Top 1000 Names](https://www.ssa.gov/oact/babynames/limits.html)
+- Official methodology and qualifications: [Background information for popular names](https://www.ssa.gov/oact/babynames/background.html)
+- Download verified on 2026-06-25; SHA-256:
+  `CD78E975ED7BB358E018DD62FBE14CED89295E9581C49172CA4EEDCB011B3724`.
+
+The archive contains yearly US first-name counts derived from Social Security
+card applications. It is not a global given-name census: names with fewer than
+five occurrences in a year are suppressed, spellings are not merged, and the
+historical coverage depends on Social Security registration. In this project it
+is combined with Census surname counts only as a conservative normalized role
+fallback; it is not used as a nationality or ethnicity classifier.
+
+Suggested reference:
+
+> U.S. Social Security Administration. (2026). *National data: Popular baby
+> names*. Retrieved June 25, 2026, from
+> https://www.ssa.gov/oact/babynames/limits.html

@@ -1,0 +1,2767 @@
+{
+  "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+  "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+  "candidate_records": 20046,
+  "unique_name_pairs": 5874,
+  "source": "CROSSREF",
+  "surname_frequency_strategy": "freq_disabled",
+  "surname_share_ratio_threshold": 1.0,
+  "publication_same_mode_only": false,
+  "pair_hash_bucket": 4,
+  "enable_corpus_role_model": true,
+  "enable_jmnedict_role_model": true,
+  "enable_ssa_census_role_model": true,
+  "candidate_filter": "pinyin",
+  "results": {
+    "given_first": {
+      "none": {
+        "n_records": 20046,
+        "errors": 57,
+        "error_rate": 0.0028434600419036215,
+        "unknown": 5378,
+        "unknown_rate": 0.26828294921680135,
+        "coverage": 0.7317170507831986,
+        "mode_counts": {
+          "CHINESE": 18013,
+          "MIXED": 1815,
+          "WESTERN": 185,
+          "ABBREVIATION": 33
+        },
+        "order_counts": {
+          "given_first": 14611,
+          "unknown": 5378,
+          "family_first": 57
+        },
+        "known_non_chinese_records": 71,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 2,
+        "error_samples": [
+          {
+            "record_id": "1173",
+            "name_raw": "Shuang Yazhou",
+            "publication_id": "10.1002/jctb.7873",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(1.30)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2367",
+            "name_raw": "Geruo A",
+            "publication_id": "10.5194/essd-2022-261",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Geruo_A"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2480",
+            "name_raw": "Yu Sunakawa",
+            "publication_id": "10.1200/jco-25-00486",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2535",
+            "name_raw": "Zhao Dandan",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2747",
+            "name_raw": "Kasubuchi Mayu",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "JMNEDICT_ROLE_LOG_ODDS(4.93)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "3517",
+            "name_raw": "Wang Chengyuan",
+            "publication_id": "10.1021/acs.jpcc.0c03661",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5341",
+            "name_raw": "Xi Chunhua",
+            "publication_id": "10.1007/s13304-024-01860-0",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5346",
+            "name_raw": "Papalia Teresa",
+            "publication_id": "10.1007/s40620-020-00755-8",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "SSA_CENSUS_ROLE_LOG_ODDS(13.45)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5371",
+            "name_raw": "Zaidi Zakaria",
+            "publication_id": "10.1016/s2214-109x(22)00168-1",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "SSA_CENSUS_ROLE_LOG_ODDS(9.25)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5421",
+            "name_raw": "Wang Zhongkai",
+            "publication_id": "10.1245/s10434-023-13863-z",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5497",
+            "name_raw": "Yu Sawada",
+            "publication_id": "10.1002/jhbp.810",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(3syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5925",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41588-022-01197-7",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5967",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41467-022-32733-y",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "6000",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41467-022-31949-2",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "7017",
+            "name_raw": "Ren Xiaoshuai",
+            "publication_id": "10.1039/d0nr01236j",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "8414",
+            "name_raw": "Hasini Medagedara",
+            "publication_id": "10.1039/d3sc03327a",
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "9737",
+            "name_raw": "Yu Ouyang",
+            "publication_id": "10.1021/acsaem.9b02242",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "9750",
+            "name_raw": "Yu Ouyang",
+            "publication_id": "10.1039/c8ta11426a",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "9766",
+            "name_raw": "Yu Ouyang",
+            "publication_id": "10.1016/j.jpowsour.2019.227046",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "10616",
+            "name_raw": "Peng E",
+            "publication_id": "10.1029/2021ja029126",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Peng_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "10693",
+            "name_raw": "Dan Dediu",
+            "publication_id": "10.1126/sciadv.abq2969",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "11108",
+            "name_raw": "Huang Neng",
+            "publication_id": "10.1038/s41586-025-09096-7",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "11130",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1093/nar/gkac633",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12285",
+            "name_raw": "Chee Chong",
+            "publication_id": "10.1038/s41467-025-60466-1",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(3.81)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12291",
+            "name_raw": "Chee Chong",
+            "publication_id": "10.1038/s41467-023-36188-7",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(3.81)"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "publication": {
+        "n_records": 20046,
+        "errors": 57,
+        "error_rate": 0.0028434600419036215,
+        "unknown": 1963,
+        "unknown_rate": 0.09792477302204929,
+        "coverage": 0.9020752269779507,
+        "mode_counts": {
+          "CHINESE": 18013,
+          "MIXED": 1815,
+          "WESTERN": 185,
+          "ABBREVIATION": 33
+        },
+        "order_counts": {
+          "given_first": 18026,
+          "unknown": 1963,
+          "family_first": 57
+        },
+        "known_non_chinese_records": 71,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 2,
+        "error_samples": [
+          {
+            "record_id": "1173",
+            "name_raw": "Shuang Yazhou",
+            "publication_id": "10.1002/jctb.7873",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(1.30)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2367",
+            "name_raw": "Geruo A",
+            "publication_id": "10.5194/essd-2022-261",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Geruo_A"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2480",
+            "name_raw": "Yu Sunakawa",
+            "publication_id": "10.1200/jco-25-00486",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2535",
+            "name_raw": "Zhao Dandan",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2746",
+            "name_raw": "Dingze Mang",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.65,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "PUB_PATTERN_OVERRIDE",
+              "PUB_WEAK_DECISION_OVERRIDE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2747",
+            "name_raw": "Kasubuchi Mayu",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "JMNEDICT_ROLE_LOG_ODDS(4.93)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "3517",
+            "name_raw": "Wang Chengyuan",
+            "publication_id": "10.1021/acs.jpcc.0c03661",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5341",
+            "name_raw": "Xi Chunhua",
+            "publication_id": "10.1007/s13304-024-01860-0",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5346",
+            "name_raw": "Papalia Teresa",
+            "publication_id": "10.1007/s40620-020-00755-8",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "SSA_CENSUS_ROLE_LOG_ODDS(13.45)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5371",
+            "name_raw": "Zaidi Zakaria",
+            "publication_id": "10.1016/s2214-109x(22)00168-1",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "SSA_CENSUS_ROLE_LOG_ODDS(9.25)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5421",
+            "name_raw": "Wang Zhongkai",
+            "publication_id": "10.1245/s10434-023-13863-z",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5497",
+            "name_raw": "Yu Sawada",
+            "publication_id": "10.1002/jhbp.810",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(3syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5925",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41588-022-01197-7",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5967",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41467-022-32733-y",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "6000",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41467-022-31949-2",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "7017",
+            "name_raw": "Ren Xiaoshuai",
+            "publication_id": "10.1039/d0nr01236j",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "8414",
+            "name_raw": "Hasini Medagedara",
+            "publication_id": "10.1039/d3sc03327a",
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "10616",
+            "name_raw": "Peng E",
+            "publication_id": "10.1029/2021ja029126",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Peng_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "10693",
+            "name_raw": "Dan Dediu",
+            "publication_id": "10.1126/sciadv.abq2969",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "11108",
+            "name_raw": "Huang Neng",
+            "publication_id": "10.1038/s41586-025-09096-7",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "11130",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1093/nar/gkac633",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12285",
+            "name_raw": "Chee Chong",
+            "publication_id": "10.1038/s41467-025-60466-1",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(3.81)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12290",
+            "name_raw": "Cheng Chen",
+            "publication_id": "10.1038/s41467-023-36188-7",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.65,
+            "reason_codes": [
+              "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+              "FIRST_SINGLE_SYLLABLE",
+              "LAST_SINGLE_SYLLABLE",
+              "DELTA_SMALL_CN",
+              "PUB_PATTERN_OVERRIDE",
+              "PUB_WEAK_DECISION_OVERRIDE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12291",
+            "name_raw": "Chee Chong",
+            "publication_id": "10.1038/s41467-023-36188-7",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(3.81)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12651",
+            "name_raw": "Xu Jianjun",
+            "publication_id": "10.1038/s41598-017-03375-8",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "person": {
+        "n_records": 20046,
+        "errors": 57,
+        "error_rate": 0.0028434600419036215,
+        "unknown": 5375,
+        "unknown_rate": 0.2681332934251222,
+        "coverage": 0.7318667065748777,
+        "mode_counts": {
+          "CHINESE": 18013,
+          "MIXED": 1815,
+          "WESTERN": 185,
+          "ABBREVIATION": 33
+        },
+        "order_counts": {
+          "given_first": 14614,
+          "unknown": 5375,
+          "family_first": 57
+        },
+        "known_non_chinese_records": 71,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 2,
+        "error_samples": [
+          {
+            "record_id": "1173",
+            "name_raw": "Shuang Yazhou",
+            "publication_id": "10.1002/jctb.7873",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(1.30)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2367",
+            "name_raw": "Geruo A",
+            "publication_id": "10.5194/essd-2022-261",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Geruo_A"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2480",
+            "name_raw": "Yu Sunakawa",
+            "publication_id": "10.1200/jco-25-00486",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2535",
+            "name_raw": "Zhao Dandan",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2747",
+            "name_raw": "Kasubuchi Mayu",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "JMNEDICT_ROLE_LOG_ODDS(4.93)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "3517",
+            "name_raw": "Wang Chengyuan",
+            "publication_id": "10.1021/acs.jpcc.0c03661",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5341",
+            "name_raw": "Xi Chunhua",
+            "publication_id": "10.1007/s13304-024-01860-0",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5346",
+            "name_raw": "Papalia Teresa",
+            "publication_id": "10.1007/s40620-020-00755-8",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "SSA_CENSUS_ROLE_LOG_ODDS(13.45)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5371",
+            "name_raw": "Zaidi Zakaria",
+            "publication_id": "10.1016/s2214-109x(22)00168-1",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "SSA_CENSUS_ROLE_LOG_ODDS(9.25)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5421",
+            "name_raw": "Wang Zhongkai",
+            "publication_id": "10.1245/s10434-023-13863-z",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5497",
+            "name_raw": "Yu Sawada",
+            "publication_id": "10.1002/jhbp.810",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(3syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5925",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41588-022-01197-7",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5967",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41467-022-32733-y",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "6000",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41467-022-31949-2",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "7017",
+            "name_raw": "Ren Xiaoshuai",
+            "publication_id": "10.1039/d0nr01236j",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "8414",
+            "name_raw": "Hasini Medagedara",
+            "publication_id": "10.1039/d3sc03327a",
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "9737",
+            "name_raw": "Yu Ouyang",
+            "publication_id": "10.1021/acsaem.9b02242",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "9750",
+            "name_raw": "Yu Ouyang",
+            "publication_id": "10.1039/c8ta11426a",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "9766",
+            "name_raw": "Yu Ouyang",
+            "publication_id": "10.1016/j.jpowsour.2019.227046",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "10616",
+            "name_raw": "Peng E",
+            "publication_id": "10.1029/2021ja029126",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Peng_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "10693",
+            "name_raw": "Dan Dediu",
+            "publication_id": "10.1126/sciadv.abq2969",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "11108",
+            "name_raw": "Huang Neng",
+            "publication_id": "10.1038/s41586-025-09096-7",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "11130",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1093/nar/gkac633",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12285",
+            "name_raw": "Chee Chong",
+            "publication_id": "10.1038/s41467-025-60466-1",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(3.81)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12291",
+            "name_raw": "Chee Chong",
+            "publication_id": "10.1038/s41467-023-36188-7",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(3.81)"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "person_publication": {
+        "n_records": 20046,
+        "errors": 57,
+        "error_rate": 0.0028434600419036215,
+        "unknown": 1960,
+        "unknown_rate": 0.09777511723037015,
+        "coverage": 0.9022248827696299,
+        "mode_counts": {
+          "CHINESE": 18013,
+          "MIXED": 1815,
+          "WESTERN": 185,
+          "ABBREVIATION": 33
+        },
+        "order_counts": {
+          "given_first": 18029,
+          "unknown": 1960,
+          "family_first": 57
+        },
+        "known_non_chinese_records": 71,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 2,
+        "error_samples": [
+          {
+            "record_id": "1173",
+            "name_raw": "Shuang Yazhou",
+            "publication_id": "10.1002/jctb.7873",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(1.30)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2367",
+            "name_raw": "Geruo A",
+            "publication_id": "10.5194/essd-2022-261",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Geruo_A"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2480",
+            "name_raw": "Yu Sunakawa",
+            "publication_id": "10.1200/jco-25-00486",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2535",
+            "name_raw": "Zhao Dandan",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2746",
+            "name_raw": "Dingze Mang",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.65,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "PUB_PATTERN_OVERRIDE",
+              "PUB_WEAK_DECISION_OVERRIDE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2747",
+            "name_raw": "Kasubuchi Mayu",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "JMNEDICT_ROLE_LOG_ODDS(4.93)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "3517",
+            "name_raw": "Wang Chengyuan",
+            "publication_id": "10.1021/acs.jpcc.0c03661",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5341",
+            "name_raw": "Xi Chunhua",
+            "publication_id": "10.1007/s13304-024-01860-0",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5346",
+            "name_raw": "Papalia Teresa",
+            "publication_id": "10.1007/s40620-020-00755-8",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "SSA_CENSUS_ROLE_LOG_ODDS(13.45)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5371",
+            "name_raw": "Zaidi Zakaria",
+            "publication_id": "10.1016/s2214-109x(22)00168-1",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "SSA_CENSUS_ROLE_LOG_ODDS(9.25)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5421",
+            "name_raw": "Wang Zhongkai",
+            "publication_id": "10.1245/s10434-023-13863-z",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5497",
+            "name_raw": "Yu Sawada",
+            "publication_id": "10.1002/jhbp.810",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(3syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5925",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41588-022-01197-7",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "5967",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41467-022-32733-y",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "6000",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1038/s41467-022-31949-2",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "7017",
+            "name_raw": "Ren Xiaoshuai",
+            "publication_id": "10.1039/d0nr01236j",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "8414",
+            "name_raw": "Hasini Medagedara",
+            "publication_id": "10.1039/d3sc03327a",
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "10616",
+            "name_raw": "Peng E",
+            "publication_id": "10.1029/2021ja029126",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Peng_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "10693",
+            "name_raw": "Dan Dediu",
+            "publication_id": "10.1126/sciadv.abq2969",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "11108",
+            "name_raw": "Huang Neng",
+            "publication_id": "10.1038/s41586-025-09096-7",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "11130",
+            "name_raw": "Weigao E",
+            "publication_id": "10.1093/nar/gkac633",
+            "order": "family_first",
+            "mode": "ABBREVIATION",
+            "confidence": 1.0,
+            "reason_codes": [
+              "ABBREV_Weigao_E"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12285",
+            "name_raw": "Chee Chong",
+            "publication_id": "10.1038/s41467-025-60466-1",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(3.81)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12290",
+            "name_raw": "Cheng Chen",
+            "publication_id": "10.1038/s41467-023-36188-7",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.65,
+            "reason_codes": [
+              "CN_SURNAME_DOUBLE_DEFAULT_FAM",
+              "FIRST_SINGLE_SYLLABLE",
+              "LAST_SINGLE_SYLLABLE",
+              "DELTA_SMALL_CN",
+              "PUB_PATTERN_OVERRIDE",
+              "PUB_WEAK_DECISION_OVERRIDE"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12291",
+            "name_raw": "Chee Chong",
+            "publication_id": "10.1038/s41467-023-36188-7",
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(3.81)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "12651",
+            "name_raw": "Xu Jianjun",
+            "publication_id": "10.1038/s41598-017-03375-8",
+            "order": "family_first",
+            "mode": "CHINESE",
+            "confidence": 0.9308615796566531,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY",
+              "LAST_VALID_PY_NAME(2syl)",
+              "FIRST_SINGLE_SYLLABLE"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      }
+    },
+    "family_first": {
+      "none": {
+        "n_records": 20046,
+        "errors": 269,
+        "error_rate": 0.013419135987229372,
+        "unknown": 5371,
+        "unknown_rate": 0.26793375236955,
+        "coverage": 0.7320662476304499,
+        "mode_counts": {
+          "CHINESE": 18016,
+          "MIXED": 1831,
+          "WESTERN": 166,
+          "ABBREVIATION": 33
+        },
+        "order_counts": {
+          "family_first": 14406,
+          "unknown": 5371,
+          "given_first": 269
+        },
+        "known_non_chinese_records": 71,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 2,
+        "error_samples": [
+          {
+            "record_id": "56",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.1002/ps.8285",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "148",
+            "name_raw": "Kan Guoshi",
+            "publication_id": "10.1007/s11756-024-01728-z",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "219",
+            "name_raw": "Meledina Maria",
+            "publication_id": "10.1016/j.cej.2021.132162",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "298",
+            "name_raw": "Rudaya Natalia",
+            "publication_id": "10.1016/j.gloplacha.2024.104577",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "462",
+            "name_raw": "Riboli Elio",
+            "publication_id": "10.1038/ng.3002",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "495",
+            "name_raw": "Anne Michele",
+            "publication_id": "10.1038/s41562-021-01173-x",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1173",
+            "name_raw": "Yazhou Shuang",
+            "publication_id": "10.1002/jctb.7873",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(-1.30)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1561",
+            "name_raw": "Liebi Marianne",
+            "publication_id": "10.1002/advs.202508635",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1603",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsami.2c13150",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1606",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsami.3c11542",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1609",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsenergylett.3c02513",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1610",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsenergylett.2c01668",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1611",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1149/1945-7111/ac208d",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1612",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsaem.3c01383",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1613",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1002/aenm.202301105",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2091",
+            "name_raw": "Bie Xiaofei",
+            "publication_id": "10.1002/chem.201702075",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2180",
+            "name_raw": "Cīrule Dace",
+            "publication_id": "10.1039/d0cp04091f",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2191",
+            "name_raw": "Sawa Takayoshi",
+            "publication_id": "10.1021/acsnano.9b03060",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2367",
+            "name_raw": "A Geruo",
+            "publication_id": "10.5194/essd-2022-261",
+            "order": "given_first",
+            "mode": "ABBREVIATION",
+            "confidence": 0.85,
+            "reason_codes": [
+              "ABBREV_A_Geruo_REVERSED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2480",
+            "name_raw": "Sunakawa Yu",
+            "publication_id": "10.1200/jco-25-00486",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.7502601055951177,
+            "reason_codes": [
+              "CN_SURNAME_LAST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2534",
+            "name_raw": "Ceola Serena",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2535",
+            "name_raw": "Dandan Zhao",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "given_first",
+            "mode": "CHINESE",
+            "confidence": 0.9478464369215823,
+            "reason_codes": [
+              "CN_SURNAME_LAST_ONLY",
+              "FIRST_VALID_PY_NAME(2syl)",
+              "LAST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION",
+              "TWO_TOKENS_CN_SURNAME_LAST_INTL"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2544",
+            "name_raw": "Lee Zhongping",
+            "publication_id": "10.1038/s41561-021-00887-x",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2596",
+            "name_raw": "Ceola Serena",
+            "publication_id": "10.1016/j.jhydrol.2023.129353",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2613",
+            "name_raw": "Pashina Olesiya",
+            "publication_id": "10.1021/acs.nanolett.3c03597",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "publication": {
+        "n_records": 20046,
+        "errors": 174,
+        "error_rate": 0.008680035917390003,
+        "unknown": 1965,
+        "unknown_rate": 0.09802454354983538,
+        "coverage": 0.9019754564501646,
+        "mode_counts": {
+          "CHINESE": 18016,
+          "MIXED": 1831,
+          "WESTERN": 166,
+          "ABBREVIATION": 33
+        },
+        "order_counts": {
+          "family_first": 17907,
+          "unknown": 1965,
+          "given_first": 174
+        },
+        "known_non_chinese_records": 71,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 2,
+        "error_samples": [
+          {
+            "record_id": "219",
+            "name_raw": "Meledina Maria",
+            "publication_id": "10.1016/j.cej.2021.132162",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1173",
+            "name_raw": "Yazhou Shuang",
+            "publication_id": "10.1002/jctb.7873",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(-1.30)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1561",
+            "name_raw": "Liebi Marianne",
+            "publication_id": "10.1002/advs.202508635",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1603",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsami.2c13150",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1606",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsami.3c11542",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1609",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsenergylett.3c02513",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1610",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsenergylett.2c01668",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1611",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1149/1945-7111/ac208d",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1612",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsaem.3c01383",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1613",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1002/aenm.202301105",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2091",
+            "name_raw": "Bie Xiaofei",
+            "publication_id": "10.1002/chem.201702075",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2180",
+            "name_raw": "Cīrule Dace",
+            "publication_id": "10.1039/d0cp04091f",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2191",
+            "name_raw": "Sawa Takayoshi",
+            "publication_id": "10.1021/acsnano.9b03060",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2367",
+            "name_raw": "A Geruo",
+            "publication_id": "10.5194/essd-2022-261",
+            "order": "given_first",
+            "mode": "ABBREVIATION",
+            "confidence": 0.85,
+            "reason_codes": [
+              "ABBREV_A_Geruo_REVERSED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2480",
+            "name_raw": "Sunakawa Yu",
+            "publication_id": "10.1200/jco-25-00486",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.7502601055951177,
+            "reason_codes": [
+              "CN_SURNAME_LAST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2535",
+            "name_raw": "Dandan Zhao",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "given_first",
+            "mode": "CHINESE",
+            "confidence": 0.9478464369215823,
+            "reason_codes": [
+              "CN_SURNAME_LAST_ONLY",
+              "FIRST_VALID_PY_NAME(2syl)",
+              "LAST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION",
+              "TWO_TOKENS_CN_SURNAME_LAST_INTL"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2544",
+            "name_raw": "Lee Zhongping",
+            "publication_id": "10.1038/s41561-021-00887-x",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2596",
+            "name_raw": "Ceola Serena",
+            "publication_id": "10.1016/j.jhydrol.2023.129353",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2730",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.3390/insects13010096",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2746",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2747",
+            "name_raw": "Mayu Kasubuchi",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "JMNEDICT_ROLE_LOG_ODDS(-4.93)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2750",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.1016/j.ibmb.2023.103927",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2751",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.1002/ps.7515",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2900",
+            "name_raw": "Kalidasan Kamaladasan",
+            "publication_id": "10.1016/j.ijpharm.2024.124435",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "3488",
+            "name_raw": "Chong Shaokun",
+            "publication_id": "10.1039/c7gc03426a",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "person": {
+        "n_records": 20046,
+        "errors": 269,
+        "error_rate": 0.013419135987229372,
+        "unknown": 5368,
+        "unknown_rate": 0.2677840965778709,
+        "coverage": 0.732215903422129,
+        "mode_counts": {
+          "CHINESE": 18016,
+          "MIXED": 1831,
+          "WESTERN": 166,
+          "ABBREVIATION": 33
+        },
+        "order_counts": {
+          "family_first": 14409,
+          "unknown": 5368,
+          "given_first": 269
+        },
+        "known_non_chinese_records": 71,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 2,
+        "error_samples": [
+          {
+            "record_id": "56",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.1002/ps.8285",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "148",
+            "name_raw": "Kan Guoshi",
+            "publication_id": "10.1007/s11756-024-01728-z",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "219",
+            "name_raw": "Meledina Maria",
+            "publication_id": "10.1016/j.cej.2021.132162",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "298",
+            "name_raw": "Rudaya Natalia",
+            "publication_id": "10.1016/j.gloplacha.2024.104577",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "462",
+            "name_raw": "Riboli Elio",
+            "publication_id": "10.1038/ng.3002",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "495",
+            "name_raw": "Anne Michele",
+            "publication_id": "10.1038/s41562-021-01173-x",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1173",
+            "name_raw": "Yazhou Shuang",
+            "publication_id": "10.1002/jctb.7873",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(-1.30)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1561",
+            "name_raw": "Liebi Marianne",
+            "publication_id": "10.1002/advs.202508635",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1603",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsami.2c13150",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1606",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsami.3c11542",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1609",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsenergylett.3c02513",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1610",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsenergylett.2c01668",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1611",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1149/1945-7111/ac208d",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1612",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsaem.3c01383",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1613",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1002/aenm.202301105",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2091",
+            "name_raw": "Bie Xiaofei",
+            "publication_id": "10.1002/chem.201702075",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2180",
+            "name_raw": "Cīrule Dace",
+            "publication_id": "10.1039/d0cp04091f",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2191",
+            "name_raw": "Sawa Takayoshi",
+            "publication_id": "10.1021/acsnano.9b03060",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2367",
+            "name_raw": "A Geruo",
+            "publication_id": "10.5194/essd-2022-261",
+            "order": "given_first",
+            "mode": "ABBREVIATION",
+            "confidence": 0.85,
+            "reason_codes": [
+              "ABBREV_A_Geruo_REVERSED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2480",
+            "name_raw": "Sunakawa Yu",
+            "publication_id": "10.1200/jco-25-00486",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.7502601055951177,
+            "reason_codes": [
+              "CN_SURNAME_LAST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2534",
+            "name_raw": "Ceola Serena",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2535",
+            "name_raw": "Dandan Zhao",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "given_first",
+            "mode": "CHINESE",
+            "confidence": 0.9478464369215823,
+            "reason_codes": [
+              "CN_SURNAME_LAST_ONLY",
+              "FIRST_VALID_PY_NAME(2syl)",
+              "LAST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION",
+              "TWO_TOKENS_CN_SURNAME_LAST_INTL"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2544",
+            "name_raw": "Lee Zhongping",
+            "publication_id": "10.1038/s41561-021-00887-x",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2596",
+            "name_raw": "Ceola Serena",
+            "publication_id": "10.1016/j.jhydrol.2023.129353",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2613",
+            "name_raw": "Pashina Olesiya",
+            "publication_id": "10.1021/acs.nanolett.3c03597",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "person_publication": {
+        "n_records": 20046,
+        "errors": 174,
+        "error_rate": 0.008680035917390003,
+        "unknown": 1962,
+        "unknown_rate": 0.09787488775815624,
+        "coverage": 0.9021251122418438,
+        "mode_counts": {
+          "CHINESE": 18016,
+          "MIXED": 1831,
+          "WESTERN": 166,
+          "ABBREVIATION": 33
+        },
+        "order_counts": {
+          "family_first": 17910,
+          "unknown": 1962,
+          "given_first": 174
+        },
+        "known_non_chinese_records": 71,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 2,
+        "error_samples": [
+          {
+            "record_id": "219",
+            "name_raw": "Meledina Maria",
+            "publication_id": "10.1016/j.cej.2021.132162",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1173",
+            "name_raw": "Yazhou Shuang",
+            "publication_id": "10.1002/jctb.7873",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "CORPUS_ROLE_LOG_ODDS(-1.30)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1561",
+            "name_raw": "Liebi Marianne",
+            "publication_id": "10.1002/advs.202508635",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1603",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsami.2c13150",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1606",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsami.3c11542",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1609",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsenergylett.3c02513",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1610",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsenergylett.2c01668",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1611",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1149/1945-7111/ac208d",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1612",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1021/acsaem.3c01383",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "1613",
+            "name_raw": "Quemin Elisa",
+            "publication_id": "10.1002/aenm.202301105",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2091",
+            "name_raw": "Bie Xiaofei",
+            "publication_id": "10.1002/chem.201702075",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2180",
+            "name_raw": "Cīrule Dace",
+            "publication_id": "10.1039/d0cp04091f",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2191",
+            "name_raw": "Sawa Takayoshi",
+            "publication_id": "10.1021/acsnano.9b03060",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2367",
+            "name_raw": "A Geruo",
+            "publication_id": "10.5194/essd-2022-261",
+            "order": "given_first",
+            "mode": "ABBREVIATION",
+            "confidence": 0.85,
+            "reason_codes": [
+              "ABBREV_A_Geruo_REVERSED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2480",
+            "name_raw": "Sunakawa Yu",
+            "publication_id": "10.1200/jco-25-00486",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.7502601055951177,
+            "reason_codes": [
+              "CN_SURNAME_LAST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2535",
+            "name_raw": "Dandan Zhao",
+            "publication_id": "10.1080/02626667.2025.2469762",
+            "order": "given_first",
+            "mode": "CHINESE",
+            "confidence": 0.9478464369215823,
+            "reason_codes": [
+              "CN_SURNAME_LAST_ONLY",
+              "FIRST_VALID_PY_NAME(2syl)",
+              "LAST_SINGLE_SYLLABLE",
+              "CN_AFFILIATION",
+              "TWO_TOKENS_CN_SURNAME_LAST_INTL"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2544",
+            "name_raw": "Lee Zhongping",
+            "publication_id": "10.1038/s41561-021-00887-x",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2596",
+            "name_raw": "Ceola Serena",
+            "publication_id": "10.1016/j.jhydrol.2023.129353",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2730",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.3390/insects13010096",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2746",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2747",
+            "name_raw": "Mayu Kasubuchi",
+            "publication_id": "10.1016/j.ibmb.2022.103858",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.72,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN",
+              "JMNEDICT_ROLE_LOG_ODDS(-4.93)"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2750",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.1016/j.ibmb.2023.103927",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2751",
+            "name_raw": "Mang Dingze",
+            "publication_id": "10.1002/ps.7515",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "2900",
+            "name_raw": "Kalidasan Kamaladasan",
+            "publication_id": "10.1016/j.ijpharm.2024.124435",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "3488",
+            "name_raw": "Chong Shaokun",
+            "publication_id": "10.1039/c7gc03426a",
+            "order": "given_first",
+            "mode": "MIXED",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "NO_MATCH_DEFAULT_GIVEN"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      }
+    }
+  }
+}

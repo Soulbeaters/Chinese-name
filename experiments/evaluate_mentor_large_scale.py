@@ -82,6 +82,17 @@ def load_candidates(path: Path) -> List[Dict[str, Any]]:
     ]
 
 
+def load_all_split_names(path: Path) -> List[Dict[str, Any]]:
+    """Load every record with non-empty structured given/family fields."""
+    records = json.loads(path.read_text(encoding="utf-8"))
+    return [
+        record
+        for record in records
+        if str(record.get("firstname", "")).strip()
+        and str(record.get("lastname", "")).strip()
+    ]
+
+
 def name_pair_bucket(row: Dict[str, Any]) -> int:
     """Assign a normalized name pair to a deterministic five-way split."""
     key = (
@@ -187,6 +198,9 @@ def evaluate(
     publication_same_mode_only: bool,
     pair_hash_bucket: int | None = None,
     enable_corpus_role_model: bool = True,
+    enable_jmnedict_role_model: bool = True,
+    enable_ssa_census_role_model: bool = True,
+    candidate_filter: str = "pinyin",
 ) -> Dict[str, Any]:
     set_ablation_config(
         AblationConfig(
@@ -194,9 +208,11 @@ def evaluate(
             surname_share_ratio_threshold=surname_share_ratio_threshold,
             publication_same_mode_only=publication_same_mode_only,
             enable_corpus_role_model=enable_corpus_role_model,
+            enable_jmnedict_role_model=enable_jmnedict_role_model,
+            enable_ssa_census_role_model=enable_ssa_census_role_model,
         )
     )
-    rows = load_candidates(path)
+    rows = load_candidates(path) if candidate_filter == "pinyin" else load_all_split_names(path)
     if pair_hash_bucket is not None:
         rows = [row for row in rows if name_pair_bucket(row) == pair_hash_bucket]
     results: Dict[str, Any] = {
@@ -215,6 +231,9 @@ def evaluate(
         "publication_same_mode_only": publication_same_mode_only,
         "pair_hash_bucket": pair_hash_bucket,
         "enable_corpus_role_model": enable_corpus_role_model,
+        "enable_jmnedict_role_model": enable_jmnedict_role_model,
+        "enable_ssa_census_role_model": enable_ssa_census_role_model,
+        "candidate_filter": candidate_filter,
         "results": {},
     }
 
@@ -257,6 +276,9 @@ def main() -> None:
     parser.add_argument("--publication-same-mode-only", action="store_true")
     parser.add_argument("--pair-hash-bucket", type=int, choices=range(5))
     parser.add_argument("--disable-corpus-role-model", action="store_true")
+    parser.add_argument("--disable-jmnedict-role-model", action="store_true")
+    parser.add_argument("--disable-ssa-census-role-model", action="store_true")
+    parser.add_argument("--candidate-filter", choices=("pinyin", "all"), default="pinyin")
     args = parser.parse_args()
 
     result = evaluate(
@@ -267,6 +289,9 @@ def main() -> None:
         args.publication_same_mode_only,
         args.pair_hash_bucket,
         not args.disable_corpus_role_model,
+        not args.disable_jmnedict_role_model,
+        not args.disable_ssa_census_role_model,
+        args.candidate_filter,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -279,6 +304,9 @@ def main() -> None:
         "publication_same_mode_only": result["publication_same_mode_only"],
         "pair_hash_bucket": result["pair_hash_bucket"],
         "enable_corpus_role_model": result["enable_corpus_role_model"],
+        "enable_jmnedict_role_model": result["enable_jmnedict_role_model"],
+        "enable_ssa_census_role_model": result["enable_ssa_census_role_model"],
+        "candidate_filter": result["candidate_filter"],
         "results": {
             order: {
                 mode: {

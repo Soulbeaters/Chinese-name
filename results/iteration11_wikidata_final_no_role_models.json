@@ -1,0 +1,2693 @@
+{
+  "dataset": "results\\wikidata_external_final_offset10000_20260625.json",
+  "dataset_sha256": "d7536b3ba2d5e212c38181813a55e7fbc64896ad047cabae6af19b808231a7c0",
+  "candidate_records": 1660,
+  "unique_name_pairs": 1660,
+  "source": "CROSSREF",
+  "surname_frequency_strategy": "freq_disabled",
+  "surname_share_ratio_threshold": 1.0,
+  "publication_same_mode_only": false,
+  "pair_hash_bucket": null,
+  "enable_corpus_role_model": false,
+  "enable_jmnedict_role_model": false,
+  "enable_ssa_census_role_model": false,
+  "candidate_filter": "all",
+  "results": {
+    "given_first": {
+      "none": {
+        "n_records": 1660,
+        "errors": 102,
+        "error_rate": 0.06144578313253012,
+        "unknown": 0,
+        "unknown_rate": 0.0,
+        "coverage": 1.0,
+        "mode_counts": {
+          "WESTERN": 1215,
+          "MIXED": 445
+        },
+        "order_counts": {
+          "given_first": 1558,
+          "family_first": 102
+        },
+        "known_non_chinese_records": 1069,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 0,
+        "error_samples": [
+          {
+            "record_id": "747",
+            "name_raw": "Chris Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "773",
+            "name_raw": "Christopher Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "781",
+            "name_raw": "Dan Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "784",
+            "name_raw": "Charles Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "795",
+            "name_raw": "Robert Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.8320183851339245,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "811",
+            "name_raw": "Brian Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "832",
+            "name_raw": "Alyson Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "842",
+            "name_raw": "Katherine Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "844",
+            "name_raw": "Ethel Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "845",
+            "name_raw": "Edward Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "851",
+            "name_raw": "Irmgard Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "852",
+            "name_raw": "Elizabeth Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "861",
+            "name_raw": "Joseph Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "869",
+            "name_raw": "Agnes Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "890",
+            "name_raw": "James Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "899",
+            "name_raw": "Franziska Neuberger",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "904",
+            "name_raw": "Frances Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "906",
+            "name_raw": "Francis Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "911",
+            "name_raw": "Arthur Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "918",
+            "name_raw": "Kenneth Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "925",
+            "name_raw": "Catherine Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "933",
+            "name_raw": "Jason Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "935",
+            "name_raw": "Matthew Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "942",
+            "name_raw": "Anthony Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "952",
+            "name_raw": "Theodore Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "publication": {
+        "n_records": 1660,
+        "errors": 102,
+        "error_rate": 0.06144578313253012,
+        "unknown": 0,
+        "unknown_rate": 0.0,
+        "coverage": 1.0,
+        "mode_counts": {
+          "WESTERN": 1215,
+          "MIXED": 445
+        },
+        "order_counts": {
+          "given_first": 1558,
+          "family_first": 102
+        },
+        "known_non_chinese_records": 1069,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 0,
+        "error_samples": [
+          {
+            "record_id": "747",
+            "name_raw": "Chris Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "773",
+            "name_raw": "Christopher Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "781",
+            "name_raw": "Dan Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "784",
+            "name_raw": "Charles Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "795",
+            "name_raw": "Robert Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.8320183851339245,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "811",
+            "name_raw": "Brian Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "832",
+            "name_raw": "Alyson Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "842",
+            "name_raw": "Katherine Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "844",
+            "name_raw": "Ethel Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "845",
+            "name_raw": "Edward Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "851",
+            "name_raw": "Irmgard Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "852",
+            "name_raw": "Elizabeth Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "861",
+            "name_raw": "Joseph Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "869",
+            "name_raw": "Agnes Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "890",
+            "name_raw": "James Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "899",
+            "name_raw": "Franziska Neuberger",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "904",
+            "name_raw": "Frances Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "906",
+            "name_raw": "Francis Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "911",
+            "name_raw": "Arthur Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "918",
+            "name_raw": "Kenneth Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "925",
+            "name_raw": "Catherine Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "933",
+            "name_raw": "Jason Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "935",
+            "name_raw": "Matthew Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "942",
+            "name_raw": "Anthony Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "952",
+            "name_raw": "Theodore Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "person": {
+        "n_records": 1660,
+        "errors": 102,
+        "error_rate": 0.06144578313253012,
+        "unknown": 0,
+        "unknown_rate": 0.0,
+        "coverage": 1.0,
+        "mode_counts": {
+          "WESTERN": 1215,
+          "MIXED": 445
+        },
+        "order_counts": {
+          "given_first": 1558,
+          "family_first": 102
+        },
+        "known_non_chinese_records": 1069,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 0,
+        "error_samples": [
+          {
+            "record_id": "747",
+            "name_raw": "Chris Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "773",
+            "name_raw": "Christopher Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "781",
+            "name_raw": "Dan Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "784",
+            "name_raw": "Charles Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "795",
+            "name_raw": "Robert Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.8320183851339245,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "811",
+            "name_raw": "Brian Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "832",
+            "name_raw": "Alyson Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "842",
+            "name_raw": "Katherine Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "844",
+            "name_raw": "Ethel Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "845",
+            "name_raw": "Edward Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "851",
+            "name_raw": "Irmgard Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "852",
+            "name_raw": "Elizabeth Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "861",
+            "name_raw": "Joseph Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "869",
+            "name_raw": "Agnes Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "890",
+            "name_raw": "James Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "899",
+            "name_raw": "Franziska Neuberger",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "904",
+            "name_raw": "Frances Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "906",
+            "name_raw": "Francis Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "911",
+            "name_raw": "Arthur Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "918",
+            "name_raw": "Kenneth Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "925",
+            "name_raw": "Catherine Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "933",
+            "name_raw": "Jason Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "935",
+            "name_raw": "Matthew Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "942",
+            "name_raw": "Anthony Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "952",
+            "name_raw": "Theodore Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      },
+      "person_publication": {
+        "n_records": 1660,
+        "errors": 102,
+        "error_rate": 0.06144578313253012,
+        "unknown": 0,
+        "unknown_rate": 0.0,
+        "coverage": 1.0,
+        "mode_counts": {
+          "WESTERN": 1215,
+          "MIXED": 445
+        },
+        "order_counts": {
+          "given_first": 1558,
+          "family_first": 102
+        },
+        "known_non_chinese_records": 1069,
+        "known_non_chinese_errors": 0,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 0,
+        "error_samples": [
+          {
+            "record_id": "747",
+            "name_raw": "Chris Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "773",
+            "name_raw": "Christopher Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "781",
+            "name_raw": "Dan Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "MIXED",
+            "confidence": 0.7109495026250039,
+            "reason_codes": [
+              "CN_SURNAME_FIRST_ONLY_MIXED"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "784",
+            "name_raw": "Charles Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "795",
+            "name_raw": "Robert Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.8320183851339245,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "811",
+            "name_raw": "Brian Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "832",
+            "name_raw": "Alyson Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "842",
+            "name_raw": "Katherine Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "844",
+            "name_raw": "Ethel Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "845",
+            "name_raw": "Edward Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "851",
+            "name_raw": "Irmgard Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "852",
+            "name_raw": "Elizabeth Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "861",
+            "name_raw": "Joseph Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "869",
+            "name_raw": "Agnes Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "890",
+            "name_raw": "James Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "899",
+            "name_raw": "Franziska Neuberger",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "904",
+            "name_raw": "Frances Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "906",
+            "name_raw": "Francis Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "911",
+            "name_raw": "Arthur Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "918",
+            "name_raw": "Kenneth Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "925",
+            "name_raw": "Catherine Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "933",
+            "name_raw": "Jason Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "935",
+            "name_raw": "Matthew Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "942",
+            "name_raw": "Anthony Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          },
+          {
+            "record_id": "952",
+            "name_raw": "Theodore Kennedy",
+            "publication_id": null,
+            "order": "family_first",
+            "mode": "WESTERN",
+            "confidence": 0.6456563062257954,
+            "reason_codes": [
+              "WEST_SURNAME_FIRST"
+            ],
+            "known_non_chinese": false
+          }
+        ]
+      }
+    },
+    "family_first": {
+      "none": {
+        "n_records": 1660,
+        "errors": 694,
+        "error_rate": 0.41807228915662653,
+        "unknown": 0,
+        "unknown_rate": 0.0,
+        "coverage": 1.0,
+        "mode_counts": {
+          "WESTERN": 1225,
+          "MIXED": 435
+        },
+        "order_counts": {
+          "family_first": 966,
+          "given_first": 694
+        },
+        "known_non_chinese_records": 1069,
+        "known_non_chinese_errors": 140,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 0,
+        "error_samples": [
+          {
+            "record_id": "4",
+            "name_raw": "Jones Kathy",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "5",
+            "name_raw": "Jones Meredith",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "11",
+            "name_raw": "Jones Mason",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.9168273035060777,
+            "reason_codes": [
+              "WEST_SURNAME_LAST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "12",
+            "name_raw": "Jones Beckford",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "15",
+            "name_raw": "Jones Edythe",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "17",
+            "name_raw": "Jones Davies",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "22",
+            "name_raw": "Jones Ethan",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "41",
+            "name_raw": "Jones Warwick",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "43",
+            "name_raw": "Jones Raphael",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "56",
+            "name_raw": "Jones Ruthe",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "61",
+            "name_raw": "Jones Emerson",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "68",
+            "name_raw": "Jones Sherman",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "77",
+            "name_raw": "Jones Warren",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.9168273035060777,
+            "reason_codes": [
+              "WEST_SURNAME_LAST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "81",
+            "name_raw": "Jones Herschel",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "100",
+            "name_raw": "Jones Alexis",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "110",
+            "name_raw": "Jones Sophia",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "114",
+            "name_raw": "Jones Paris",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "129",
+            "name_raw": "Jones Bethan",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "130",
+            "name_raw": "Jones Tucker",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "145",
+            "name_raw": "Jones Dorothea",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "148",
+            "name_raw": "Jones Mitchell",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "151",
+            "name_raw": "Jones Delyth",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "152",
+            "name_raw": "Jones Ypres",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "160",
+            "name_raw": "Jones Elis",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "166",
+            "name_raw": "Jones Alison",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          }
+        ]
+      },
+      "publication": {
+        "n_records": 1660,
+        "errors": 694,
+        "error_rate": 0.41807228915662653,
+        "unknown": 0,
+        "unknown_rate": 0.0,
+        "coverage": 1.0,
+        "mode_counts": {
+          "WESTERN": 1225,
+          "MIXED": 435
+        },
+        "order_counts": {
+          "family_first": 966,
+          "given_first": 694
+        },
+        "known_non_chinese_records": 1069,
+        "known_non_chinese_errors": 140,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 0,
+        "error_samples": [
+          {
+            "record_id": "4",
+            "name_raw": "Jones Kathy",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "5",
+            "name_raw": "Jones Meredith",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "11",
+            "name_raw": "Jones Mason",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.9168273035060777,
+            "reason_codes": [
+              "WEST_SURNAME_LAST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "12",
+            "name_raw": "Jones Beckford",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "15",
+            "name_raw": "Jones Edythe",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "17",
+            "name_raw": "Jones Davies",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "22",
+            "name_raw": "Jones Ethan",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "41",
+            "name_raw": "Jones Warwick",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "43",
+            "name_raw": "Jones Raphael",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "56",
+            "name_raw": "Jones Ruthe",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "61",
+            "name_raw": "Jones Emerson",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "68",
+            "name_raw": "Jones Sherman",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "77",
+            "name_raw": "Jones Warren",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.9168273035060777,
+            "reason_codes": [
+              "WEST_SURNAME_LAST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "81",
+            "name_raw": "Jones Herschel",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "100",
+            "name_raw": "Jones Alexis",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "110",
+            "name_raw": "Jones Sophia",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "114",
+            "name_raw": "Jones Paris",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "129",
+            "name_raw": "Jones Bethan",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "130",
+            "name_raw": "Jones Tucker",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "145",
+            "name_raw": "Jones Dorothea",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "148",
+            "name_raw": "Jones Mitchell",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "151",
+            "name_raw": "Jones Delyth",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "152",
+            "name_raw": "Jones Ypres",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "160",
+            "name_raw": "Jones Elis",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "166",
+            "name_raw": "Jones Alison",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          }
+        ]
+      },
+      "person": {
+        "n_records": 1660,
+        "errors": 694,
+        "error_rate": 0.41807228915662653,
+        "unknown": 0,
+        "unknown_rate": 0.0,
+        "coverage": 1.0,
+        "mode_counts": {
+          "WESTERN": 1225,
+          "MIXED": 435
+        },
+        "order_counts": {
+          "family_first": 966,
+          "given_first": 694
+        },
+        "known_non_chinese_records": 1069,
+        "known_non_chinese_errors": 140,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 0,
+        "error_samples": [
+          {
+            "record_id": "4",
+            "name_raw": "Jones Kathy",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "5",
+            "name_raw": "Jones Meredith",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "11",
+            "name_raw": "Jones Mason",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.9168273035060777,
+            "reason_codes": [
+              "WEST_SURNAME_LAST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "12",
+            "name_raw": "Jones Beckford",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "15",
+            "name_raw": "Jones Edythe",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "17",
+            "name_raw": "Jones Davies",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "22",
+            "name_raw": "Jones Ethan",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "41",
+            "name_raw": "Jones Warwick",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "43",
+            "name_raw": "Jones Raphael",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "56",
+            "name_raw": "Jones Ruthe",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "61",
+            "name_raw": "Jones Emerson",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "68",
+            "name_raw": "Jones Sherman",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "77",
+            "name_raw": "Jones Warren",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.9168273035060777,
+            "reason_codes": [
+              "WEST_SURNAME_LAST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "81",
+            "name_raw": "Jones Herschel",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "100",
+            "name_raw": "Jones Alexis",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "110",
+            "name_raw": "Jones Sophia",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "114",
+            "name_raw": "Jones Paris",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "129",
+            "name_raw": "Jones Bethan",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "130",
+            "name_raw": "Jones Tucker",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "145",
+            "name_raw": "Jones Dorothea",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "148",
+            "name_raw": "Jones Mitchell",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "151",
+            "name_raw": "Jones Delyth",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "152",
+            "name_raw": "Jones Ypres",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "160",
+            "name_raw": "Jones Elis",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "166",
+            "name_raw": "Jones Alison",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          }
+        ]
+      },
+      "person_publication": {
+        "n_records": 1660,
+        "errors": 694,
+        "error_rate": 0.41807228915662653,
+        "unknown": 0,
+        "unknown_rate": 0.0,
+        "coverage": 1.0,
+        "mode_counts": {
+          "WESTERN": 1225,
+          "MIXED": 435
+        },
+        "order_counts": {
+          "family_first": 966,
+          "given_first": 694
+        },
+        "known_non_chinese_records": 1069,
+        "known_non_chinese_errors": 140,
+        "known_non_chinese_unknown": 0,
+        "known_non_chinese_chinese_mode": 0,
+        "error_samples": [
+          {
+            "record_id": "4",
+            "name_raw": "Jones Kathy",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "5",
+            "name_raw": "Jones Meredith",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "11",
+            "name_raw": "Jones Mason",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.9168273035060777,
+            "reason_codes": [
+              "WEST_SURNAME_LAST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "12",
+            "name_raw": "Jones Beckford",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "15",
+            "name_raw": "Jones Edythe",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "17",
+            "name_raw": "Jones Davies",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "22",
+            "name_raw": "Jones Ethan",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "41",
+            "name_raw": "Jones Warwick",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "43",
+            "name_raw": "Jones Raphael",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "56",
+            "name_raw": "Jones Ruthe",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "61",
+            "name_raw": "Jones Emerson",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "68",
+            "name_raw": "Jones Sherman",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "77",
+            "name_raw": "Jones Warren",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.9168273035060777,
+            "reason_codes": [
+              "WEST_SURNAME_LAST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "81",
+            "name_raw": "Jones Herschel",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "100",
+            "name_raw": "Jones Alexis",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "110",
+            "name_raw": "Jones Sophia",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "114",
+            "name_raw": "Jones Paris",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "129",
+            "name_raw": "Jones Bethan",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "130",
+            "name_raw": "Jones Tucker",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "145",
+            "name_raw": "Jones Dorothea",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "148",
+            "name_raw": "Jones Mitchell",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "151",
+            "name_raw": "Jones Delyth",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "152",
+            "name_raw": "Jones Ypres",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "160",
+            "name_raw": "Jones Elis",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          },
+          {
+            "record_id": "166",
+            "name_raw": "Jones Alison",
+            "publication_id": null,
+            "order": "given_first",
+            "mode": "WESTERN",
+            "confidence": 0.8021838885585817,
+            "reason_codes": [
+              "WEST_SURNAME_LAST",
+              "KNOWN_NON_CHINESE_SURNAME_FIRST"
+            ],
+            "known_non_chinese": true
+          }
+        ]
+      }
+    }
+  }
+}

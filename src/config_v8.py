@@ -273,6 +273,12 @@ class AblationConfig:
     # Frozen Crossref token-role model trained on name-pair-disjoint records.
     enable_corpus_role_model: bool = True
 
+    # Independent Japanese surname/given evidence derived from JMnedict.
+    enable_jmnedict_role_model: bool = True
+
+    # Normalized SSA given-name vs 2010 Census surname evidence.
+    enable_ssa_census_role_model: bool = True
+
     # 作者级一致性开关 / Person-level consistency switch
     enable_person_consistency: bool = True
 
