@@ -2,7 +2,7 @@
 
 Generated: 2026-06-24
 
-Branch: `codex/mentor-20260623-optimize`
+Branch: `mentor-20260623-optimize` (archived local experiment; superseded by the final multilingual branch)
 
 Base: `origin/zenderro/20260623-fix` (`3ebaf5a`)
 

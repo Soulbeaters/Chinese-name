@@ -33,7 +33,7 @@ The committed derived model is documented in
 | `pl_pesel_surnames_male_2026.csv` | `ce4238feda85e75c73b16a229eb8afc1dfccb8854a7809111ab85fb8672b62f4` |
 | `se_scb_names_by_birth_country_2020.zip` | `908602a4ea1e0ccc577c74bb8b71fe2b0d428ef4cb3c2d84c44319d8f8360351` |
 
-Raw files are cached outside the repository under the local Codex
+Raw files are cached outside the repository under the local
 `external_data/official_name_stats_20260625` directory. They are intentionally
 not committed.
 
