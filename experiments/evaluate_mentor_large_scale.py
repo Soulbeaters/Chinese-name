@@ -200,6 +200,7 @@ def evaluate(
     enable_corpus_role_model: bool = True,
     enable_jmnedict_role_model: bool = True,
     enable_ssa_census_role_model: bool = True,
+    enable_official_name_stats_role_model: bool = True,
     candidate_filter: str = "pinyin",
 ) -> Dict[str, Any]:
     set_ablation_config(
@@ -210,6 +211,7 @@ def evaluate(
             enable_corpus_role_model=enable_corpus_role_model,
             enable_jmnedict_role_model=enable_jmnedict_role_model,
             enable_ssa_census_role_model=enable_ssa_census_role_model,
+            enable_official_name_stats_role_model=enable_official_name_stats_role_model,
         )
     )
     rows = load_candidates(path) if candidate_filter == "pinyin" else load_all_split_names(path)
@@ -233,6 +235,7 @@ def evaluate(
         "enable_corpus_role_model": enable_corpus_role_model,
         "enable_jmnedict_role_model": enable_jmnedict_role_model,
         "enable_ssa_census_role_model": enable_ssa_census_role_model,
+        "enable_official_name_stats_role_model": enable_official_name_stats_role_model,
         "candidate_filter": candidate_filter,
         "results": {},
     }
@@ -278,6 +281,7 @@ def main() -> None:
     parser.add_argument("--disable-corpus-role-model", action="store_true")
     parser.add_argument("--disable-jmnedict-role-model", action="store_true")
     parser.add_argument("--disable-ssa-census-role-model", action="store_true")
+    parser.add_argument("--disable-official-name-stats-role-model", action="store_true")
     parser.add_argument("--candidate-filter", choices=("pinyin", "all"), default="pinyin")
     args = parser.parse_args()
 
@@ -291,6 +295,7 @@ def main() -> None:
         not args.disable_corpus_role_model,
         not args.disable_jmnedict_role_model,
         not args.disable_ssa_census_role_model,
+        not args.disable_official_name_stats_role_model,
         args.candidate_filter,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
@@ -306,6 +311,7 @@ def main() -> None:
         "enable_corpus_role_model": result["enable_corpus_role_model"],
         "enable_jmnedict_role_model": result["enable_jmnedict_role_model"],
         "enable_ssa_census_role_model": result["enable_ssa_census_role_model"],
+        "enable_official_name_stats_role_model": result["enable_official_name_stats_role_model"],
         "candidate_filter": result["candidate_filter"],
         "results": {
             order: {

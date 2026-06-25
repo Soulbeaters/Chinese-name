@@ -27,7 +27,12 @@ from data.surname_frequency import (
     get_surname_frequency_rank,
 )
 from data.non_chinese_surnames import is_strong_non_chinese_surname
-from data.name_role_model import get_jmnedict_role, get_ssa_census_role, get_token_role
+from data.name_role_model import (
+    get_jmnedict_role,
+    get_official_stats_role,
+    get_ssa_census_role,
+    get_token_role,
+)
 from data.western_name_features import (
     has_western_suffix,
     has_western_consonant_cluster,
@@ -1114,6 +1119,58 @@ def _apply_ssa_census_role_model(
         reason_codes=decision.reason_codes + [f"SSA_CENSUS_ROLE_LOG_ODDS({delta:.2f})"],
     )
 
+
+def _apply_official_name_stats_role_model(
+    record: NameRecord,
+    parsed: ParsedName,
+    decision: NameDecision,
+    cfg: SourceConfig,
+) -> NameDecision:
+    """Refine weak Crossref decisions with official national name statistics."""
+    if not get_ablation_config().enable_official_name_stats_role_model:
+        return decision
+    if record.source not in ("CROSSREF", "crossref", "Crossref"):
+        return decision
+    eligible_reasons = {
+        "NO_MATCH_DEFAULT_GIVEN",
+        "NO_CN_EVIDENCE_DEFAULT_GIVEN",
+        "FORCED_GIVEN_ON_TIE",
+        "DELTA_SMALL_MIXED",
+    }
+    morphology_only_western = (
+        decision.mode == "WESTERN"
+        and any(code in {"WEST_SURNAME_FIRST", "WEST_SURNAME_LAST"} for code in decision.reason_codes)
+        and not any(code.startswith("KNOWN_NON_CHINESE_SURNAME") for code in decision.reason_codes)
+    )
+    if decision.confidence >= cfg.pub_conf_thresh and not morphology_only_western:
+        return decision
+    if (
+        not morphology_only_western
+        and not any(code in eligible_reasons for code in decision.reason_codes)
+    ):
+        return decision
+
+    first = parsed.tokens[parsed.first_idx].ascii.lower()
+    last = parsed.tokens[parsed.last_idx].ascii.lower()
+    first_role = get_official_stats_role(first)
+    last_role = get_official_stats_role(last)
+    if not first_role or not last_role:
+        return decision
+    first_log_odds, first_support = first_role
+    last_log_odds, last_support = last_role
+    if first_support < 3 or last_support < 3:
+        return decision
+    delta = first_log_odds - last_log_odds
+    if abs(delta) < 2.0:
+        return decision
+    return NameDecision(
+        order="family_first" if delta > 0 else "given_first",
+        confidence=0.72,
+        mode=decision.mode,
+        reason_codes=decision.reason_codes + [f"OFFICIAL_STATS_ROLE_LOG_ODDS({delta:.2f})"],
+    )
+
+
 def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
     """
     单条记录局部决策
@@ -1257,7 +1314,8 @@ def local_decision(record: NameRecord, cfg: SourceConfig) -> NameDecision:
 
     decision = _apply_corpus_role_model(record, parsed, decision, cfg)
     decision = _apply_jmnedict_role_model(record, parsed, decision, cfg)
-    return _apply_ssa_census_role_model(record, parsed, decision, cfg)
+    decision = _apply_ssa_census_role_model(record, parsed, decision, cfg)
+    return _apply_official_name_stats_role_model(record, parsed, decision, cfg)
 
 
 # ========== 模块6: 批量一致性 Module 6: Batch Consistency ==========

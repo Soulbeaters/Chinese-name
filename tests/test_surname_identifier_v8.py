@@ -499,6 +499,7 @@ def test_corpus_role_model_only_refines_weak_crossref_default():
             enable_corpus_role_model=False,
             enable_jmnedict_role_model=False,
             enable_ssa_census_role_model=False,
+            enable_official_name_stats_role_model=False,
         )
     )
     try:
@@ -528,6 +529,7 @@ def test_jmnedict_role_model_resolves_unseen_japanese_order():
                 enable_corpus_role_model=False,
                 enable_jmnedict_role_model=False,
                 enable_ssa_census_role_model=False,
+                enable_official_name_stats_role_model=False,
             )
         )
         disabled = local_decision(
@@ -548,6 +550,7 @@ def test_ssa_census_role_model_resolves_western_name_order():
         AblationConfig(
             enable_corpus_role_model=False,
             enable_jmnedict_role_model=False,
+            enable_official_name_stats_role_model=False,
         )
     )
     try:
@@ -564,6 +567,7 @@ def test_ssa_census_role_model_resolves_western_name_order():
                 enable_corpus_role_model=False,
                 enable_jmnedict_role_model=False,
                 enable_ssa_census_role_model=False,
+                enable_official_name_stats_role_model=False,
             )
         )
         disabled = local_decision(
@@ -580,18 +584,60 @@ def test_ssa_census_role_model_resolves_western_name_order():
 
 
 def test_ssa_census_role_overrides_western_name_morphology_only():
-    family_first = local_decision(
-        NameRecord(record_id="family", name_raw="Bowers Elizabeth", source="CROSSREF"),
-        get_config("CROSSREF"),
-    )
-    given_first = local_decision(
-        NameRecord(record_id="given", name_raw="Elizabeth Bowers", source="CROSSREF"),
-        get_config("CROSSREF"),
-    )
+    set_ablation_config(AblationConfig(enable_official_name_stats_role_model=False))
+    try:
+        family_first = local_decision(
+            NameRecord(record_id="family", name_raw="Bowers Elizabeth", source="CROSSREF"),
+            get_config("CROSSREF"),
+        )
+        given_first = local_decision(
+            NameRecord(record_id="given", name_raw="Elizabeth Bowers", source="CROSSREF"),
+            get_config("CROSSREF"),
+        )
+    finally:
+        reset_ablation_config()
 
     assert family_first.order == "family_first"
     assert given_first.order == "given_first"
     assert any(code.startswith("SSA_CENSUS_ROLE_LOG_ODDS") for code in family_first.reason_codes)
+
+
+def test_official_name_stats_role_model_resolves_polish_name_order():
+    set_ablation_config(
+        AblationConfig(
+            enable_corpus_role_model=False,
+            enable_jmnedict_role_model=False,
+            enable_ssa_census_role_model=False,
+        )
+    )
+    try:
+        family_first = local_decision(
+            NameRecord(record_id="family", name_raw="Nowak Katarzyna", source="CROSSREF"),
+            get_config("CROSSREF"),
+        )
+        given_first = local_decision(
+            NameRecord(record_id="given", name_raw="Katarzyna Nowak", source="CROSSREF"),
+            get_config("CROSSREF"),
+        )
+        set_ablation_config(
+            AblationConfig(
+                enable_corpus_role_model=False,
+                enable_jmnedict_role_model=False,
+                enable_ssa_census_role_model=False,
+                enable_official_name_stats_role_model=False,
+            )
+        )
+        disabled = local_decision(
+            NameRecord(record_id="disabled", name_raw="Nowak Katarzyna", source="CROSSREF"),
+            get_config("CROSSREF"),
+        )
+    finally:
+        reset_ablation_config()
+
+    assert family_first.order == "family_first"
+    assert given_first.order == "given_first"
+    assert any(code.startswith("OFFICIAL_STATS_ROLE_LOG_ODDS") for code in family_first.reason_codes)
+    assert disabled.order == "given_first"
 
 
 def test_duplicate_split_fields_are_not_proxy_labels():

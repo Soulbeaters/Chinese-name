@@ -279,6 +279,9 @@ class AblationConfig:
     # Normalized SSA given-name vs 2010 Census surname evidence.
     enable_ssa_census_role_model: bool = True
 
+    # Official national name statistics from US Census 2020, INSEE, PESEL, and SCB.
+    enable_official_name_stats_role_model: bool = True
+
     # 作者级一致性开关 / Person-level consistency switch
     enable_person_consistency: bool = True
 

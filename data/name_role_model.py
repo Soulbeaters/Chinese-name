@@ -13,6 +13,7 @@ from typing import Optional, Tuple
 MODEL_PATH = Path(__file__).with_name("name_role_counts.json")
 JMNEDICT_MODEL_PATH = Path(__file__).with_name("jmnedict_role_counts.json")
 SSA_CENSUS_MODEL_PATH = Path(__file__).with_name("ssa_census_role_counts.json")
+OFFICIAL_STATS_MODEL_PATH = Path(__file__).with_name("official_name_stats_role_counts.json")
 
 
 @lru_cache(maxsize=1)
@@ -53,6 +54,25 @@ def _ssa_census_payload() -> dict:
 def get_ssa_census_role(token: str) -> Optional[Tuple[float, int]]:
     """Return normalized US surname-vs-given log-odds and support."""
     payload = _ssa_census_payload()
+    values = payload["counts"].get(token.lower())
+    if not values:
+        return None
+    surname_count, given_count = values
+    totals = payload["totals"]
+    vocabulary = totals["vocabulary"]
+    surname_probability = (surname_count + 1.0) / (totals["surname"] + vocabulary)
+    given_probability = (given_count + 1.0) / (totals["given"] + vocabulary)
+    return math.log(surname_probability / given_probability), surname_count + given_count
+
+
+@lru_cache(maxsize=1)
+def _official_stats_payload() -> dict:
+    return json.loads(OFFICIAL_STATS_MODEL_PATH.read_text(encoding="utf-8"))
+
+
+def get_official_stats_role(token: str) -> Optional[Tuple[float, int]]:
+    """Return official national-statistics surname-vs-given log-odds and support."""
+    payload = _official_stats_payload()
     values = payload["counts"].get(token.lower())
     if not values:
         return None
