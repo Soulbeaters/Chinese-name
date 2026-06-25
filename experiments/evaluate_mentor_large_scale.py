@@ -190,6 +190,50 @@ def summarize(
     }
 
 
+def apply_confidence_gate(
+    decisions: Dict[str, NameDecision],
+    min_decision_confidence: float,
+) -> Dict[str, NameDecision]:
+    """Route low-confidence final decisions to manual-review UNKNOWN."""
+    if min_decision_confidence <= 0:
+        return decisions
+    gated: Dict[str, NameDecision] = {}
+    for record_id, decision in decisions.items():
+        if decision.order == "unknown" or decision.confidence >= min_decision_confidence:
+            gated[record_id] = decision
+            continue
+        gated[record_id] = NameDecision(
+            order="unknown",
+            confidence=decision.confidence,
+            mode=decision.mode,
+            reason_codes=decision.reason_codes
+            + [f"PRODUCTION_REVIEW_LOW_CONFIDENCE(<{min_decision_confidence:.2f})"],
+        )
+    return gated
+
+
+def apply_reason_review_gate(
+    decisions: Dict[str, NameDecision],
+    review_reason_codes: Iterable[str],
+) -> Dict[str, NameDecision]:
+    """Route configured high-risk reason codes to manual-review UNKNOWN."""
+    review_reasons = set(review_reason_codes)
+    if not review_reasons:
+        return decisions
+    gated: Dict[str, NameDecision] = {}
+    for record_id, decision in decisions.items():
+        if decision.order == "unknown" or not (set(decision.reason_codes) & review_reasons):
+            gated[record_id] = decision
+            continue
+        gated[record_id] = NameDecision(
+            order="unknown",
+            confidence=decision.confidence,
+            mode=decision.mode,
+            reason_codes=decision.reason_codes + ["PRODUCTION_REVIEW_HIGH_RISK_REASON"],
+        )
+    return gated
+
+
 def evaluate(
     path: Path,
     source: str,
@@ -202,6 +246,8 @@ def evaluate(
     enable_ssa_census_role_model: bool = True,
     enable_official_name_stats_role_model: bool = True,
     candidate_filter: str = "pinyin",
+    min_decision_confidence: float = 0.0,
+    review_reason_codes: Iterable[str] = (),
 ) -> Dict[str, Any]:
     set_ablation_config(
         AblationConfig(
@@ -237,6 +283,8 @@ def evaluate(
         "enable_ssa_census_role_model": enable_ssa_census_role_model,
         "enable_official_name_stats_role_model": enable_official_name_stats_role_model,
         "candidate_filter": candidate_filter,
+        "min_decision_confidence": min_decision_confidence,
+        "review_reason_codes": list(review_reason_codes),
         "results": {},
     }
 
@@ -254,6 +302,8 @@ def evaluate(
                 decisions = adjust_by_publication(records, decisions, config)
             if person_enabled:
                 decisions = adjust_by_person(records, decisions, config)
+            decisions = apply_confidence_gate(decisions, min_decision_confidence)
+            decisions = apply_reason_review_gate(decisions, review_reason_codes)
             order_results[mode_name] = summarize(
                 records,
                 decisions,
@@ -283,6 +333,8 @@ def main() -> None:
     parser.add_argument("--disable-ssa-census-role-model", action="store_true")
     parser.add_argument("--disable-official-name-stats-role-model", action="store_true")
     parser.add_argument("--candidate-filter", choices=("pinyin", "all"), default="pinyin")
+    parser.add_argument("--min-decision-confidence", type=float, default=0.0)
+    parser.add_argument("--review-reason-codes", nargs="*", default=[])
     args = parser.parse_args()
 
     result = evaluate(
@@ -297,6 +349,8 @@ def main() -> None:
         not args.disable_ssa_census_role_model,
         not args.disable_official_name_stats_role_model,
         args.candidate_filter,
+        args.min_decision_confidence,
+        args.review_reason_codes,
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -313,6 +367,8 @@ def main() -> None:
         "enable_ssa_census_role_model": result["enable_ssa_census_role_model"],
         "enable_official_name_stats_role_model": result["enable_official_name_stats_role_model"],
         "candidate_filter": result["candidate_filter"],
+        "min_decision_confidence": result["min_decision_confidence"],
+        "review_reason_codes": result["review_reason_codes"],
         "results": {
             order: {
                 mode: {

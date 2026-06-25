@@ -29,6 +29,10 @@ from src.surname_identifier_v8 import (
     preprocess_name,
     review_crossref_split_fields_v8,
 )
+from experiments.evaluate_mentor_large_scale import (
+    apply_confidence_gate,
+    apply_reason_review_gate,
+)
 
 
 def _local_strategy_decision(
@@ -638,6 +642,32 @@ def test_official_name_stats_role_model_resolves_polish_name_order():
     assert given_first.order == "given_first"
     assert any(code.startswith("OFFICIAL_STATS_ROLE_LOG_ODDS") for code in family_first.reason_codes)
     assert disabled.order == "given_first"
+
+
+def test_production_confidence_gate_routes_low_confidence_to_unknown():
+    decisions = {
+        "low": NameDecision("family_first", 0.71, "MIXED", ["NO_MATCH_DEFAULT_GIVEN"]),
+        "high": NameDecision("given_first", 0.90, "WESTERN", ["WEST_SURNAME_LAST"]),
+    }
+
+    gated = apply_confidence_gate(decisions, 0.72)
+
+    assert gated["low"].order == "unknown"
+    assert gated["high"].order == "given_first"
+    assert "PRODUCTION_REVIEW_LOW_CONFIDENCE(<0.72)" in gated["low"].reason_codes
+
+
+def test_production_reason_gate_routes_configured_reason_to_unknown():
+    decisions = {
+        "risk": NameDecision("given_first", 0.90, "WESTERN", ["WEST_SURNAME_LAST"]),
+        "safe": NameDecision("family_first", 0.90, "CHINESE", ["CN_SURNAME_FIRST_ONLY"]),
+    }
+
+    gated = apply_reason_review_gate(decisions, ["WEST_SURNAME_LAST"])
+
+    assert gated["risk"].order == "unknown"
+    assert gated["safe"].order == "family_first"
+    assert "PRODUCTION_REVIEW_HIGH_RISK_REASON" in gated["risk"].reason_codes
 
 
 def test_duplicate_split_fields_are_not_proxy_labels():
