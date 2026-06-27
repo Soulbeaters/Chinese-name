@@ -211,3 +211,50 @@ def test_evaluate_mentions_reports_cluster_metrics():
     assert result["candidate_pairwise"]["tp"] == 1
     assert result["cluster_pairwise"]["tp"] == 1
     assert result["b_cubed"]["f1"] > 0
+
+
+def test_large_blocks_use_exact_name_subblocks_instead_of_full_skip():
+    rows = [
+        {
+            "firstname": "Alex",
+            "lastname": "Smith",
+            "doi": "10.test/a",
+            "year": 2020,
+            "affiliation": "Specific Institute",
+            "orcid": "0000-0001-0000-0001",
+        },
+        {
+            "firstname": "Alex",
+            "lastname": "Smith",
+            "doi": "10.test/b",
+            "year": 2021,
+            "affiliation": "Specific Institute",
+            "orcid": "0000-0001-0000-0001",
+        },
+        {
+            "firstname": "Alice",
+            "lastname": "Smith",
+            "doi": "10.test/c",
+            "year": 2021,
+            "affiliation": "Other Institute",
+            "orcid": "0000-0002-0000-0002",
+        },
+        {
+            "firstname": "Andrew",
+            "lastname": "Smith",
+            "doi": "10.test/d",
+            "year": 2021,
+            "affiliation": "Other Institute",
+            "orcid": "0000-0003-0000-0003",
+        },
+    ]
+    result = evaluate_mentions(
+        [_mention(row, index) for index, row in enumerate(rows)],
+        DisambiguationConfig(max_block_size=3),
+    )
+
+    assert result["skipped_large_blocks"] == 1
+    assert result["large_block_exact_subblocks"] == 1
+    assert result["large_block_exact_subblock_candidate_pairs"] == 1
+    assert result["evaluated_pairs"] == 1
+    assert result["candidate_pairwise"]["tp"] == 1

@@ -6,6 +6,8 @@
   "blocks": 11297,
   "max_block_size": 200,
   "skipped_large_blocks": 0,
+  "large_block_exact_subblocks": 0,
+  "large_block_exact_subblock_candidate_pairs": 0,
   "evaluated_pairs": 28436,
   "same_paper_skipped_pairs": 33,
   "candidate_pairwise": {

@@ -30,6 +30,10 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
         "unique_orcid": result["unique_orcid"],
         "evaluated_pairs": result["evaluated_pairs"],
         "skipped_large_blocks": result["skipped_large_blocks"],
+        "large_block_exact_subblocks": result["large_block_exact_subblocks"],
+        "large_block_exact_subblock_candidate_pairs": (
+            result["large_block_exact_subblock_candidate_pairs"]
+        ),
         "candidate_pairwise": result["candidate_pairwise"],
         "cluster_pairwise": result["cluster_pairwise"],
         "b_cubed": result["b_cubed"],

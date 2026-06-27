@@ -272,6 +272,13 @@ def build_blocks(mentions: Iterable[AuthorMention]) -> dict[str, list[int]]:
     return blocks
 
 
+def exact_name_subblocks(mentions: list[AuthorMention], positions: list[int]) -> list[list[int]]:
+    groups: dict[str, list[int]] = defaultdict(list)
+    for position in positions:
+        groups[mentions[position].entity_name_key].append(position)
+    return [group for group in groups.values() if len(group) >= 2]
+
+
 def build_coauthor_sets(mentions: list[AuthorMention]) -> dict[int, set[str]]:
     names_by_paper: dict[str, set[str]] = defaultdict(set)
     for mention in mentions:
@@ -582,49 +589,61 @@ def evaluate_mentions(
     rule_counts: Counter[str] = Counter()
     examples: dict[str, list[dict[str, Any]]] = defaultdict(list)
     skipped_large_blocks = 0
+    large_block_exact_subblocks = 0
+    large_block_exact_subblock_candidate_pairs = 0
 
     for key, positions in blocks.items():
+        candidate_groups = [positions]
         if len(positions) > config.max_block_size:
             skipped_large_blocks += 1
-            continue
-
-        for left_position, right_position in combinations(positions, 2):
-            left = mentions[left_position]
-            right = mentions[right_position]
-            if left.paper_key and left.paper_key == right.paper_key:
-                pair_counts["same_paper_skipped"] += 1
-                continue
-
-            decision = decide_pair(
-                left,
-                right,
-                affiliations[left_position],
-                affiliations[right_position],
-                coauthors[left_position],
-                coauthors[right_position],
-                affiliation_weights,
-                config,
+            candidate_groups = [
+                group
+                for group in exact_name_subblocks(mentions, positions)
+                if len(group) <= config.max_block_size
+            ]
+            large_block_exact_subblocks += len(candidate_groups)
+            large_block_exact_subblock_candidate_pairs += sum(
+                n_choose_2(len(group)) for group in candidate_groups
             )
-            rule_counts[decision.rule] += 1
 
-            same_truth = left.label_orcid == right.label_orcid
-            if decision.same_author:
-                uf.union(left_position, right_position)
+        for candidate_positions in candidate_groups:
+            for left_position, right_position in combinations(candidate_positions, 2):
+                left = mentions[left_position]
+                right = mentions[right_position]
+                if left.paper_key and left.paper_key == right.paper_key:
+                    pair_counts["same_paper_skipped"] += 1
+                    continue
 
-            bucket = ""
-            if decision.same_author and same_truth:
-                pair_counts["tp"] += 1
-            elif decision.same_author and not same_truth:
-                pair_counts["fp"] += 1
-                bucket = "false_positive"
-            elif not decision.same_author and same_truth:
-                pair_counts["fn"] += 1
-                bucket = "false_negative"
-            else:
-                pair_counts["tn"] += 1
+                decision = decide_pair(
+                    left,
+                    right,
+                    affiliations[left_position],
+                    affiliations[right_position],
+                    coauthors[left_position],
+                    coauthors[right_position],
+                    affiliation_weights,
+                    config,
+                )
+                rule_counts[decision.rule] += 1
 
-            if bucket and len(examples[bucket]) < config.example_limit:
-                examples[bucket].append(format_example(key, left, right, decision))
+                same_truth = left.label_orcid == right.label_orcid
+                if decision.same_author:
+                    uf.union(left_position, right_position)
+
+                bucket = ""
+                if decision.same_author and same_truth:
+                    pair_counts["tp"] += 1
+                elif decision.same_author and not same_truth:
+                    pair_counts["fp"] += 1
+                    bucket = "false_positive"
+                elif not decision.same_author and same_truth:
+                    pair_counts["fn"] += 1
+                    bucket = "false_negative"
+                else:
+                    pair_counts["tn"] += 1
+
+                if bucket and len(examples[bucket]) < config.example_limit:
+                    examples[bucket].append(format_example(key, left, right, decision))
 
     tp = pair_counts["tp"]
     fp = pair_counts["fp"]
@@ -639,6 +658,8 @@ def evaluate_mentions(
         "blocks": len(blocks),
         "max_block_size": config.max_block_size,
         "skipped_large_blocks": skipped_large_blocks,
+        "large_block_exact_subblocks": large_block_exact_subblocks,
+        "large_block_exact_subblock_candidate_pairs": large_block_exact_subblock_candidate_pairs,
         "evaluated_pairs": tp + fp + fn + pair_counts["tn"],
         "same_paper_skipped_pairs": pair_counts["same_paper_skipped"],
         "candidate_pairwise": {
