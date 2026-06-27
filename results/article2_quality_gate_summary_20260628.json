@@ -1,0 +1,84 @@
+{
+  "thresholds": {
+    "candidate_pairwise_precision": 0.99,
+    "cluster_pairwise_precision": 0.99,
+    "b_cubed_f1": 0.95
+  },
+  "datasets": [
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "labeled_mentions": 150775,
+      "unique_orcid": 45730,
+      "baseline_algorithm": "baseline_exact_context",
+      "candidate_algorithm": "framework_v1",
+      "candidate_profile": "balanced",
+      "baseline": {
+        "candidate_pairwise_f1": 0.6425211074424985,
+        "cluster_pairwise_f1": 0.742280369245281,
+        "b_cubed_f1": 0.8504987946759248
+      },
+      "candidate": {
+        "candidate_pairwise_precision": 0.9965616758432425,
+        "candidate_pairwise_recall": 0.473034991815683,
+        "candidate_pairwise_f1": 0.6415481942093507,
+        "cluster_pairwise_precision": 0.9923864485399415,
+        "cluster_pairwise_recall": 0.64788000655452,
+        "cluster_pairwise_f1": 0.7839547492881542,
+        "b_cubed_precision": 0.9967481962568046,
+        "b_cubed_recall": 0.7740363980081801,
+        "b_cubed_f1": 0.8713870518757354
+      },
+      "delta_vs_baseline": {
+        "candidate_pairwise_f1": -0.000972913233147743,
+        "cluster_pairwise_f1": 0.04167438004287327,
+        "b_cubed_f1": 0.020888257199810578
+      },
+      "production_checks": {
+        "candidate_pairwise_precision": true,
+        "cluster_pairwise_precision": true,
+        "b_cubed_f1": false
+      },
+      "production_ready": false
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "labeled_mentions": 19180,
+      "unique_orcid": 12456,
+      "baseline_algorithm": "baseline_exact_context",
+      "candidate_algorithm": "framework_v1",
+      "candidate_profile": "balanced",
+      "baseline": {
+        "candidate_pairwise_f1": 0.6212850853054485,
+        "cluster_pairwise_f1": 0.6999841143764892,
+        "b_cubed_f1": 0.9143722189397968
+      },
+      "candidate": {
+        "candidate_pairwise_precision": 0.9920348244882837,
+        "candidate_pairwise_recall": 0.5365694820158301,
+        "candidate_pairwise_f1": 0.696446568484021,
+        "cluster_pairwise_precision": 0.9915222726258645,
+        "cluster_pairwise_recall": 0.6547659971516967,
+        "cluster_pairwise_f1": 0.788701567583555,
+        "b_cubed_precision": 0.997781170862507,
+        "b_cubed_recall": 0.8759944398008981,
+        "b_cubed_f1": 0.9329300187701032
+      },
+      "delta_vs_baseline": {
+        "candidate_pairwise_f1": 0.07516148317857252,
+        "cluster_pairwise_f1": 0.08871745320706581,
+        "b_cubed_f1": 0.018557799830306365
+      },
+      "production_checks": {
+        "candidate_pairwise_precision": true,
+        "cluster_pairwise_precision": true,
+        "b_cubed_f1": false
+      },
+      "production_ready": false
+    }
+  ],
+  "production_ready": false
+}

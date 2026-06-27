@@ -91,6 +91,16 @@
 
 因此当前最终版本仍保持 `framework_v1 balanced`。本轮只保留工程清理：删除未参与判定的中文姓氏频率死特征，并固定加权 Jaccard 的求和顺序，使结果文件中的浮点样例可重复；核心指标与上一版 final 结果一致。
 
+## 2026-06-28 生产质量门禁
+
+新增 `experiments/author_disambiguation_quality_gate.py`，用于统一汇总 baseline 与当前算法的结果，并给出生产可用性判断。默认门槛：
+
+- 候选对 precision ≥ 99%
+- 聚类 pairwise precision ≥ 99%
+- B³ F1 ≥ 95%
+
+当前 `framework_v1 balanced` 可以作为文章二的自研算法基线，但尚未通过生产最终门槛：precision 已达标，B³ F1 在 Crossref ORCID 与导师 DOI ORCID 两个数据集上仍未达到 95%。因此文稿中应表述为“已在真实数据上显著改善聚类质量的可解释基线框架”，而不是“最终生产系统”。
+
 ## 下一步实验方向
 
 1. 与 ISTINA 现行算法做同数据、同标签、同指标的大规模比较。
@@ -108,6 +118,8 @@ python experiments\evaluate_author_disambiguation_framework.py --dataset "runs\a
 python experiments\evaluate_author_disambiguation_framework.py --dataset "C:\istina\materia 材料\测试表单\crossref_authors.json" --output results\article2_baseline_exact_context_crossref_orcid_20260628.json --algorithm baseline_exact_context --profile conservative --max-block-size 200
 
 python experiments\evaluate_author_disambiguation_framework.py --dataset "runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json" --output results\article2_baseline_exact_context_advisor_orcid_20260628.json --algorithm baseline_exact_context --profile conservative --max-block-size 200
+
+python experiments\author_disambiguation_quality_gate.py --warn-only --output results\article2_quality_gate_summary_20260628.json --pair "Crossref ORCID" results\article2_baseline_exact_context_crossref_orcid_20260628.json results\article2_framework_v1_final_balanced_crossref_orcid_20260628.json --pair "Advisor DOI ORCID" results\article2_baseline_exact_context_advisor_orcid_20260628.json results\article2_framework_v1_final_balanced_advisor_orcid_20260628.json
 ```
 
 完整测试：
