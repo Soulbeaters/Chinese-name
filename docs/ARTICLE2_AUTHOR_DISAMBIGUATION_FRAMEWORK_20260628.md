@@ -51,20 +51,20 @@
 | 算法 | 候选对 Precision | 候选对 Recall | 候选对 F1 | 聚类 Precision | 聚类 Recall | 聚类 F1 | B³ F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | baseline_exact_context | 99.649% | 47.568% | 64.396% | 98.894% | 63.504% | 77.343% | 86.575% |
-| framework_v1 balanced | 99.653% | 46.975% | 63.851% | 99.258% | 69.068% | 81.456% | 88.632% |
-| framework_v1 conservative | 99.664% | 42.376% | 59.467% | 99.234% | 61.507% | 75.943% | 86.915% |
+| framework_v1 balanced | 99.613% | 72.362% | 83.828% | 99.264% | 84.074% | 91.040% | 94.012% |
+| framework_v1 conservative | 99.619% | 68.175% | 80.950% | 99.247% | 76.731% | 86.548% | 92.534% |
 
-结论：在 Crossref 大规模数据上，`framework_v1 balanced` 的候选对 F1 与 baseline 基本持平，但聚类 Recall 提升 5.564 个百分点，聚类 F1 提升 4.113 个百分点，B³ F1 提升 2.056 个百分点。与上一版整体跳过超大 block 的结果相比，Crossref 聚类 F1 从 78.395% 提升到 81.456%，B³ F1 从 87.139% 提升到 88.632%，并且聚类 precision 仍保持 99% 以上。
+结论：在 Crossref 大规模数据上，`framework_v1 balanced` 相对 baseline 的聚类 Recall 提升 20.570 个百分点，聚类 F1 提升 13.697 个百分点，B³ F1 提升 7.437 个百分点，并且候选对与聚类 precision 均保持 99% 以上。
 
 ### 导师 DOI ORCID 数据
 
 | 算法 | 候选对 Precision | 候选对 Recall | 候选对 F1 | 聚类 Precision | 聚类 Recall | 聚类 F1 | B³ F1 |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | baseline_exact_context | 99.133% | 45.241% | 62.129% | 99.136% | 54.098% | 69.998% | 91.437% |
-| framework_v1 balanced | 99.203% | 53.657% | 69.645% | 99.152% | 65.477% | 78.870% | 93.293% |
-| framework_v1 conservative | 99.337% | 52.535% | 68.724% | 99.271% | 64.210% | 77.981% | 93.046% |
+| framework_v1 balanced | 99.147% | 73.935% | 84.705% | 99.116% | 78.206% | 87.428% | 95.906% |
+| framework_v1 conservative | 99.231% | 73.024% | 84.134% | 99.202% | 76.349% | 86.288% | 95.664% |
 
-结论：在导师 DOI 数据上，`framework_v1 balanced` 明显优于 baseline：候选对 F1 提升 7.516 个百分点，聚类 F1 提升 8.872 个百分点，B³ F1 提升 1.856 个百分点，同时 precision 仍保持 99% 以上。
+结论：在导师 DOI 数据上，`framework_v1 balanced` 明显优于 baseline：候选对 F1 提升 22.577 个百分点，聚类 F1 提升 17.430 个百分点，B³ F1 提升 4.469 个百分点，同时 precision 仍保持 99% 以上，并且该数据集已通过当前生产质量门禁。
 
 ## 当前判断
 
@@ -75,7 +75,7 @@
 但它还不能直接声明为最终生产级版本：
 
 - precision 已基本达到生产系统可接受水平（候选对与聚类 precision 均 >99%）。
-- recall 仍不足，尤其 Crossref 大规模数据的 B³ F1 为 88.632%，距离 95% 以上的强生产目标还有差距。
+- recall 仍不足，尤其 Crossref 大规模数据的 B³ F1 为 94.012%，距离 95% 以上的强生产目标仍差约 1 个百分点。
 - 主要错误来源仍是中文拼音式同名作者：常见姓名在同机构、同团队、相似共同作者网络中容易产生误合并；过度收紧会显著降低 recall。
 
 ## 2026-06-28 迭代记录：首字母姓名保护规则
@@ -99,6 +99,14 @@
 
 该策略已采用为当前 final 版本。它不改变 pairwise 判定规则，只改善候选召回边界。
 
+## 2026-06-28 迭代记录：非中文 exact full-name 合并
+
+本轮诊断显示，在启用超大 block exact-name 子阻塞后，剩余 `exact_name_insufficient_context` 是最高质量的 false negative 来源：Crossref 中如果翻转该规则，新增 TP/FP 约为 392,496/1,819；导师 DOI 数据中约为 4,048/41。
+
+因此新增规则：对于非中文、非首字母-only、exact normalized full name 完全一致的作者，即使缺少机构或共同作者上下文，也允许合并。中文拼音式同名仍保持原来的保守规则。
+
+该规则已采用。它使 Crossref B³ F1 从 88.632% 提升到 94.012%，导师 DOI B³ F1 从 93.293% 提升到 95.906%。同时测试了进一步放宽 exact initial-only name，但该候选使聚类 precision 低于 99%，因此没有采用。
+
 ## 2026-06-28 生产质量门禁
 
 新增 `experiments/author_disambiguation_quality_gate.py`，用于统一汇总 baseline 与当前算法的结果，并给出生产可用性判断。默认门槛：
@@ -107,7 +115,7 @@
 - 聚类 pairwise precision ≥ 99%
 - B³ F1 ≥ 95%
 
-当前 `framework_v1 balanced` 可以作为文章二的自研算法基线，但尚未通过生产最终门槛：precision 已达标，B³ F1 在 Crossref ORCID 与导师 DOI ORCID 两个数据集上仍未达到 95%。因此文稿中应表述为“已在真实数据上显著改善聚类质量的可解释基线框架”，而不是“最终生产系统”。
+当前 `framework_v1 balanced` 可以作为文章二的自研算法基线，但尚未完全通过生产最终门槛：导师 DOI ORCID 已通过，Crossref ORCID 的 precision 已达标但 B³ F1 仍为 94.012%，略低于 95%。因此文稿中应表述为“接近生产门槛、已在真实数据上显著改善聚类质量的可解释基线框架”，而不是“最终生产系统”。
 
 ## 下一步实验方向
 

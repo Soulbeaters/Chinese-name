@@ -95,6 +95,34 @@ def test_chinese_like_same_name_requires_stronger_context_than_affiliation_only(
     assert decision.rule == "cn_like_exact_name_requires_coauthor_or_very_strong_context"
 
 
+def test_exact_non_chinese_full_name_merges_without_context():
+    left = _mention(
+        {
+            "firstname": "Ivan",
+            "lastname": "Topisirovic",
+            "doi": "10.test/a",
+            "year": 2022,
+            "affiliation": "",
+            "orcid": "0000-0002-5510-9762",
+        },
+        0,
+    )
+    right = _mention(
+        {
+            "firstname": "Ivan",
+            "lastname": "Topisirovic",
+            "doi": "10.test/b",
+            "year": 2025,
+            "affiliation": "",
+            "orcid": "0000-0002-5510-9762",
+        },
+        1,
+    )
+    decision = _decision(left, right)
+    assert decision.same_author is True
+    assert decision.rule == "exact_non_chinese_full_name"
+
+
 def test_given_prefix_variant_merges_under_strong_affiliation():
     left = _mention(
         {

@@ -438,7 +438,7 @@ def framework_v1_decision(
             return True, "exact_name_recent_weighted_affiliation_ge_0.32", 0.70
         if profile == "balanced" and aff >= 0.30 and raw_aff >= 0.20:
             return True, "balanced_exact_name_affiliation_ge_0.30", 0.66
-        return False, "exact_name_insufficient_context", 0.0
+        return True, "exact_non_chinese_full_name", 0.60
 
     if relation == "prefix":
         if co >= 0.16:
