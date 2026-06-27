@@ -17,7 +17,6 @@ from itertools import combinations
 from pathlib import Path
 from typing import Any, Iterable, Mapping
 
-from data.surname_frequency import get_surname_frequency_share
 from data.surname_pinyin_db import is_surname_pinyin
 from src.pinyin_validator import is_valid_pinyin_name
 from src.surname_identifier_v8 import preprocess_name
@@ -103,7 +102,6 @@ class PairFeatures:
     same_family: bool
     given_relation: str
     name_is_chinese_like: bool
-    chinese_family_frequency_share: float
     exact_canonical_name: bool
     affiliation_jaccard: float
     affiliation_weighted_jaccard: float
@@ -211,8 +209,8 @@ def weighted_jaccard(
     if not left or not right:
         return 0.0
     union = left | right
-    numerator = sum(weights.get(token, 1.0) for token in left & right)
-    denominator = sum(weights.get(token, 1.0) for token in union)
+    numerator = sum(weights.get(token, 1.0) for token in sorted(left & right))
+    denominator = sum(weights.get(token, 1.0) for token in sorted(union))
     return numerator / denominator if denominator else 0.0
 
 
@@ -338,12 +336,6 @@ def is_chinese_like_name(mention: AuthorMention) -> bool:
     return is_surname_pinyin(family) and is_pinyin_token(given)
 
 
-@lru_cache(maxsize=None)
-def chinese_family_frequency_share(family_key: str) -> float:
-    compact = family_key.replace(" ", "")
-    return get_surname_frequency_share(compact) if compact else 0.0
-
-
 def pair_features(
     left: AuthorMention,
     right: AuthorMention,
@@ -362,7 +354,6 @@ def pair_features(
         same_family=left.family_tokens == right.family_tokens,
         given_relation=given_relation(left.given_tokens, right.given_tokens),
         name_is_chinese_like=is_chinese_like_name(left) or is_chinese_like_name(right),
-        chinese_family_frequency_share=chinese_family_frequency_share(left.family_key),
         exact_canonical_name=left.entity_name_key == right.entity_name_key,
         affiliation_jaccard=jaccard(left_affiliation, right_affiliation),
         affiliation_weighted_jaccard=weighted_jaccard(
