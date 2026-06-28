@@ -91,16 +91,25 @@ tests/test_istina_hypergraph_proxy.py
   - test：`year > 2021`
 - 只使用带 ORCID 的作者记录，与现有 gold label 范围一致。
 - 姓名候选集：同 family name，并且 given name exact / prefix / initial-compatible。
-- 三个方法在同一候选集上比较：
+- 四个方法在同一候选集上比较：
   1. `name_most_frequent`：姓名候选中历史出现次数最多者；
   2. `istina_hypergraph_proxy`：按当前论文其他署名候选集中的历史合著关系打分；
   3. `framework_v1_profile`：用当前 `framework_v1 balanced` pairwise 规则做 profile linking；不能高置信判断时输出 UNKNOWN。
+  4. `risk_controlled_hybrid`：先接受 `framework_v1_profile` 的高置信结果；若 framework 输出 UNKNOWN，则仅在 ISTINA hypergraph proxy 的历史合著支持分数 `>= 1.0` 时接受其 LINK，否则输出 UNKNOWN。
 
 结果文件：
 
 ```text
 results/article2_istina_proxy_online_crossref_orcid_20260628.json
 results/article2_istina_proxy_online_advisor_orcid_20260628.json
+```
+
+复现实验命令：
+
+```powershell
+python experiments\evaluate_istina_hypergraph_proxy.py --dataset "C:\istina\materia 材料\测试表单\crossref_authors.json" --output results\article2_istina_proxy_online_crossref_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 1.0
+
+python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json" --output results\article2_istina_proxy_online_advisor_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 1.0
 ```
 
 ## 5. Crossref ORCID 大规模数据结果
@@ -123,6 +132,7 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 | name_most_frequent | 93.796% | 93.796% | 93.796% | 0.000% | 85.573% |
 | istina_hypergraph_proxy | 97.552% | 97.552% | 97.552% | 0.000% | 93.345% |
 | framework_v1_profile | 99.590% | 84.423% | 91.382% | 15.229% | 72.430% |
+| risk_controlled_hybrid | 99.545% | 89.672% | 94.351% | 9.918% | 74.528% |
 
 ### 5.2 Linkable end-to-end
 
@@ -133,6 +143,7 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 | name_most_frequent | 93.539% | 92.729% | 93.133% | 0.866% |
 | istina_hypergraph_proxy | 97.286% | 96.443% | 96.862% | 0.866% |
 | framework_v1_profile | 99.550% | 83.463% | 90.800% | 16.159% |
+| risk_controlled_hybrid | 99.508% | 88.652% | 93.767% | 10.909% |
 
 ### 5.3 New-author / truth-not-in-history 风险
 
@@ -143,6 +154,7 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 | name_most_frequent | 11.425% | 88.575% | 5,318 / 46,548 |
 | istina_hypergraph_proxy | 11.425% | 88.575% | 5,318 / 46,548 |
 | framework_v1_profile | 0.455% | 99.545% | 212 / 46,548 |
+| risk_controlled_hybrid | 0.975% | 99.025% | 454 / 46,548 |
 
 ## 6. 导师 DOI ORCID 数据结果
 
@@ -162,6 +174,7 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 | name_most_frequent | 99.254% | 99.254% | 99.254% | 0.000% | 97.302% |
 | istina_hypergraph_proxy | 99.429% | 99.429% | 99.429% | 0.000% | 97.937% |
 | framework_v1_profile | 100.000% | 79.807% | 88.770% | 20.193% | 64.444% |
+| risk_controlled_hybrid | 100.000% | 91.923% | 95.791% | 8.077% | 74.921% |
 
 ### 6.2 Linkable end-to-end
 
@@ -170,6 +183,7 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 | name_most_frequent | 99.167% | 96.914% | 98.027% | 2.272% |
 | istina_hypergraph_proxy | 99.342% | 97.085% | 98.201% | 2.272% |
 | framework_v1_profile | 99.890% | 77.925% | 87.551% | 21.989% |
+| risk_controlled_hybrid | 99.905% | 89.756% | 94.559% | 10.159% |
 
 ### 6.3 New-author / truth-not-in-history 风险
 
@@ -178,6 +192,7 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 | name_most_frequent | 2.545% | 97.455% | 324 / 12,729 |
 | istina_hypergraph_proxy | 2.545% | 97.455% | 324 / 12,729 |
 | framework_v1_profile | 0.244% | 99.756% | 31 / 12,729 |
+| risk_controlled_hybrid | 0.275% | 99.725% | 35 / 12,729 |
 
 ## 7. 判断
 
@@ -186,7 +201,8 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 1. 旧 ISTINA 超图思想在 linkable 场景更强，尤其是整篇论文作者组合归属。
 2. 当前 `framework_v1` 不应被写成“替代旧算法”的主张。
 3. 当前 `framework_v1` 的价值在风险控制：它显著降低 new-author / truth-not-in-history 场景的误链接。
-4. 文章二更合理的方向是：
+4. `risk_controlled_hybrid` 是当前最适合作为文章二扩展点的三分决策层：它牺牲少量 NEW 场景保守性，换取明显更高的 linkable 召回，同时仍把 new-author false-link 控制在约 1% 或以下。
+5. 文章二更合理的方向是：
 
    ```text
    旧 ISTINA 作者消歧算法复现与比较

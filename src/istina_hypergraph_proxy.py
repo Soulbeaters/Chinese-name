@@ -40,6 +40,7 @@ from src.author_disambiguation import (
 class OnlineBenchmarkConfig:
     cutoff_year: int = 2021
     max_profile_mentions: int = 30
+    hypergraph_support_threshold: float = 1.0
 
 
 @dataclass
@@ -128,17 +129,18 @@ def choose_name_most_frequent(
     return max(candidates, key=lambda author_id: (len(profiles[author_id].mention_positions), author_id))
 
 
-def choose_istina_hypergraph_proxy(
+def score_istina_hypergraph_proxy(
     position: int,
     candidate_sets: dict[int, list[str]],
     profiles: dict[str, AuthorProfile],
-) -> str | None:
+) -> tuple[str | None, float]:
     candidates = candidate_sets[position]
     if not candidates:
-        return None
+        return None, 0.0
 
     best_author: str | None = None
     best_score = -1.0
+    best_graph_support = 0.0
     for author_id in candidates:
         profile = profiles[author_id]
         graph_support = 0.0
@@ -158,7 +160,30 @@ def choose_istina_hypergraph_proxy(
         if score > best_score or (score == best_score and (best_author is None or author_id < best_author)):
             best_score = score
             best_author = author_id
-    return best_author
+            best_graph_support = graph_support
+    return best_author, best_graph_support
+
+
+def choose_istina_hypergraph_proxy(
+    position: int,
+    candidate_sets: dict[int, list[str]],
+    profiles: dict[str, AuthorProfile],
+) -> str | None:
+    author_id, _ = score_istina_hypergraph_proxy(position, candidate_sets, profiles)
+    return author_id
+
+
+def choose_risk_controlled_hybrid(
+    framework_prediction: str | None,
+    hypergraph_prediction: str | None,
+    hypergraph_support: float,
+    support_threshold: float,
+) -> str | None:
+    if framework_prediction is not None:
+        return framework_prediction
+    if hypergraph_prediction is not None and hypergraph_support >= support_threshold:
+        return hypergraph_prediction
+    return None
 
 
 def choose_framework_profile(
@@ -325,16 +350,19 @@ def evaluate_online_assignment(
         "name_most_frequent": empty_method_counts(),
         "istina_hypergraph_proxy": empty_method_counts(),
         "framework_v1_profile": empty_method_counts(),
+        "risk_controlled_hybrid": empty_method_counts(),
     }
     linkable_method_counts = {
         "name_most_frequent": empty_method_counts(),
         "istina_hypergraph_proxy": empty_method_counts(),
         "framework_v1_profile": empty_method_counts(),
+        "risk_controlled_hybrid": empty_method_counts(),
     }
     new_author_counts = {
         "name_most_frequent": Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0),
         "istina_hypergraph_proxy": Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0),
         "framework_v1_profile": Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0),
+        "risk_controlled_hybrid": Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0),
     }
     evaluated_papers = 0
 
@@ -373,24 +401,32 @@ def evaluate_online_assignment(
 
         for position in paper_positions:
             truth = mentions[position].label_orcid
+            hypergraph_prediction, hypergraph_support = score_istina_hypergraph_proxy(
+                position,
+                candidate_sets,
+                profiles,
+            )
+            framework_prediction = choose_framework_profile(
+                mentions[position],
+                coauthor_names[position],
+                candidate_sets[position],
+                profiles,
+                mentions,
+                history_coauthor_names,
+                affiliations_by_position,
+                affiliation_weights,
+                family_frequencies,
+                config.max_profile_mentions,
+            )
             predictions = {
                 "name_most_frequent": choose_name_most_frequent(candidate_sets[position], profiles),
-                "istina_hypergraph_proxy": choose_istina_hypergraph_proxy(
-                    position,
-                    candidate_sets,
-                    profiles,
-                ),
-                "framework_v1_profile": choose_framework_profile(
-                    mentions[position],
-                    coauthor_names[position],
-                    candidate_sets[position],
-                    profiles,
-                    mentions,
-                    history_coauthor_names,
-                    affiliations_by_position,
-                    affiliation_weights,
-                    family_frequencies,
-                    config.max_profile_mentions,
+                "istina_hypergraph_proxy": hypergraph_prediction,
+                "framework_v1_profile": framework_prediction,
+                "risk_controlled_hybrid": choose_risk_controlled_hybrid(
+                    framework_prediction,
+                    hypergraph_prediction,
+                    hypergraph_support,
+                    config.hypergraph_support_threshold,
                 ),
             }
 
@@ -418,6 +454,7 @@ def evaluate_online_assignment(
     return {
         "cutoff_year": config.cutoff_year,
         "max_profile_mentions": config.max_profile_mentions,
+        "hypergraph_support_threshold": config.hypergraph_support_threshold,
         "history_mentions": len(history_positions),
         "history_authors": len(history_author_ids),
         "test_mentions": totals["test_mentions"],

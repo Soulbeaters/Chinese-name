@@ -13,8 +13,10 @@ from src.istina_hypergraph_proxy import (  # noqa: E402
     OnlineBenchmarkConfig,
     build_profiles,
     choose_istina_hypergraph_proxy,
+    choose_risk_controlled_hybrid,
     evaluate_online_assignment,
     get_candidates,
+    score_istina_hypergraph_proxy,
 )
 
 
@@ -90,6 +92,26 @@ def test_istina_proxy_prefers_candidate_supported_by_current_coauthor_candidates
     assert prediction == "0000-0001-0000-0001"
 
 
+def test_istina_proxy_reports_graph_support():
+    mentions = _toy_mentions()
+    profiles, family_index, _ = build_profiles(mentions, [0, 1, 2])
+    candidate_sets = {
+        3: get_candidates(mentions[3], profiles, family_index),
+        4: get_candidates(mentions[4], profiles, family_index),
+    }
+
+    prediction, support = score_istina_hypergraph_proxy(3, candidate_sets, profiles)
+
+    assert prediction == "0000-0001-0000-0001"
+    assert support > 0
+
+
+def test_risk_controlled_hybrid_prefers_framework_then_supported_graph():
+    assert choose_risk_controlled_hybrid("framework-id", "graph-id", 10.0, 1.0) == "framework-id"
+    assert choose_risk_controlled_hybrid(None, "graph-id", 1.0, 1.0) == "graph-id"
+    assert choose_risk_controlled_hybrid(None, "graph-id", 0.5, 1.0) is None
+
+
 def test_online_assignment_reports_proxy_metrics():
     result = evaluate_online_assignment(
         _toy_mentions(),
@@ -99,3 +121,4 @@ def test_online_assignment_reports_proxy_metrics():
     assert result["truth_in_history_mentions"] == 2
     assert result["candidate_covered_mentions"] == 2
     assert result["methods"]["istina_hypergraph_proxy"]["correct"] == 2
+    assert "risk_controlled_hybrid" in result["methods"]

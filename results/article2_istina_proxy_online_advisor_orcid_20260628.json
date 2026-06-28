@@ -1,6 +1,7 @@
 {
   "cutoff_year": 2021,
   "max_profile_mentions": 30,
+  "hypergraph_support_threshold": 1.0,
   "history_mentions": 4118,
   "history_authors": 3658,
   "test_mentions": 15062,
@@ -58,6 +59,20 @@
       "unknown_rate": 0.2019315188762072,
       "paper_exact": 406,
       "paper_exact_rate": 0.6444444444444445
+    },
+    "risk_controlled_hybrid": {
+      "evaluated_mentions": 2278,
+      "predicted_mentions": 2094,
+      "correct": 2094,
+      "wrong": 0,
+      "unknown": 184,
+      "precision": 1.0,
+      "recall": 0.9192273924495171,
+      "f1": 0.9579139981701739,
+      "accuracy_counting_unknown_as_wrong": 0.9192273924495171,
+      "unknown_rate": 0.08077260755048288,
+      "paper_exact": 472,
+      "paper_exact_rate": 0.7492063492063492
     }
   },
   "linkable_end_to_end_methods": {
@@ -96,6 +111,18 @@
       "f1": 0.8755116783048399,
       "accuracy_counting_unknown_as_wrong": 0.7792541791684526,
       "unknown_rate": 0.2198885555079297
+    },
+    "risk_controlled_hybrid": {
+      "evaluated_mentions": 2333,
+      "predicted_mentions": 2096,
+      "correct": 2094,
+      "wrong": 2,
+      "unknown": 237,
+      "precision": 0.9990458015267175,
+      "recall": 0.8975567938276897,
+      "f1": 0.9455859110408671,
+      "accuracy_counting_unknown_as_wrong": 0.8975567938276897,
+      "unknown_rate": 0.10158594084869267
     }
   },
   "new_author_methods": {
@@ -119,6 +146,13 @@
       "no_prediction": 12698,
       "false_link_rate": 0.0024353837693455887,
       "no_prediction_rate": 0.9975646162306544
+    },
+    "risk_controlled_hybrid": {
+      "evaluated_mentions": 12729,
+      "false_links": 35,
+      "no_prediction": 12694,
+      "false_link_rate": 0.002749626836357923,
+      "no_prediction_rate": 0.9972503731636421
     }
   },
   "limitations": [

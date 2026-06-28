@@ -146,7 +146,7 @@
 
 `docs/ISTINA_CURRENT_ALGORITHM_COMPARISON_20260628.md`
 
-结论摘要：旧 ISTINA 超图思想在“真值作者已经存在于历史库”的 linkable 场景召回更强；当前 `framework_v1` 的优势是显著降低 new-author / truth-not-in-history 场景的误链接。因此文章二不宜写成“替代旧算法”，更适合定位为“旧算法复现与统一评测 + 风险导向三分决策扩展”。
+结论摘要：旧 ISTINA 超图思想在“真值作者已经存在于历史库”的 linkable 场景召回更强；当前 `framework_v1` 的优势是显著降低 new-author / truth-not-in-history 场景的误链接。本轮已实现 `risk_controlled_hybrid` 三分决策层：先接受 `framework_v1` 的高置信判断，若其输出 UNKNOWN，则仅在 ISTINA hypergraph proxy 有足够历史合著支持时接受 LINK。该层在 Crossref 上将 linkable recall 从 83.463% 提升到 88.652%，new-author false-link 控制在 0.975%；在导师 DOI 数据上将 linkable recall 从 77.925% 提升到 89.756%，new-author false-link 为 0.275%。因此文章二不宜写成“替代旧算法”，更适合定位为“旧算法复现与统一评测 + 风险导向三分决策扩展”。
 
 ## 下一步实验方向
 
