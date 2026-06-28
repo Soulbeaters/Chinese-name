@@ -23,7 +23,13 @@ def _mention(row: dict, index: int = 0):
     return row_to_mention(row, index)
 
 
-def _decision(left, right, algorithm="framework_v1"):
+def _decision(
+    left,
+    right,
+    algorithm="framework_v1",
+    profile="conservative",
+    family_frequency=10**9,
+):
     mentions = [left, right]
     weights = build_affiliation_weights(mentions)
     coauthors = build_coauthor_sets(mentions)
@@ -35,7 +41,8 @@ def _decision(left, right, algorithm="framework_v1"):
         coauthors[0],
         coauthors[1],
         weights,
-        DisambiguationConfig(algorithm=algorithm),
+        DisambiguationConfig(algorithm=algorithm, profile=profile),
+        family_frequency,
     )
 
 
@@ -93,6 +100,34 @@ def test_chinese_like_same_name_requires_stronger_context_than_affiliation_only(
     decision = _decision(left, right)
     assert decision.same_author is False
     assert decision.rule == "cn_like_exact_name_requires_coauthor_or_very_strong_context"
+
+
+def test_chinese_like_same_name_balanced_profile_uses_moderate_context():
+    left = _mention(
+        {
+            "firstname": "Wei",
+            "lastname": "Li",
+            "doi": "10.test/a",
+            "year": 2024,
+            "affiliation": "Graphene Optoelectronics Group",
+            "orcid": "0000-0001-0000-0001",
+        },
+        0,
+    )
+    right = _mention(
+        {
+            "firstname": "Wei",
+            "lastname": "Li",
+            "doi": "10.test/b",
+            "year": 2025,
+            "affiliation": "Graphene Nanophotonics Group",
+            "orcid": "0000-0001-0000-0001",
+        },
+        1,
+    )
+    decision = _decision(left, right, profile="balanced")
+    assert decision.same_author is True
+    assert decision.rule == "balanced_cn_like_exact_name_moderate_context"
 
 
 def test_exact_non_chinese_full_name_merges_without_context():
@@ -177,6 +212,90 @@ def test_same_family_initial_without_context_does_not_merge():
     decision = _decision(left, right)
     assert decision.same_author is False
     assert decision.features.given_relation == "initial_compatible"
+
+
+def test_balanced_exact_initial_low_frequency_family_merges():
+    left = _mention(
+        {
+            "firstname": "A.",
+            "lastname": "Vecchio",
+            "doi": "10.test/a",
+            "year": 2021,
+            "affiliation": "",
+            "orcid": "0000-0002-2002-1701",
+        },
+        0,
+    )
+    right = _mention(
+        {
+            "firstname": "A.",
+            "lastname": "Vecchio",
+            "doi": "10.test/b",
+            "year": 2023,
+            "affiliation": "",
+            "orcid": "0000-0002-2002-1701",
+        },
+        1,
+    )
+    decision = _decision(left, right, profile="balanced", family_frequency=9)
+    assert decision.same_author is True
+    assert decision.rule == "balanced_exact_initial_name_low_frequency_or_affiliation"
+
+
+def test_balanced_exact_initial_common_family_without_context_does_not_merge():
+    left = _mention(
+        {
+            "firstname": "W.",
+            "lastname": "Li",
+            "doi": "10.test/a",
+            "year": 2021,
+            "affiliation": "",
+            "orcid": "0000-0001-0000-0001",
+        },
+        0,
+    )
+    right = _mention(
+        {
+            "firstname": "W.",
+            "lastname": "Li",
+            "doi": "10.test/b",
+            "year": 2023,
+            "affiliation": "",
+            "orcid": "0000-0002-0000-0002",
+        },
+        1,
+    )
+    decision = _decision(left, right, profile="balanced", family_frequency=200)
+    assert decision.same_author is False
+    assert decision.rule == "initial_only_name_requires_stronger_context"
+
+
+def test_balanced_exact_initial_common_family_affiliation_context_merges():
+    left = _mention(
+        {
+            "firstname": "W.",
+            "lastname": "Li",
+            "doi": "10.test/a",
+            "year": 2021,
+            "affiliation": "Space Physics Laboratory Boston University",
+            "orcid": "0000-0001-0000-0001",
+        },
+        0,
+    )
+    right = _mention(
+        {
+            "firstname": "W.",
+            "lastname": "Li",
+            "doi": "10.test/b",
+            "year": 2023,
+            "affiliation": "Center for Space Physics Boston University",
+            "orcid": "0000-0001-0000-0001",
+        },
+        1,
+    )
+    decision = _decision(left, right, profile="balanced", family_frequency=200)
+    assert decision.same_author is True
+    assert decision.rule == "balanced_exact_initial_name_low_frequency_or_affiliation"
 
 
 def test_orcid_is_label_only_not_decision_feature():
@@ -286,3 +405,40 @@ def test_large_blocks_use_exact_name_subblocks_instead_of_full_skip():
     assert result["large_block_exact_subblock_candidate_pairs"] == 1
     assert result["evaluated_pairs"] == 1
     assert result["candidate_pairwise"]["tp"] == 1
+
+
+def test_framework_rejects_cluster_merge_that_duplicates_paper_key():
+    rows = [
+        {
+            "firstname": "Alex",
+            "lastname": "Smith",
+            "doi": "10.test/a",
+            "year": 2020,
+            "affiliation": "",
+            "orcid": "0000-0001-0000-0001",
+        },
+        {
+            "firstname": "Alex",
+            "lastname": "Smith",
+            "doi": "10.test/b",
+            "year": 2021,
+            "affiliation": "",
+            "orcid": "0000-0001-0000-0001",
+        },
+        {
+            "firstname": "Alex",
+            "lastname": "Smith",
+            "doi": "10.test/a",
+            "year": 2022,
+            "affiliation": "",
+            "orcid": "0000-0002-0000-0002",
+        },
+    ]
+    result = evaluate_mentions(
+        [_mention(row, index) for index, row in enumerate(rows)],
+        DisambiguationConfig(profile="balanced"),
+    )
+
+    assert result["candidate_pairwise"]["tp"] == 1
+    assert result["candidate_pairwise"]["fp"] == 0
+    assert result["rule_counts"]["cluster_paper_conflict_rejected"] == 1

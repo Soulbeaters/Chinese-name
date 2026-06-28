@@ -11,28 +11,28 @@
   "evaluated_pairs": 28436,
   "same_paper_skipped_pairs": 33,
   "candidate_pairwise": {
-    "tp": 14759,
-    "fp": 127,
-    "fn": 5203,
-    "tn": 8347,
-    "precision": 0.9914684938868735,
-    "recall": 0.7393547740707344,
-    "f1": 0.8470500459136822
+    "tp": 15416,
+    "fp": 148,
+    "fn": 4546,
+    "tn": 8326,
+    "precision": 0.990490876381393,
+    "recall": 0.7722673078849814,
+    "f1": 0.8678714181163091
   },
   "cluster_pairwise": {
-    "tp": 15925,
-    "fp": 142,
-    "fn": 4438,
-    "precision": 0.9911620090869484,
-    "recall": 0.7820556892402888,
-    "f1": 0.8742794400219599,
+    "tp": 16485,
+    "fp": 160,
+    "fn": 3878,
+    "precision": 0.9903875037548814,
+    "recall": 0.8095565486421451,
+    "f1": 0.8908884565499351,
     "truth_pairs": 20363,
-    "predicted_pairs": 16067
+    "predicted_pairs": 16645
   },
   "b_cubed": {
-    "precision": 0.9969951338199525,
-    "recall": 0.9239108000433586,
-    "f1": 0.9590626542283088
+    "precision": 0.9966558046576308,
+    "recall": 0.9352072501001507,
+    "f1": 0.9649542518810483
   },
   "rule_counts": {
     "exact_name_coauthor_jaccard_ge_0.12": 9347,
@@ -41,12 +41,14 @@
     "exact_non_chinese_full_name": 4089,
     "given_relation_different": 898,
     "given_prefix_insufficient_context": 764,
-    "cn_like_exact_name_requires_coauthor_or_very_strong_context": 672,
-    "initial_only_name_requires_stronger_context": 612,
     "exact_name_weighted_affiliation_ge_0.42": 580,
+    "balanced_exact_initial_name_low_frequency_or_affiliation": 526,
+    "cn_like_exact_name_requires_coauthor_or_very_strong_context": 520,
     "given_prefix_coauthor_jaccard_ge_0.16": 227,
+    "balanced_cn_like_exact_name_moderate_context": 152,
     "given_initial_strong_affiliation_ge_0.72": 150,
     "balanced_cn_like_exact_name_strong_affiliation": 141,
+    "initial_only_name_requires_stronger_context": 86,
     "given_prefix_weighted_affiliation_ge_0.58": 82,
     "balanced_given_initial_recent_affiliation": 49,
     "balanced_exact_name_affiliation_ge_0.30": 44,
@@ -75,6 +77,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 201,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -93,6 +96,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 201,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -111,6 +115,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 29,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -129,6 +134,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 29,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -147,42 +153,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
-        "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
-        "score": 0.0
-      },
-      {
-        "block": "xue|q",
-        "left_name": "qifan xue",
-        "right_name": "qifan xue",
-        "left_orcid": "0000-0003-0013-0721",
-        "right_orcid": "0000-0003-0013-0721",
-        "left_doi": "10.1002/adfm.202300113",
-        "right_doi": "10.1021/acsami.4c09850",
-        "left_year": 2023,
-        "right_year": 2024,
-        "affiliation_jaccard": 0.45454545454545453,
-        "affiliation_weighted_jaccard": 0.44088345646030097,
-        "coauthor_jaccard": 0.0,
-        "given_relation": "exact",
-        "name_is_chinese_like": true,
-        "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
-        "score": 0.0
-      },
-      {
-        "block": "xue|q",
-        "left_name": "qifan xue",
-        "right_name": "qifan xue",
-        "left_orcid": "0000-0003-0013-0721",
-        "right_orcid": "0000-0003-0013-0721",
-        "left_doi": "10.1002/adfm.202300113",
-        "right_doi": "10.1039/d2ta02574d",
-        "left_year": 2023,
-        "right_year": 2022,
-        "affiliation_jaccard": 0.55,
-        "affiliation_weighted_jaccard": 0.5382223159149863,
-        "coauthor_jaccard": 0.0,
-        "given_relation": "exact",
-        "name_is_chinese_like": true,
+        "family_frequency": 29,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -201,6 +172,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -219,6 +191,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -237,6 +210,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -255,6 +229,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -273,6 +248,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -291,6 +267,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -309,6 +286,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -327,6 +305,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "initial_compatible",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_initial_insufficient_context",
         "score": 0.0
       },
@@ -345,6 +324,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -363,6 +343,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -381,6 +362,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -399,6 +381,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -417,6 +400,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -435,6 +419,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -453,6 +438,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "initial_compatible",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_initial_insufficient_context",
         "score": 0.0
       },
@@ -471,6 +457,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -489,6 +476,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
         "score": 0.0
       },
@@ -507,7 +495,46 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "first_initial_only",
         "name_is_chinese_like": false,
+        "family_frequency": 13,
         "rule": "given_relation_first_initial_only",
+        "score": 0.0
+      },
+      {
+        "block": "nazeeruddin|m",
+        "left_name": "mohammad kahaj khaja nazeeruddin",
+        "right_name": "mohammad khaja nazeeruddin",
+        "left_orcid": "0000-0001-5955-4786",
+        "right_orcid": "0000-0001-5955-4786",
+        "left_doi": "10.1002/adma.202310619",
+        "right_doi": "10.1126/science.ado6619",
+        "left_year": 2024,
+        "right_year": 2024,
+        "affiliation_jaccard": 0.55,
+        "affiliation_weighted_jaccard": 0.5548099421499378,
+        "coauthor_jaccard": 0.0,
+        "given_relation": "first_initial_only",
+        "name_is_chinese_like": false,
+        "family_frequency": 13,
+        "rule": "given_relation_first_initial_only",
+        "score": 0.0
+      },
+      {
+        "block": "nazeeruddin|m",
+        "left_name": "mohammad khaja nazeeruddin",
+        "right_name": "mohammad k nazeeruddin",
+        "left_orcid": "0000-0001-5955-4786",
+        "right_orcid": "0000-0001-5955-4786",
+        "left_doi": "10.1002/aenm.202302038",
+        "right_doi": "10.1038/s41467-024-50016-6",
+        "left_year": 2023,
+        "right_year": 2024,
+        "affiliation_jaccard": 0.0,
+        "affiliation_weighted_jaccard": 0.0,
+        "coauthor_jaccard": 0.0,
+        "given_relation": "initial_compatible",
+        "name_is_chinese_like": false,
+        "family_frequency": 13,
+        "rule": "given_initial_insufficient_context",
         "score": 0.0
       }
     ],
@@ -527,6 +554,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -545,6 +573,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -563,6 +592,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -581,6 +611,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -599,6 +630,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -617,6 +649,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -635,6 +668,7 @@
         "coauthor_jaccard": 0.2,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -653,6 +687,7 @@
         "coauthor_jaccard": 0.2,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -671,6 +706,7 @@
         "coauthor_jaccard": 0.16666666666666666,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -689,6 +725,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -707,6 +744,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -725,6 +763,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -743,6 +782,7 @@
         "coauthor_jaccard": 0.1,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_affiliation_and_coauthor",
         "score": 0.86
       },
@@ -761,8 +801,28 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 47,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
+      },
+      {
+        "block": "zhu|y",
+        "left_name": "yiming zhu",
+        "right_name": "yiming zhu",
+        "left_orcid": "0000-0001-8557-895X",
+        "right_orcid": "0000-0003-2353-5713",
+        "left_doi": "10.1002/apxr.202200049",
+        "right_doi": "10.1109/tthz.2023.3275270",
+        "left_year": 2023,
+        "right_year": 2023,
+        "affiliation_jaccard": 0.4,
+        "affiliation_weighted_jaccard": 0.38460791680281203,
+        "coauthor_jaccard": 0.0,
+        "given_relation": "exact",
+        "name_is_chinese_like": true,
+        "family_frequency": 47,
+        "rule": "balanced_cn_like_exact_name_moderate_context",
+        "score": 0.7
       },
       {
         "block": "zhu|y",
@@ -779,6 +839,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 47,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -797,8 +858,28 @@
         "coauthor_jaccard": 1.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 47,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
+      },
+      {
+        "block": "zhu|y",
+        "left_name": "yiming zhu",
+        "right_name": "yiming zhu",
+        "left_orcid": "0009-0009-5768-4371",
+        "right_orcid": "0000-0003-2353-5713",
+        "left_doi": "10.1063/5.0217984",
+        "right_doi": "10.1109/tthz.2023.3275270",
+        "left_year": 2024,
+        "right_year": 2023,
+        "affiliation_jaccard": 0.4,
+        "affiliation_weighted_jaccard": 0.3846079168028121,
+        "coauthor_jaccard": 0.0,
+        "given_relation": "exact",
+        "name_is_chinese_like": true,
+        "family_frequency": 47,
+        "rule": "balanced_cn_like_exact_name_moderate_context",
+        "score": 0.7
       },
       {
         "block": "zhu|y",
@@ -815,6 +896,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 47,
         "rule": "balanced_cn_like_exact_name_strong_affiliation",
         "score": 0.72
       },
@@ -833,6 +915,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 8,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -851,6 +934,7 @@
         "coauthor_jaccard": 0.6027397260273972,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 183,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -869,6 +953,7 @@
         "coauthor_jaccard": 0.43434343434343436,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 183,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -887,6 +972,7 @@
         "coauthor_jaccard": 0.45918367346938777,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 183,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -905,6 +991,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 4,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -923,42 +1010,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
-        "rule": "exact_non_chinese_full_name",
-        "score": 0.6
-      },
-      {
-        "block": "luque|r",
-        "left_name": "rafael luque",
-        "right_name": "rafael luque",
-        "left_orcid": "0000-0003-4190-1916",
-        "right_orcid": "0000-0002-4671-2957",
-        "left_doi": "10.1002/bbb.2742",
-        "right_doi": "10.1093/pasj/psab106",
-        "left_year": 2025,
-        "right_year": 2022,
-        "affiliation_jaccard": 0.0,
-        "affiliation_weighted_jaccard": 0.0,
-        "coauthor_jaccard": 0.0,
-        "given_relation": "exact",
-        "name_is_chinese_like": false,
-        "rule": "exact_non_chinese_full_name",
-        "score": 0.6
-      },
-      {
-        "block": "luque|r",
-        "left_name": "rafael luque",
-        "right_name": "rafael luque",
-        "left_orcid": "0000-0003-4190-1916",
-        "right_orcid": "0000-0002-4671-2957",
-        "left_doi": "10.1002/bbb.2742",
-        "right_doi": "10.3847/1538-3881/ac69e5",
-        "left_year": 2025,
-        "right_year": 2022,
-        "affiliation_jaccard": 0.0,
-        "affiliation_weighted_jaccard": 0.0,
-        "coauthor_jaccard": 0.0,
-        "given_relation": "exact",
-        "name_is_chinese_like": false,
+        "family_frequency": 4,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       }

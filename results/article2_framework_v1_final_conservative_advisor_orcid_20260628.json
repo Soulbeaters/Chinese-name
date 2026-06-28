@@ -71,6 +71,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 201,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -89,6 +90,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 201,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -107,6 +109,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 201,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -125,6 +128,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 201,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -143,6 +147,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 29,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -161,6 +166,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 29,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -179,6 +185,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 29,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -197,6 +204,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -215,6 +223,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -233,6 +242,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -251,6 +261,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -269,6 +280,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -287,6 +299,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -305,6 +318,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -323,6 +337,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -341,6 +356,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -359,6 +375,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -377,6 +394,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -395,6 +413,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -413,6 +432,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -431,6 +451,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -449,6 +470,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -467,6 +489,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -485,6 +508,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       },
@@ -503,6 +527,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_requires_coauthor_or_very_strong_context",
         "score": 0.0
       }
@@ -523,6 +548,7 @@
         "coauthor_jaccard": 0.2,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -541,6 +567,7 @@
         "coauthor_jaccard": 0.2,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -559,6 +586,7 @@
         "coauthor_jaccard": 0.16666666666666666,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 74,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -577,6 +605,7 @@
         "coauthor_jaccard": 0.1,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 11,
         "rule": "cn_like_exact_name_affiliation_and_coauthor",
         "score": 0.86
       },
@@ -595,6 +624,7 @@
         "coauthor_jaccard": 1.0,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 47,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -613,6 +643,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 8,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -631,6 +662,7 @@
         "coauthor_jaccard": 0.6027397260273972,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 183,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -649,6 +681,7 @@
         "coauthor_jaccard": 0.43434343434343436,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 183,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -667,6 +700,7 @@
         "coauthor_jaccard": 0.45918367346938777,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 183,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -685,6 +719,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 4,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -703,6 +738,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 4,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -721,6 +757,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 7,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -739,6 +776,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 7,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -757,6 +795,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 7,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -775,6 +814,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 7,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -793,6 +833,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 7,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -811,6 +852,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 7,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -829,6 +871,7 @@
         "coauthor_jaccard": 0.25,
         "given_relation": "exact",
         "name_is_chinese_like": true,
+        "family_frequency": 5,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -847,6 +890,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 3,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -865,6 +909,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "initial_compatible",
         "name_is_chinese_like": false,
+        "family_frequency": 8,
         "rule": "given_initial_strong_affiliation_ge_0.72",
         "score": 0.8
       },
@@ -883,6 +928,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "initial_compatible",
         "name_is_chinese_like": false,
+        "family_frequency": 8,
         "rule": "given_initial_strong_affiliation_ge_0.72",
         "score": 0.8
       },
@@ -901,6 +947,7 @@
         "coauthor_jaccard": 0.1935483870967742,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 3,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -919,6 +966,7 @@
         "coauthor_jaccard": 0.3235294117647059,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 3,
         "rule": "exact_name_coauthor_jaccard_ge_0.12",
         "score": 0.91
       },
@@ -937,6 +985,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 20,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       },
@@ -955,6 +1004,7 @@
         "coauthor_jaccard": 0.0,
         "given_relation": "exact",
         "name_is_chinese_like": false,
+        "family_frequency": 20,
         "rule": "exact_non_chinese_full_name",
         "score": 0.6
       }

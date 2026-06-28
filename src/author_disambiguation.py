@@ -107,6 +107,7 @@ class PairFeatures:
     affiliation_weighted_jaccard: float
     coauthor_jaccard: float
     year_gap: int | None
+    family_frequency: int = 10**9
 
 
 @dataclass(frozen=True)
@@ -138,15 +139,16 @@ class UnionFind:
             item = self.parent[item]
         return item
 
-    def union(self, left: int, right: int) -> None:
+    def union(self, left: int, right: int) -> int:
         left_root = self.find(left)
         right_root = self.find(right)
         if left_root == right_root:
-            return
+            return left_root
         if self.size[left_root] < self.size[right_root]:
             left_root, right_root = right_root, left_root
         self.parent[right_root] = left_root
         self.size[left_root] += self.size[right_root]
+        return left_root
 
 
 def sha256_file(path: Path) -> str:
@@ -351,6 +353,7 @@ def pair_features(
     left_coauthors: set[str],
     right_coauthors: set[str],
     affiliation_weights: Mapping[str, float],
+    family_frequency: int = 10**9,
 ) -> PairFeatures:
     year_gap = (
         abs(left.year - right.year)
@@ -370,6 +373,7 @@ def pair_features(
         ),
         coauthor_jaccard=jaccard(left_coauthors, right_coauthors),
         year_gap=year_gap,
+        family_frequency=family_frequency,
     )
 
 
@@ -425,12 +429,16 @@ def framework_v1_decision(
         if initial_only:
             if co >= 0.08 and aff >= 0.45:
                 return True, "exact_initial_name_affiliation_and_coauthor", 0.82
+            if profile == "balanced" and (features.family_frequency <= 20 or aff >= 0.20):
+                return True, "balanced_exact_initial_name_low_frequency_or_affiliation", 0.64
             return False, "initial_only_name_requires_stronger_context", 0.0
         if chinese_like:
             if co >= 0.05 and aff >= 0.35:
                 return True, "cn_like_exact_name_affiliation_and_coauthor", 0.86
             if profile == "balanced" and aff >= 0.58 and raw_aff >= 0.50:
                 return True, "balanced_cn_like_exact_name_strong_affiliation", 0.72
+            if profile == "balanced" and (aff >= 0.35 or co >= 0.05):
+                return True, "balanced_cn_like_exact_name_moderate_context", 0.70
             return False, "cn_like_exact_name_requires_coauthor_or_very_strong_context", 0.0
         if aff >= 0.42:
             return True, "exact_name_weighted_affiliation_ge_0.42", 0.82
@@ -474,6 +482,7 @@ def decide_pair(
     right_coauthors: set[str],
     affiliation_weights: Mapping[str, float],
     config: DisambiguationConfig,
+    family_frequency: int = 10**9,
 ) -> PairDecision:
     features = pair_features(
         left,
@@ -483,6 +492,7 @@ def decide_pair(
         left_coauthors,
         right_coauthors,
         affiliation_weights,
+        family_frequency,
     )
     if config.algorithm == "baseline_exact_context":
         same_author, rule, score = baseline_exact_context_decision(features)
@@ -567,9 +577,32 @@ def format_example(
         "coauthor_jaccard": features.coauthor_jaccard,
         "given_relation": features.given_relation,
         "name_is_chinese_like": features.name_is_chinese_like,
+        "family_frequency": features.family_frequency,
         "rule": decision.rule,
         "score": decision.score,
     }
+
+
+def union_unless_cluster_paper_conflict(
+    uf: UnionFind,
+    cluster_papers: list[set[str]],
+    left_position: int,
+    right_position: int,
+) -> bool:
+    """Merge clusters unless that would place the same paper twice in one cluster."""
+
+    left_root = uf.find(left_position)
+    right_root = uf.find(right_position)
+    if left_root == right_root:
+        return True
+    if cluster_papers[left_root] & cluster_papers[right_root]:
+        return False
+
+    new_root = uf.union(left_root, right_root)
+    old_root = right_root if new_root == left_root else left_root
+    cluster_papers[new_root] |= cluster_papers[old_root]
+    cluster_papers[old_root] = set()
+    return True
 
 
 def evaluate_mentions(
@@ -583,7 +616,13 @@ def evaluate_mentions(
         for position, mention in enumerate(mentions)
     }
     affiliation_weights = build_affiliation_weights(mentions)
+    family_frequencies: Counter[str] = Counter(mention.family_key for mention in mentions)
     uf = UnionFind(len(mentions))
+    cluster_papers = [
+        {mention.paper_key} if mention.paper_key else set()
+        for mention in mentions
+    ]
+    enforce_cluster_paper_uniqueness = config.algorithm == "framework_v1"
 
     pair_counts: Counter[str] = Counter()
     rule_counts: Counter[str] = Counter()
@@ -623,27 +662,45 @@ def evaluate_mentions(
                     coauthors[right_position],
                     affiliation_weights,
                     config,
+                    family_frequencies[left.family_key],
                 )
-                rule_counts[decision.rule] += 1
 
                 same_truth = left.label_orcid == right.label_orcid
+                effective_decision = decision
                 if decision.same_author:
-                    uf.union(left_position, right_position)
+                    if enforce_cluster_paper_uniqueness:
+                        accepted = union_unless_cluster_paper_conflict(
+                            uf,
+                            cluster_papers,
+                            left_position,
+                            right_position,
+                        )
+                        if not accepted:
+                            effective_decision = PairDecision(
+                                same_author=False,
+                                rule="cluster_paper_conflict_rejected",
+                                score=0.0,
+                                features=decision.features,
+                            )
+                    else:
+                        uf.union(left_position, right_position)
+
+                rule_counts[effective_decision.rule] += 1
 
                 bucket = ""
-                if decision.same_author and same_truth:
+                if effective_decision.same_author and same_truth:
                     pair_counts["tp"] += 1
-                elif decision.same_author and not same_truth:
+                elif effective_decision.same_author and not same_truth:
                     pair_counts["fp"] += 1
                     bucket = "false_positive"
-                elif not decision.same_author and same_truth:
+                elif not effective_decision.same_author and same_truth:
                     pair_counts["fn"] += 1
                     bucket = "false_negative"
                 else:
                     pair_counts["tn"] += 1
 
                 if bucket and len(examples[bucket]) < config.example_limit:
-                    examples[bucket].append(format_example(key, left, right, decision))
+                    examples[bucket].append(format_example(key, left, right, effective_decision))
 
     tp = pair_counts["tp"]
     fp = pair_counts["fp"]
