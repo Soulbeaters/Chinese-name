@@ -16,6 +16,7 @@ from src.istina_hypergraph_proxy import (  # noqa: E402
     choose_risk_controlled_hybrid,
     evaluate_online_assignment,
     get_candidates,
+    hard_case_labels,
     score_istina_hypergraph_proxy,
 )
 
@@ -112,6 +113,32 @@ def test_risk_controlled_hybrid_prefers_framework_then_supported_graph():
     assert choose_risk_controlled_hybrid(None, "graph-id", 0.5, 1.0) is None
 
 
+def test_hard_case_labels_mark_ambiguous_and_graph_supported_cases():
+    mentions = _toy_mentions()
+    profiles, family_index, _ = build_profiles(mentions, [0, 1, 2])
+    candidate_sets = {
+        3: get_candidates(mentions[3], profiles, family_index),
+        4: get_candidates(mentions[4], profiles, family_index),
+    }
+    prediction, support = score_istina_hypergraph_proxy(3, candidate_sets, profiles)
+
+    labels = hard_case_labels(
+        mentions[3],
+        candidate_sets[3],
+        profiles,
+        truth_in_history=True,
+        framework_prediction=None,
+        hypergraph_prediction=prediction,
+        hypergraph_support=support,
+        support_threshold=0.5,
+    )
+
+    assert "ambiguous_candidates" in labels
+    assert "exact_name_ambiguous" in labels
+    assert "graph_supported_candidate" in labels
+    assert "framework_unknown_graph_supported" in labels
+
+
 def test_online_assignment_reports_proxy_metrics():
     result = evaluate_online_assignment(
         _toy_mentions(),
@@ -122,3 +149,4 @@ def test_online_assignment_reports_proxy_metrics():
     assert result["candidate_covered_mentions"] == 2
     assert result["methods"]["istina_hypergraph_proxy"]["correct"] == 2
     assert "risk_controlled_hybrid" in result["methods"]
+    assert "ambiguous_candidates" in result["hard_case_linkable_methods"]

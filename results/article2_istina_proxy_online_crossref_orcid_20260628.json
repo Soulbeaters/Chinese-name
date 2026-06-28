@@ -1,7 +1,7 @@
 {
   "cutoff_year": 2021,
   "max_profile_mentions": 30,
-  "hypergraph_support_threshold": 1.0,
+  "hypergraph_support_threshold": 3.0,
   "history_mentions": 38480,
   "history_authors": 16040,
   "test_mentions": 82335,
@@ -93,17 +93,17 @@
     },
     "risk_controlled_hybrid": {
       "evaluated_mentions": 35380,
-      "predicted_mentions": 31871,
-      "correct": 31726,
-      "wrong": 145,
-      "unknown": 3509,
-      "precision": 0.9954504094631483,
-      "recall": 0.8967213114754098,
-      "f1": 0.9435101336783097,
-      "accuracy_counting_unknown_as_wrong": 0.8967213114754098,
-      "unknown_rate": 0.09918032786885246,
-      "paper_exact": 8880,
-      "paper_exact_rate": 0.7452790600083928
+      "predicted_mentions": 30855,
+      "correct": 30728,
+      "wrong": 127,
+      "unknown": 4525,
+      "precision": 0.9958839734240804,
+      "recall": 0.8685132843414358,
+      "f1": 0.9278478145995319,
+      "accuracy_counting_unknown_as_wrong": 0.8685132843414358,
+      "unknown_rate": 0.12789711701526285,
+      "paper_exact": 8681,
+      "paper_exact_rate": 0.7285774234158624
     }
   },
   "linkable_end_to_end_methods": {
@@ -145,15 +145,15 @@
     },
     "risk_controlled_hybrid": {
       "evaluated_mentions": 35787,
-      "predicted_mentions": 31883,
-      "correct": 31726,
-      "wrong": 157,
-      "unknown": 3904,
-      "precision": 0.9950757456951981,
-      "recall": 0.8865230390924078,
-      "f1": 0.9376680951677258,
-      "accuracy_counting_unknown_as_wrong": 0.8865230390924078,
-      "unknown_rate": 0.10908989297789701
+      "predicted_mentions": 30867,
+      "correct": 30728,
+      "wrong": 139,
+      "unknown": 4920,
+      "precision": 0.9954968088897528,
+      "recall": 0.8586358174756197,
+      "f1": 0.9220151828847482,
+      "accuracy_counting_unknown_as_wrong": 0.8586358174756197,
+      "unknown_rate": 0.13748009053566937
     }
   },
   "new_author_methods": {
@@ -180,10 +180,524 @@
     },
     "risk_controlled_hybrid": {
       "evaluated_mentions": 46548,
-      "false_links": 454,
-      "no_prediction": 46094,
-      "false_link_rate": 0.009753372862421587,
-      "no_prediction_rate": 0.9902466271375784
+      "false_links": 265,
+      "no_prediction": 46283,
+      "false_link_rate": 0.005693048036435507,
+      "no_prediction_rate": 0.9943069519635644
+    }
+  },
+  "hard_case_linkable_methods": {
+    "ambiguous_candidates": {
+      "name_most_frequent": {
+        "evaluated_mentions": 5552,
+        "predicted_mentions": 5552,
+        "correct": 3307,
+        "wrong": 2245,
+        "unknown": 0,
+        "precision": 0.5956412103746398,
+        "recall": 0.5956412103746398,
+        "f1": 0.5956412103746398,
+        "accuracy_counting_unknown_as_wrong": 0.5956412103746398,
+        "unknown_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 5552,
+        "predicted_mentions": 5552,
+        "correct": 4636,
+        "wrong": 916,
+        "unknown": 0,
+        "precision": 0.8350144092219021,
+        "recall": 0.8350144092219021,
+        "f1": 0.8350144092219021,
+        "accuracy_counting_unknown_as_wrong": 0.8350144092219021,
+        "unknown_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 5552,
+        "predicted_mentions": 4146,
+        "correct": 4018,
+        "wrong": 128,
+        "unknown": 1406,
+        "precision": 0.9691268692715871,
+        "recall": 0.7237031700288185,
+        "f1": 0.8286244586512684,
+        "accuracy_counting_unknown_as_wrong": 0.7237031700288185,
+        "unknown_rate": 0.25324207492795386
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 5552,
+        "predicted_mentions": 4233,
+        "correct": 4101,
+        "wrong": 132,
+        "unknown": 1319,
+        "precision": 0.9688164422395464,
+        "recall": 0.7386527377521613,
+        "f1": 0.8382217680122636,
+        "accuracy_counting_unknown_as_wrong": 0.7386527377521613,
+        "unknown_rate": 0.23757204610951008
+      }
+    },
+    "chinese_like_signature": {
+      "name_most_frequent": {
+        "evaluated_mentions": 10860,
+        "predicted_mentions": 10762,
+        "correct": 8976,
+        "wrong": 1786,
+        "unknown": 98,
+        "precision": 0.8340457164095892,
+        "recall": 0.8265193370165745,
+        "f1": 0.8302654703542688,
+        "accuracy_counting_unknown_as_wrong": 0.8265193370165745,
+        "unknown_rate": 0.009023941068139963
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 10860,
+        "predicted_mentions": 10762,
+        "correct": 10077,
+        "wrong": 685,
+        "unknown": 98,
+        "precision": 0.9363501207953911,
+        "recall": 0.9279005524861879,
+        "f1": 0.9321061881417075,
+        "accuracy_counting_unknown_as_wrong": 0.9279005524861879,
+        "unknown_rate": 0.009023941068139963
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 10860,
+        "predicted_mentions": 8041,
+        "correct": 7989,
+        "wrong": 52,
+        "unknown": 2819,
+        "precision": 0.9935331426439498,
+        "recall": 0.7356353591160221,
+        "f1": 0.8453520977726047,
+        "accuracy_counting_unknown_as_wrong": 0.7356353591160221,
+        "unknown_rate": 0.2595764272559853
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 10860,
+        "predicted_mentions": 8103,
+        "correct": 8049,
+        "wrong": 54,
+        "unknown": 2757,
+        "precision": 0.9933358015549797,
+        "recall": 0.7411602209944751,
+        "f1": 0.8489163107103306,
+        "accuracy_counting_unknown_as_wrong": 0.7411602209944751,
+        "unknown_rate": 0.25386740331491714
+      }
+    },
+    "exact_name_ambiguous": {
+      "name_most_frequent": {
+        "evaluated_mentions": 1852,
+        "predicted_mentions": 1852,
+        "correct": 1165,
+        "wrong": 687,
+        "unknown": 0,
+        "precision": 0.6290496760259179,
+        "recall": 0.6290496760259179,
+        "f1": 0.6290496760259179,
+        "accuracy_counting_unknown_as_wrong": 0.6290496760259179,
+        "unknown_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 1852,
+        "predicted_mentions": 1852,
+        "correct": 1599,
+        "wrong": 253,
+        "unknown": 0,
+        "precision": 0.8633909287257019,
+        "recall": 0.8633909287257019,
+        "f1": 0.8633909287257019,
+        "accuracy_counting_unknown_as_wrong": 0.8633909287257019,
+        "unknown_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 1852,
+        "predicted_mentions": 1427,
+        "correct": 1316,
+        "wrong": 111,
+        "unknown": 425,
+        "precision": 0.9222144358794674,
+        "recall": 0.7105831533477321,
+        "f1": 0.8026837450442207,
+        "accuracy_counting_unknown_as_wrong": 0.7105831533477321,
+        "unknown_rate": 0.2294816414686825
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 1852,
+        "predicted_mentions": 1439,
+        "correct": 1328,
+        "wrong": 111,
+        "unknown": 413,
+        "precision": 0.9228630993745657,
+        "recall": 0.7170626349892009,
+        "f1": 0.8070495290185353,
+        "accuracy_counting_unknown_as_wrong": 0.7170626349892009,
+        "unknown_rate": 0.22300215982721383
+      }
+    },
+    "framework_unknown_graph_supported": {
+      "name_most_frequent": {
+        "evaluated_mentions": 863,
+        "predicted_mentions": 863,
+        "correct": 801,
+        "wrong": 62,
+        "unknown": 0,
+        "precision": 0.9281575898030128,
+        "recall": 0.9281575898030128,
+        "f1": 0.9281575898030128,
+        "accuracy_counting_unknown_as_wrong": 0.9281575898030128,
+        "unknown_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 863,
+        "predicted_mentions": 863,
+        "correct": 859,
+        "wrong": 4,
+        "unknown": 0,
+        "precision": 0.9953650057937428,
+        "recall": 0.9953650057937428,
+        "f1": 0.9953650057937428,
+        "accuracy_counting_unknown_as_wrong": 0.9953650057937428,
+        "unknown_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 863,
+        "predicted_mentions": 0,
+        "correct": 0,
+        "wrong": 0,
+        "unknown": 863,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "accuracy_counting_unknown_as_wrong": 0.0,
+        "unknown_rate": 1.0
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 863,
+        "predicted_mentions": 863,
+        "correct": 859,
+        "wrong": 4,
+        "unknown": 0,
+        "precision": 0.9953650057937428,
+        "recall": 0.9953650057937428,
+        "f1": 0.9953650057937428,
+        "accuracy_counting_unknown_as_wrong": 0.9953650057937428,
+        "unknown_rate": 0.0
+      }
+    },
+    "graph_supported_candidate": {
+      "name_most_frequent": {
+        "evaluated_mentions": 13018,
+        "predicted_mentions": 13018,
+        "correct": 12571,
+        "wrong": 447,
+        "unknown": 0,
+        "precision": 0.9656629282531879,
+        "recall": 0.9656629282531879,
+        "f1": 0.9656629282531879,
+        "accuracy_counting_unknown_as_wrong": 0.9656629282531879,
+        "unknown_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 13018,
+        "predicted_mentions": 13018,
+        "correct": 12945,
+        "wrong": 73,
+        "unknown": 0,
+        "precision": 0.9943923797818405,
+        "recall": 0.9943923797818405,
+        "f1": 0.9943923797818405,
+        "accuracy_counting_unknown_as_wrong": 0.9943923797818405,
+        "unknown_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 13018,
+        "predicted_mentions": 12155,
+        "correct": 12123,
+        "wrong": 32,
+        "unknown": 863,
+        "precision": 0.9973673385438091,
+        "recall": 0.9312490397910586,
+        "f1": 0.9631748301751877,
+        "accuracy_counting_unknown_as_wrong": 0.9312490397910586,
+        "unknown_rate": 0.06629282531878937
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 13018,
+        "predicted_mentions": 13018,
+        "correct": 12982,
+        "wrong": 36,
+        "unknown": 0,
+        "precision": 0.9972345982485789,
+        "recall": 0.9972345982485789,
+        "f1": 0.9972345982485789,
+        "accuracy_counting_unknown_as_wrong": 0.9972345982485789,
+        "unknown_rate": 0.0
+      }
+    },
+    "initial_only_signature": {
+      "name_most_frequent": {
+        "evaluated_mentions": 5785,
+        "predicted_mentions": 5755,
+        "correct": 5434,
+        "wrong": 321,
+        "unknown": 30,
+        "precision": 0.9442224152910512,
+        "recall": 0.9393258426966292,
+        "f1": 0.9417677642980936,
+        "accuracy_counting_unknown_as_wrong": 0.9393258426966292,
+        "unknown_rate": 0.005185825410544511
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 5785,
+        "predicted_mentions": 5755,
+        "correct": 5598,
+        "wrong": 157,
+        "unknown": 30,
+        "precision": 0.972719374456994,
+        "recall": 0.9676750216076059,
+        "f1": 0.9701906412478337,
+        "accuracy_counting_unknown_as_wrong": 0.9676750216076059,
+        "unknown_rate": 0.005185825410544511
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 5785,
+        "predicted_mentions": 4330,
+        "correct": 4306,
+        "wrong": 24,
+        "unknown": 1455,
+        "precision": 0.9944572748267898,
+        "recall": 0.7443388072601556,
+        "f1": 0.8514087988136431,
+        "accuracy_counting_unknown_as_wrong": 0.7443388072601556,
+        "unknown_rate": 0.2515125324114088
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 5785,
+        "predicted_mentions": 4816,
+        "correct": 4790,
+        "wrong": 26,
+        "unknown": 969,
+        "precision": 0.9946013289036545,
+        "recall": 0.8280034572169404,
+        "f1": 0.9036883312895009,
+        "accuracy_counting_unknown_as_wrong": 0.8280034572169404,
+        "unknown_rate": 0.16750216076058771
+      }
+    }
+  },
+  "hard_case_new_author_methods": {
+    "ambiguous_candidates": {
+      "name_most_frequent": {
+        "evaluated_mentions": 2394,
+        "false_links": 2394,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 2394,
+        "false_links": 2394,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 2394,
+        "false_links": 56,
+        "no_prediction": 2338,
+        "false_link_rate": 0.023391812865497075,
+        "no_prediction_rate": 0.9766081871345029
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 2394,
+        "false_links": 91,
+        "no_prediction": 2303,
+        "false_link_rate": 0.038011695906432746,
+        "no_prediction_rate": 0.9619883040935673
+      }
+    },
+    "chinese_like_signature": {
+      "name_most_frequent": {
+        "evaluated_mentions": 10822,
+        "false_links": 4235,
+        "no_prediction": 6587,
+        "false_link_rate": 0.3913324708926261,
+        "no_prediction_rate": 0.6086675291073739
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 10822,
+        "false_links": 4235,
+        "no_prediction": 6587,
+        "false_link_rate": 0.3913324708926261,
+        "no_prediction_rate": 0.6086675291073739
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 10822,
+        "false_links": 83,
+        "no_prediction": 10739,
+        "false_link_rate": 0.007669562003326557,
+        "no_prediction_rate": 0.9923304379966734
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 10822,
+        "false_links": 103,
+        "no_prediction": 10719,
+        "false_link_rate": 0.009517649233043799,
+        "no_prediction_rate": 0.9904823507669562
+      }
+    },
+    "exact_name_ambiguous": {
+      "name_most_frequent": {
+        "evaluated_mentions": 538,
+        "false_links": 538,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 538,
+        "false_links": 538,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 538,
+        "false_links": 18,
+        "no_prediction": 520,
+        "false_link_rate": 0.03345724907063197,
+        "no_prediction_rate": 0.966542750929368
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 538,
+        "false_links": 28,
+        "no_prediction": 510,
+        "false_link_rate": 0.05204460966542751,
+        "no_prediction_rate": 0.9479553903345725
+      }
+    },
+    "framework_unknown_graph_supported": {
+      "name_most_frequent": {
+        "evaluated_mentions": 53,
+        "false_links": 53,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 53,
+        "false_links": 53,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 53,
+        "false_links": 0,
+        "no_prediction": 53,
+        "false_link_rate": 0.0,
+        "no_prediction_rate": 1.0
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 53,
+        "false_links": 53,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      }
+    },
+    "graph_supported_candidate": {
+      "name_most_frequent": {
+        "evaluated_mentions": 86,
+        "false_links": 86,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 86,
+        "false_links": 86,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 86,
+        "false_links": 33,
+        "no_prediction": 53,
+        "false_link_rate": 0.38372093023255816,
+        "no_prediction_rate": 0.6162790697674418
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 86,
+        "false_links": 86,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      }
+    },
+    "initial_only_signature": {
+      "name_most_frequent": {
+        "evaluated_mentions": 10705,
+        "false_links": 726,
+        "no_prediction": 9979,
+        "false_link_rate": 0.06781877627276973,
+        "no_prediction_rate": 0.9321812237272302
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 10705,
+        "false_links": 726,
+        "no_prediction": 9979,
+        "false_link_rate": 0.06781877627276973,
+        "no_prediction_rate": 0.9321812237272302
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 10705,
+        "false_links": 20,
+        "no_prediction": 10685,
+        "false_link_rate": 0.0018682858477347033,
+        "no_prediction_rate": 0.9981317141522653
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 10705,
+        "false_links": 52,
+        "no_prediction": 10653,
+        "false_link_rate": 0.0048575432041102285,
+        "no_prediction_rate": 0.9951424567958898
+      }
+    },
+    "new_author_with_candidates": {
+      "name_most_frequent": {
+        "evaluated_mentions": 5318,
+        "false_links": 5318,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 5318,
+        "false_links": 5318,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 5318,
+        "false_links": 212,
+        "no_prediction": 5106,
+        "false_link_rate": 0.03986461075592328,
+        "no_prediction_rate": 0.9601353892440767
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 5318,
+        "false_links": 265,
+        "no_prediction": 5053,
+        "false_link_rate": 0.0498307634449041,
+        "no_prediction_rate": 0.9501692365550959
+      }
     }
   },
   "limitations": [

@@ -31,8 +31,18 @@ from src.author_disambiguation import (
     decide_pair,
     f1,
     given_relation,
+    is_chinese_like_name,
+    is_initial_only_given,
     load_labeled_mentions,
     sha256_file,
+)
+
+
+METHOD_NAMES = (
+    "name_most_frequent",
+    "istina_hypergraph_proxy",
+    "framework_v1_profile",
+    "risk_controlled_hybrid",
 )
 
 
@@ -40,7 +50,7 @@ from src.author_disambiguation import (
 class OnlineBenchmarkConfig:
     cutoff_year: int = 2021
     max_profile_mentions: int = 30
-    hypergraph_support_threshold: float = 1.0
+    hypergraph_support_threshold: float = 3.0
 
 
 @dataclass
@@ -316,6 +326,52 @@ def summarize_new_author(counts: Counter[str]) -> dict[str, float | int]:
     }
 
 
+def hard_case_labels(
+    mention: AuthorMention,
+    candidates: list[str],
+    profiles: dict[str, AuthorProfile],
+    truth_in_history: bool,
+    framework_prediction: str | None,
+    hypergraph_prediction: str | None,
+    hypergraph_support: float,
+    support_threshold: float,
+) -> list[str]:
+    labels: list[str] = []
+    if len(candidates) >= 2:
+        labels.append("ambiguous_candidates")
+    exact_name_candidates = sum(
+        1 for author_id in candidates if mention.given_tokens in profiles[author_id].given_variants
+    )
+    if exact_name_candidates >= 2:
+        labels.append("exact_name_ambiguous")
+    if is_initial_only_given(mention.given_tokens):
+        labels.append("initial_only_signature")
+    if is_chinese_like_name(mention):
+        labels.append("chinese_like_signature")
+    if not truth_in_history and candidates:
+        labels.append("new_author_with_candidates")
+    if hypergraph_prediction is not None and hypergraph_support >= support_threshold:
+        labels.append("graph_supported_candidate")
+    if (
+        framework_prediction is None
+        and hypergraph_prediction is not None
+        and hypergraph_support >= support_threshold
+    ):
+        labels.append("framework_unknown_graph_supported")
+    return labels
+
+
+def empty_method_map() -> dict[str, Counter[str]]:
+    return {method: empty_method_counts() for method in METHOD_NAMES}
+
+
+def empty_new_author_method_map() -> dict[str, Counter[str]]:
+    return {
+        method: Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0)
+        for method in METHOD_NAMES
+    }
+
+
 def evaluate_online_assignment(
     mentions: list[AuthorMention],
     config: OnlineBenchmarkConfig,
@@ -346,24 +402,13 @@ def evaluate_online_assignment(
 
     totals = Counter()
     candidate_sizes: Counter[int] = Counter()
-    method_counts = {
-        "name_most_frequent": empty_method_counts(),
-        "istina_hypergraph_proxy": empty_method_counts(),
-        "framework_v1_profile": empty_method_counts(),
-        "risk_controlled_hybrid": empty_method_counts(),
-    }
-    linkable_method_counts = {
-        "name_most_frequent": empty_method_counts(),
-        "istina_hypergraph_proxy": empty_method_counts(),
-        "framework_v1_profile": empty_method_counts(),
-        "risk_controlled_hybrid": empty_method_counts(),
-    }
-    new_author_counts = {
-        "name_most_frequent": Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0),
-        "istina_hypergraph_proxy": Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0),
-        "framework_v1_profile": Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0),
-        "risk_controlled_hybrid": Counter(evaluated=0, predicted=0, correct=0, wrong=0, unknown=0),
-    }
+    method_counts = empty_method_map()
+    linkable_method_counts = empty_method_map()
+    new_author_counts = empty_new_author_method_map()
+    hard_linkable_counts: dict[str, dict[str, Counter[str]]] = defaultdict(empty_method_map)
+    hard_new_author_counts: dict[str, dict[str, Counter[str]]] = defaultdict(
+        empty_new_author_method_map
+    )
     evaluated_papers = 0
 
     for paper_positions in test_positions_by_paper.values():
@@ -429,13 +474,37 @@ def evaluate_online_assignment(
                     config.hypergraph_support_threshold,
                 ),
             }
+            truth_in_history = truth in history_author_ids
+            labels = hard_case_labels(
+                mentions[position],
+                candidate_sets[position],
+                profiles,
+                truth_in_history,
+                framework_prediction,
+                hypergraph_prediction,
+                hypergraph_support,
+                config.hypergraph_support_threshold,
+            )
 
-            if truth in history_author_ids:
+            if truth_in_history:
                 for method, prediction in predictions.items():
                     update_assignment_counts(linkable_method_counts[method], prediction, truth)
+                for label in labels:
+                    for method, prediction in predictions.items():
+                        update_assignment_counts(
+                            hard_linkable_counts[label][method],
+                            prediction,
+                            truth,
+                        )
             else:
                 for method, prediction in predictions.items():
                     update_new_author_counts(new_author_counts[method], prediction)
+                for label in labels:
+                    for method, prediction in predictions.items():
+                        update_new_author_counts(
+                            hard_new_author_counts[label][method],
+                            prediction,
+                        )
 
             if position not in covered_positions:
                 continue
@@ -478,6 +547,20 @@ def evaluate_online_assignment(
         "new_author_methods": {
             method: summarize_new_author(counts)
             for method, counts in new_author_counts.items()
+        },
+        "hard_case_linkable_methods": {
+            label: {
+                method: summarize_method(counts, None)
+                for method, counts in method_counts_by_name.items()
+            }
+            for label, method_counts_by_name in sorted(hard_linkable_counts.items())
+        },
+        "hard_case_new_author_methods": {
+            label: {
+                method: summarize_new_author(counts)
+                for method, counts in method_counts_by_name.items()
+            }
+            for label, method_counts_by_name in sorted(hard_new_author_counts.items())
         },
         "limitations": [
             "This is a source-faithful Python proxy, not the compiled ISTINA C++ service.",

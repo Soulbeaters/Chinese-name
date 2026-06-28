@@ -46,6 +46,8 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
         "methods": result["methods"],
         "linkable_end_to_end_methods": result["linkable_end_to_end_methods"],
         "new_author_methods": result["new_author_methods"],
+        "hard_case_linkable_methods": result["hard_case_linkable_methods"],
+        "hard_case_new_author_methods": result["hard_case_new_author_methods"],
     }
 
 
@@ -89,13 +91,47 @@ def print_new_author_table(result: dict[str, Any]) -> None:
         )
 
 
+def print_hard_case_table(result: dict[str, Any]) -> None:
+    labels = [
+        "ambiguous_candidates",
+        "exact_name_ambiguous",
+        "initial_only_signature",
+        "chinese_like_signature",
+        "framework_unknown_graph_supported",
+    ]
+    print("\nHard-case linkable set:")
+    print("| Case | Method | N | Precision | Recall | Unknown rate | Wrong |")
+    print("|---|---|---:|---:|---:|---:|---:|")
+    for label in labels:
+        if label not in result["hard_case_linkable_methods"]:
+            continue
+        for method, metrics in result["hard_case_linkable_methods"][label].items():
+            print(
+                f"| {label} | {method} | {metrics['evaluated_mentions']} | "
+                f"{pct(metrics['precision'])} | {pct(metrics['recall'])} | "
+                f"{pct(metrics['unknown_rate'])} | {metrics['wrong']} |"
+            )
+
+    print("\nHard-case new-author set:")
+    print("| Case | Method | N | False-link rate | False links |")
+    print("|---|---|---:|---:|---:|")
+    for label in ["new_author_with_candidates", "ambiguous_candidates", "exact_name_ambiguous"]:
+        if label not in result["hard_case_new_author_methods"]:
+            continue
+        for method, metrics in result["hard_case_new_author_methods"][label].items():
+            print(
+                f"| {label} | {method} | {metrics['evaluated_mentions']} | "
+                f"{pct(metrics['false_link_rate'])} | {metrics['false_links']} |"
+            )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--cutoff-year", type=int, default=2021)
     parser.add_argument("--max-profile-mentions", type=int, default=30)
-    parser.add_argument("--hypergraph-support-threshold", type=float, default=1.0)
+    parser.add_argument("--hypergraph-support-threshold", type=float, default=3.0)
     args = parser.parse_args()
 
     config = OnlineBenchmarkConfig(
@@ -111,6 +147,7 @@ def main() -> None:
     print_candidate_table(result)
     print_linkable_table(result)
     print_new_author_table(result)
+    print_hard_case_table(result)
 
 
 if __name__ == "__main__":
