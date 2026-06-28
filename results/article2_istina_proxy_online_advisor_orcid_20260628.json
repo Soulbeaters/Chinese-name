@@ -1,0 +1,133 @@
+{
+  "cutoff_year": 2021,
+  "max_profile_mentions": 30,
+  "history_mentions": 4118,
+  "history_authors": 3658,
+  "test_mentions": 15062,
+  "truth_in_history_mentions": 2333,
+  "candidate_covered_mentions": 2278,
+  "candidate_coverage_vs_truth_in_history": 0.9764252036005143,
+  "evaluated_papers": 630,
+  "candidate_size_histogram": {
+    "0": 12458,
+    "1": 2482,
+    "2": 94,
+    "3": 19,
+    "4": 6,
+    "7": 3
+  },
+  "methods": {
+    "name_most_frequent": {
+      "evaluated_mentions": 2278,
+      "predicted_mentions": 2278,
+      "correct": 2261,
+      "wrong": 17,
+      "unknown": 0,
+      "precision": 0.9925373134328358,
+      "recall": 0.9925373134328358,
+      "f1": 0.9925373134328358,
+      "accuracy_counting_unknown_as_wrong": 0.9925373134328358,
+      "unknown_rate": 0.0,
+      "paper_exact": 613,
+      "paper_exact_rate": 0.973015873015873
+    },
+    "istina_hypergraph_proxy": {
+      "evaluated_mentions": 2278,
+      "predicted_mentions": 2278,
+      "correct": 2265,
+      "wrong": 13,
+      "unknown": 0,
+      "precision": 0.9942932396839332,
+      "recall": 0.9942932396839332,
+      "f1": 0.9942932396839332,
+      "accuracy_counting_unknown_as_wrong": 0.9942932396839332,
+      "unknown_rate": 0.0,
+      "paper_exact": 617,
+      "paper_exact_rate": 0.9793650793650793
+    },
+    "framework_v1_profile": {
+      "evaluated_mentions": 2278,
+      "predicted_mentions": 1818,
+      "correct": 1818,
+      "wrong": 0,
+      "unknown": 460,
+      "precision": 1.0,
+      "recall": 0.7980684811237928,
+      "f1": 0.8876953125,
+      "accuracy_counting_unknown_as_wrong": 0.7980684811237928,
+      "unknown_rate": 0.2019315188762072,
+      "paper_exact": 406,
+      "paper_exact_rate": 0.6444444444444445
+    }
+  },
+  "linkable_end_to_end_methods": {
+    "name_most_frequent": {
+      "evaluated_mentions": 2333,
+      "predicted_mentions": 2280,
+      "correct": 2261,
+      "wrong": 19,
+      "unknown": 53,
+      "precision": 0.9916666666666667,
+      "recall": 0.9691384483497643,
+      "f1": 0.9802731411229135,
+      "accuracy_counting_unknown_as_wrong": 0.9691384483497643,
+      "unknown_rate": 0.02271753107586798
+    },
+    "istina_hypergraph_proxy": {
+      "evaluated_mentions": 2333,
+      "predicted_mentions": 2280,
+      "correct": 2265,
+      "wrong": 15,
+      "unknown": 53,
+      "precision": 0.993421052631579,
+      "recall": 0.9708529789969995,
+      "f1": 0.9820073704747453,
+      "accuracy_counting_unknown_as_wrong": 0.9708529789969995,
+      "unknown_rate": 0.02271753107586798
+    },
+    "framework_v1_profile": {
+      "evaluated_mentions": 2333,
+      "predicted_mentions": 1820,
+      "correct": 1818,
+      "wrong": 2,
+      "unknown": 513,
+      "precision": 0.9989010989010989,
+      "recall": 0.7792541791684526,
+      "f1": 0.8755116783048399,
+      "accuracy_counting_unknown_as_wrong": 0.7792541791684526,
+      "unknown_rate": 0.2198885555079297
+    }
+  },
+  "new_author_methods": {
+    "name_most_frequent": {
+      "evaluated_mentions": 12729,
+      "false_links": 324,
+      "no_prediction": 12405,
+      "false_link_rate": 0.02545368842799906,
+      "no_prediction_rate": 0.9745463115720009
+    },
+    "istina_hypergraph_proxy": {
+      "evaluated_mentions": 12729,
+      "false_links": 324,
+      "no_prediction": 12405,
+      "false_link_rate": 0.02545368842799906,
+      "no_prediction_rate": 0.9745463115720009
+    },
+    "framework_v1_profile": {
+      "evaluated_mentions": 12729,
+      "false_links": 31,
+      "no_prediction": 12698,
+      "false_link_rate": 0.0024353837693455887,
+      "no_prediction_rate": 0.9975646162306544
+    }
+  },
+  "limitations": [
+    "This is a source-faithful Python proxy, not the compiled ISTINA C++ service.",
+    "ORCID labels are used as surrogate historical author ids for evaluation.",
+    "Only ORCID-labeled mentions are used, matching the available gold labels."
+  ],
+  "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+  "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+  "labeled_mentions": 19180,
+  "unique_orcid": 12456
+}

@@ -140,9 +140,17 @@
 
 当前 `framework_v1 balanced` 已在 Crossref ORCID 和导师 DOI ORCID 两套真实大规模数据上同时通过该门槛。文稿中可以表述为“在当前两个 ORCID 标注真实数据集上达到生产质量门槛的可解释消歧框架”。但仍不应泛化为“所有生产场景的最终系统”，因为还缺少与 ISTINA 现行算法的同口径比较，以及更多第三方多语言姓名数据集验证。
 
+## 2026-06-28 与 ISTINA 现行算法的初步同口径比较
+
+已新增独立审计与对比文档：
+
+`docs/ISTINA_CURRENT_ALGORITHM_COMPARISON_20260628.md`
+
+结论摘要：旧 ISTINA 超图思想在“真值作者已经存在于历史库”的 linkable 场景召回更强；当前 `framework_v1` 的优势是显著降低 new-author / truth-not-in-history 场景的误链接。因此文章二不宜写成“替代旧算法”，更适合定位为“旧算法复现与统一评测 + 风险导向三分决策扩展”。
+
 ## 下一步实验方向
 
-1. 与 ISTINA 现行算法做同数据、同标签、同指标的大规模比较。
+1. 获取真实 ISTINA `worker_id / article_id / author_position / aliases` 导出后，做旧 C++ 算法或严格等价复现版本的同口径比较。
 2. 加入更多生产特征：email、机构 ID/ROR、国家/城市、题名/关键词/期刊、完整共同作者图，而不是只用姓名和自由文本机构。
 3. 在当前规则框架上增加可解释的监督 pairwise 模型，例如 logistic regression / gradient boosting，用当前规则分数和上下文特征做输入。
 4. GNN 暂不作为第一版生产算法，应作为后续对比模型：只有在强规则/监督 baseline 之上还能显著提升，才作为文章二创新点之一。
