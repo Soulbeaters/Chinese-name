@@ -104,6 +104,7 @@ tests/test_istina_hypergraph_proxy.py
 ```text
 results/article2_istina_proxy_online_crossref_orcid_20260628.json
 results/article2_istina_proxy_online_advisor_orcid_20260628.json
+results/article2_hybrid_threshold_sweep_20260629.json
 ```
 
 复现实验命令：
@@ -112,6 +113,8 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 python experiments\evaluate_istina_hypergraph_proxy.py --dataset "C:\istina\materia 材料\测试表单\crossref_authors.json" --output results\article2_istina_proxy_online_crossref_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 1.25
 
 python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json" --output results\article2_istina_proxy_online_advisor_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 1.25
+
+python experiments\sweep_istina_hybrid_thresholds.py --output results\article2_hybrid_threshold_sweep_20260629.json
 ```
 
 ## 5. Crossref ORCID 大规模数据结果
@@ -198,7 +201,7 @@ python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_d
 
 ## 7. Hard-case 分组结果
 
-这组统计用于回答“同名、initial、中文拼音、新作者边界样本”是否真实改善。`risk_controlled_hybrid` 采用论文级组合优化后，进一步扫测了 0.5 / 1.0 / 1.25 / 1.5 / 1.75 / 2.0 / 2.5 / 3.0 / 3.5 / 4.0。0.5 在 Crossref 上未通过生产门槛；1.0 虽然 F1 最高，但 precision 距 99.5% 门槛过近。最终采用 1.25 作为召回与风险的生产折中点。
+这组统计用于回答“同名、initial、中文拼音、新作者边界样本”是否真实改善。`risk_controlled_hybrid` 采用论文级组合优化后，进一步扫测了 0.5 / 1.0 / 1.25 / 1.5 / 1.75 / 2.0 / 2.5 / 3.0 / 3.5 / 4.0。扫测结果保存在 `results/article2_hybrid_threshold_sweep_20260629.json`。0.5 在 Crossref 上未通过生产门槛；1.0 虽然 F1 最高，但 precision 距 99.5% 门槛过近。最终采用 1.25 作为召回与风险的生产折中点。
 
 ### 7.1 Crossref ORCID hard cases
 

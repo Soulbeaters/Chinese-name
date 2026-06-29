@@ -166,6 +166,12 @@
 
 该门槛证明的是“风险控制在线流程可部署”：高置信 LINK 可以自动处理，NEW 与 UNKNOWN 仍应进入保守流程或人工审核。它不等价于“完全自动合并所有作者”，也不等价于“已经在真实 ISTINA worker_id 数据上替代当前 C++ 服务”。
 
+阈值选择证据已固化为：
+
+`results/article2_hybrid_threshold_sweep_20260629.json`
+
+该文件在两套大规模数据上扫测 `0.5 / 1.0 / 1.25 / 1.5 / 1.75 / 2.0 / 2.5 / 3.0 / 3.5 / 4.0`。选择规则为：所有数据集必须通过生产门槛；为避免贴近 99.5% precision 下限，最小 precision 安全余量需 ≥ 0.025 个百分点；在满足条件的阈值中选择平均 linkable F1 最高者。该规则选择 `1.25`。
+
 ## 下一步实验方向
 
 1. 获取真实 ISTINA `worker_id / article_id / author_position / aliases` 导出后，做旧 C++ 算法或严格等价复现版本的同口径比较。
@@ -201,6 +207,8 @@ python experiments\evaluate_istina_hypergraph_proxy.py --dataset "C:\istina\mate
 python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json" --output results\article2_istina_proxy_online_advisor_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 1.25
 
 python experiments\online_disambiguation_quality_gate.py --output results\article2_online_quality_gate_summary_20260629.json --result "Crossref ORCID" results\article2_istina_proxy_online_crossref_orcid_20260628.json --result "Advisor DOI ORCID" results\article2_istina_proxy_online_advisor_orcid_20260628.json
+
+python experiments\sweep_istina_hybrid_thresholds.py --output results\article2_hybrid_threshold_sweep_20260629.json
 ```
 
 完整测试：

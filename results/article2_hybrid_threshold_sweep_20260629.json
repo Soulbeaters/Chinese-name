@@ -1,0 +1,660 @@
+{
+  "thresholds": [
+    0.5,
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+    2.5,
+    3.0,
+    3.5,
+    4.0
+  ],
+  "validation_config": {
+    "crossref_dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+    "advisor_dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+    "cutoff_year": 2021,
+    "max_profile_mentions": 30,
+    "min_hybrid_linkable_precision": 0.995,
+    "max_hybrid_new_author_false_link_rate": 0.01,
+    "min_hybrid_recall_gain_vs_framework": 0.0,
+    "min_precision_margin": 0.00025
+  },
+  "selection": {
+    "threshold": 1.25,
+    "reason": "Selected the production-ready threshold with at least 0.000250 precision safety margin and the highest mean linkable F1 across datasets.",
+    "selected": {
+      "threshold": 1.25,
+      "production_ready": true,
+      "precision_margin_ready": true,
+      "min_precision_margin": 0.0004330708661417493,
+      "min_false_link_margin": 0.002846094354215004,
+      "mean_hybrid_linkable_f1": 0.9398046581498531
+    },
+    "candidates": [
+      {
+        "threshold": 0.5,
+        "production_ready": false,
+        "precision_margin_ready": false,
+        "min_precision_margin": -0.00023430482856878765,
+        "min_false_link_margin": -0.0020950416774082672,
+        "mean_hybrid_linkable_f1": 0.9495555598326704
+      },
+      {
+        "threshold": 1.0,
+        "production_ready": true,
+        "precision_margin_ready": false,
+        "min_precision_margin": 0.0002003011575744118,
+        "min_false_link_margin": 0.001707484746927902,
+        "mean_hybrid_linkable_f1": 0.9416390184194641
+      },
+      {
+        "threshold": 1.25,
+        "production_ready": true,
+        "precision_margin_ready": true,
+        "min_precision_margin": 0.0004330708661417493,
+        "min_false_link_margin": 0.002846094354215004,
+        "mean_hybrid_linkable_f1": 0.9398046581498531
+      },
+      {
+        "threshold": 1.5,
+        "production_ready": true,
+        "precision_margin_ready": true,
+        "min_precision_margin": 0.0004899158329363384,
+        "min_false_link_margin": 0.003598006359027241,
+        "mean_hybrid_linkable_f1": 0.9347498011954998
+      },
+      {
+        "threshold": 1.75,
+        "production_ready": true,
+        "precision_margin_ready": true,
+        "min_precision_margin": 0.00048819623169060744,
+        "min_false_link_margin": 0.003662455959439718,
+        "mean_hybrid_linkable_f1": 0.934654513862114
+      },
+      {
+        "threshold": 2.0,
+        "production_ready": true,
+        "precision_margin_ready": true,
+        "min_precision_margin": 0.00048015405672086064,
+        "min_false_link_margin": 0.0038772879608146432,
+        "mean_hybrid_linkable_f1": 0.9340885331125328
+      },
+      {
+        "threshold": 2.5,
+        "production_ready": true,
+        "precision_margin_ready": true,
+        "min_precision_margin": 0.0004920144255537995,
+        "min_false_link_margin": 0.00445733436452694,
+        "mean_hybrid_linkable_f1": 0.9267204066721264
+      },
+      {
+        "threshold": 3.0,
+        "production_ready": true,
+        "precision_margin_ready": true,
+        "min_precision_margin": 0.0005284816278918747,
+        "min_false_link_margin": 0.004650683165764373,
+        "mean_hybrid_linkable_f1": 0.9215966208869328
+      },
+      {
+        "threshold": 3.5,
+        "production_ready": true,
+        "precision_margin_ready": true,
+        "min_precision_margin": 0.0005149663622476819,
+        "min_false_link_margin": 0.00480106556672682,
+        "mean_hybrid_linkable_f1": 0.9193441063520553
+      },
+      {
+        "threshold": 4.0,
+        "production_ready": true,
+        "precision_margin_ready": true,
+        "min_precision_margin": 0.0005416707344853,
+        "min_false_link_margin": 0.005037380768239237,
+        "mean_hybrid_linkable_f1": 0.918658407221461
+      }
+    ]
+  },
+  "rows": [
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 0.5,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9947656951714312,
+        "recall": 0.8974767373627295,
+        "f1": 0.943620178041543,
+        "unknown_rate": 0.09780087741358594,
+        "wrong": 169
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.012095041677408267,
+        "false_links": 563,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9879049583225917
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.06284404951518707,
+        "linkable_unknown_rate": -0.06379411518149049
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 0.5,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.9990645463049579,
+        "recall": 0.9155593656236605,
+        "f1": 0.9554909416237978,
+        "unknown_rate": 0.08358336905272182,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.003063869903370257,
+        "false_links": 39,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9969361300966297
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.13630518645520784,
+        "linkable_unknown_rate": -0.1363051864552079
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 1.0,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9952003011575744,
+        "recall": 0.8864671528767429,
+        "f1": 0.9376921257980609,
+        "unknown_rate": 0.10925755162489172,
+        "wrong": 153
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.008292515253072098,
+        "false_links": 386,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9917074847469279
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.05183446502920053,
+        "linkable_unknown_rate": -0.05233744097018471
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 1.0,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.9990458015267175,
+        "recall": 0.8975567938276897,
+        "f1": 0.9455859110408671,
+        "unknown_rate": 0.10158594084869267,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.0026710660696048394,
+        "false_links": 34,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9973289339303951
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.11830261465923708,
+        "linkable_unknown_rate": -0.11830261465923704
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 1.25,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9954330708661417,
+        "recall": 0.883141923044681,
+        "f1": 0.9359314153723144,
+        "unknown_rate": 0.11280632631961326,
+        "wrong": 145
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.007153905645784996,
+        "false_links": 333,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.992846094354215
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.04850923519713857,
+        "linkable_unknown_rate": -0.04878866627546316
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 1.25,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.9990421455938697,
+        "recall": 0.894127732533219,
+        "f1": 0.9436779009273919,
+        "unknown_rate": 0.10501500214316331,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002592505302851756,
+        "false_links": 33,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974074946971483
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.11487355336476635,
+        "linkable_unknown_rate": -0.1148735533647664
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 1.5,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9954899158329363,
+        "recall": 0.8758208287925783,
+        "f1": 0.9318289927458675,
+        "unknown_rate": 0.12021124989521334,
+        "wrong": 142
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.006401993640972759,
+        "false_links": 298,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9935980063590273
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.04118814094503587,
+        "linkable_unknown_rate": -0.041383742699863085
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 1.5,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.9990305380513815,
+        "recall": 0.8834119159879983,
+        "f1": 0.9376706096451319,
+        "unknown_rate": 0.11573081868838406,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002592505302851756,
+        "false_links": 33,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974074946971483
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.10415773681954565,
+        "linkable_unknown_rate": -0.10415773681954565
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 1.75,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9954881962316906,
+        "recall": 0.8754855114985889,
+        "f1": 0.931638418079096,
+        "unknown_rate": 0.12054656718920279,
+        "wrong": 142
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.006337544040560282,
+        "false_links": 295,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9936624559594397
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.04085282365104648,
+        "linkable_unknown_rate": -0.04104842540587364
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 1.75,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.9990305380513815,
+        "recall": 0.8834119159879983,
+        "f1": 0.9376706096451319,
+        "unknown_rate": 0.11573081868838406,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002592505302851756,
+        "false_links": 33,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974074946971483
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.10415773681954565,
+        "linkable_unknown_rate": -0.10415773681954565
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 2.0,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9954801540567209,
+        "recall": 0.8739206974599715,
+        "f1": 0.9307481697518004,
+        "unknown_rate": 0.12211138122782016,
+        "wrong": 142
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.006122712039185357,
+        "false_links": 285,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9938772879608146
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.039288009612429065,
+        "linkable_unknown_rate": -0.03948361136725627
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 2.0,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.9990300678952473,
+        "recall": 0.8829832833261895,
+        "f1": 0.9374288964732651,
+        "unknown_rate": 0.11615945135019289,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002513944536098672,
+        "false_links": 32,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974860554639013
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.10372910415773684,
+        "linkable_unknown_rate": -0.10372910415773683
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 2.5,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9954920144255538,
+        "recall": 0.8638891217481208,
+        "f1": 0.9250332869560015,
+        "unknown_rate": 0.13219884315533573,
+        "wrong": 140
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.00554266563547306,
+        "false_links": 258,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.994457334364527
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.029256433900578416,
+        "linkable_unknown_rate": -0.0293961494397407
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 2.5,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.9990123456790123,
+        "recall": 0.8671238748392628,
+        "f1": 0.9284075263882514,
+        "unknown_rate": 0.13201885983711958,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002513944536098672,
+        "false_links": 32,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974860554639013
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.08786969567081016,
+        "linkable_unknown_rate": -0.08786969567081013
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 3.0,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9955284816278919,
+        "recall": 0.8585240450442898,
+        "f1": 0.9219643205449444,
+        "unknown_rate": 0.13761980607483165,
+        "wrong": 138
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.005349316834235627,
+        "false_links": 249,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9946506831657643
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.023891357196747398,
+        "linkable_unknown_rate": -0.023975186520244773
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 3.0,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.998997995991984,
+        "recall": 0.8546935276468067,
+        "f1": 0.9212289212289212,
+        "unknown_rate": 0.14444920702957564,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002513944536098672,
+        "false_links": 32,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974860554639013
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.0754393484783541,
+        "linkable_unknown_rate": -0.07543934847835407
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 3.5,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9955149663622477,
+        "recall": 0.8559253360158717,
+        "f1": 0.9204579602139552,
+        "unknown_rate": 0.14021851510324979,
+        "wrong": 138
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.00519893443327318,
+        "false_links": 242,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9948010655667269
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.02129264816832932,
+        "linkable_unknown_rate": -0.02137647749182664
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 3.5,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.998991935483871,
+        "recall": 0.8495499357051007,
+        "f1": 0.9182302524901553,
+        "unknown_rate": 0.1495927989712816,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002513944536098672,
+        "false_links": 32,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974860554639013
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.0702957565366481,
+        "linkable_unknown_rate": -0.0702957565366481
+      }
+    },
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hypergraph_support_threshold": 4.0,
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hybrid_linkable": {
+        "precision": 0.9955416707344853,
+        "recall": 0.854835554810406,
+        "f1": 0.9198388357688376,
+        "unknown_rate": 0.1413362394165479,
+        "wrong": 137
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.004962619231760763,
+        "false_links": 231,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9950373807682392
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.020202866962863553,
+        "linkable_unknown_rate": -0.020258753178528516
+      }
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hypergraph_support_threshold": 4.0,
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hybrid_linkable": {
+        "precision": 0.9989904088844018,
+        "recall": 0.8482640377196743,
+        "f1": 0.9174779786740843,
+        "unknown_rate": 0.1508786969567081,
+        "wrong": 2
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002513944536098672,
+        "false_links": 32,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974860554639013
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.06900985855122166,
+        "linkable_unknown_rate": -0.0690098585512216
+      }
+    }
+  ]
+}
