@@ -18,6 +18,7 @@ from src.istina_hypergraph_proxy import (  # noqa: E402
     get_candidates,
     hard_case_labels,
     score_istina_hypergraph_proxy,
+    score_istina_hypergraph_proxy_paper,
 )
 
 
@@ -105,6 +106,51 @@ def test_istina_proxy_reports_graph_support():
 
     assert prediction == "0000-0001-0000-0001"
     assert support > 0
+
+
+def test_paper_level_proxy_does_not_reuse_same_author_for_two_signatures():
+    rows = [
+        {
+            "firstname": "Alice",
+            "lastname": "Smith",
+            "doi": "10.hist/1",
+            "year": 2020,
+            "orcid": "0000-0001-0000-0001",
+        },
+        {
+            "firstname": "Alice",
+            "lastname": "Smith",
+            "doi": "10.hist/2",
+            "year": 2020,
+            "orcid": "0000-0002-0000-0002",
+        },
+        {
+            "firstname": "Alice",
+            "lastname": "Smith",
+            "doi": "10.test/1",
+            "year": 2022,
+            "orcid": "0000-0001-0000-0001",
+        },
+        {
+            "firstname": "Alice",
+            "lastname": "Smith",
+            "doi": "10.test/1",
+            "year": 2022,
+            "orcid": "0000-0002-0000-0002",
+        },
+    ]
+    mentions = [_mention(row, index) for index, row in enumerate(rows)]
+    profiles, family_index, _ = build_profiles(mentions, [0, 1])
+    candidate_sets = {
+        2: get_candidates(mentions[2], profiles, family_index),
+        3: get_candidates(mentions[3], profiles, family_index),
+    }
+
+    predictions = score_istina_hypergraph_proxy_paper([2, 3], candidate_sets, profiles)
+    assigned_author_ids = [author_id for author_id, _ in predictions.values()]
+
+    assert len(assigned_author_ids) == 2
+    assert len(set(assigned_author_ids)) == 2
 
 
 def test_risk_controlled_hybrid_prefers_framework_then_supported_graph():

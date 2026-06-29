@@ -18,6 +18,7 @@ This module therefore implements a source-faithful proxy for comparison:
 from __future__ import annotations
 
 import math
+from heapq import nlargest
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
@@ -44,6 +45,7 @@ METHOD_NAMES = (
     "framework_v1_profile",
     "risk_controlled_hybrid",
 )
+HYPERGRAPH_ASSIGNMENT_BEAM_SIZE = 256
 
 
 @dataclass(frozen=True)
@@ -172,6 +174,80 @@ def score_istina_hypergraph_proxy(
             best_author = author_id
             best_graph_support = graph_support
     return best_author, best_graph_support
+
+
+def coauthor_support(
+    left_author_id: str,
+    right_author_id: str,
+    profiles: dict[str, AuthorProfile],
+) -> float:
+    if left_author_id == right_author_id:
+        return 0.0
+    count = max(
+        profiles[left_author_id].coauthor_counts.get(right_author_id, 0),
+        profiles[right_author_id].coauthor_counts.get(left_author_id, 0),
+    )
+    return math.log1p(count) if count else 0.0
+
+
+def score_istina_hypergraph_proxy_paper(
+    paper_positions: list[int],
+    candidate_sets: dict[int, list[str]],
+    profiles: dict[str, AuthorProfile],
+    beam_size: int = HYPERGRAPH_ASSIGNMENT_BEAM_SIZE,
+) -> dict[int, tuple[str | None, float]]:
+    """Choose a paper-level candidate combination using coauthor support.
+
+    The original ISTINA service optimizes the author combination for the whole
+    paper.  The local proxy keeps that idea with a deterministic beam search:
+    each signature receives at most one historical author and the same author is
+    not assigned to two signatures in the same paper.
+    """
+    ordered_positions = sorted(
+        paper_positions,
+        key=lambda position: (
+            len(candidate_sets[position]) if candidate_sets[position] else math.inf,
+            position,
+        ),
+    )
+    beams: list[tuple[float, dict[int, str], frozenset[str]]] = [(0.0, {}, frozenset())]
+
+    for position in ordered_positions:
+        candidates = candidate_sets[position]
+        if not candidates:
+            continue
+
+        next_beams: list[tuple[float, dict[int, str], frozenset[str]]] = []
+        for score, assignment, used_author_ids in beams:
+            for author_id in candidates:
+                if author_id in used_author_ids:
+                    continue
+                increment = 0.01 * math.log1p(len(profiles[author_id].mention_positions))
+                for selected_author_id in assignment.values():
+                    increment += coauthor_support(author_id, selected_author_id, profiles)
+                next_assignment = dict(assignment)
+                next_assignment[position] = author_id
+                next_beams.append(
+                    (
+                        score + increment,
+                        next_assignment,
+                        used_author_ids | {author_id},
+                    )
+                )
+
+        if next_beams:
+            beams = nlargest(beam_size, next_beams, key=lambda item: item[0])
+
+    best_assignment = max(beams, key=lambda item: item[0])[1] if beams else {}
+    predictions: dict[int, tuple[str | None, float]] = {}
+    for position, author_id in best_assignment.items():
+        graph_support = sum(
+            coauthor_support(author_id, selected_author_id, profiles)
+            for other_position, selected_author_id in best_assignment.items()
+            if other_position != position
+        )
+        predictions[position] = (author_id, graph_support)
+    return predictions
 
 
 def choose_istina_hypergraph_proxy(
@@ -424,6 +500,11 @@ def evaluate_online_assignment(
             }
             for position in paper_positions
         }
+        hypergraph_predictions = score_istina_hypergraph_proxy_paper(
+            paper_positions,
+            candidate_sets,
+            profiles,
+        )
         covered_positions = [
             position
             for position in paper_positions
@@ -446,10 +527,9 @@ def evaluate_online_assignment(
 
         for position in paper_positions:
             truth = mentions[position].label_orcid
-            hypergraph_prediction, hypergraph_support = score_istina_hypergraph_proxy(
+            hypergraph_prediction, hypergraph_support = hypergraph_predictions.get(
                 position,
-                candidate_sets,
-                profiles,
+                (None, 0.0),
             )
             framework_prediction = choose_framework_profile(
                 mentions[position],
@@ -524,6 +604,7 @@ def evaluate_online_assignment(
         "cutoff_year": config.cutoff_year,
         "max_profile_mentions": config.max_profile_mentions,
         "hypergraph_support_threshold": config.hypergraph_support_threshold,
+        "hypergraph_assignment_beam_size": HYPERGRAPH_ASSIGNMENT_BEAM_SIZE,
         "history_mentions": len(history_positions),
         "history_authors": len(history_author_ids),
         "test_mentions": totals["test_mentions"],

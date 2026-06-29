@@ -35,6 +35,7 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
         "dataset": result["dataset"],
         "cutoff_year": result["cutoff_year"],
         "hypergraph_support_threshold": result["hypergraph_support_threshold"],
+        "hypergraph_assignment_beam_size": result["hypergraph_assignment_beam_size"],
         "history_mentions": result["history_mentions"],
         "history_authors": result["history_authors"],
         "test_mentions": result["test_mentions"],

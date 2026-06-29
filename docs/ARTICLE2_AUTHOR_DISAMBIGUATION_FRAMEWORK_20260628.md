@@ -146,7 +146,7 @@
 
 `docs/ISTINA_CURRENT_ALGORITHM_COMPARISON_20260628.md`
 
-结论摘要：旧 ISTINA 超图思想在“真值作者已经存在于历史库”的 linkable 场景召回更强；当前 `framework_v1` 的优势是显著降低 new-author / truth-not-in-history 场景的误链接。本轮已实现 `risk_controlled_hybrid` 三分决策层：先接受 `framework_v1` 的高置信判断，若其输出 UNKNOWN，则仅在 ISTINA hypergraph proxy 有足够历史合著支持时接受 LINK。阈值扫测后采用更保守的 `hypergraph_support_threshold=3.0`：该层在 Crossref 上将 linkable recall 从 83.463% 提升到 85.864%，new-author false-link 控制在 0.569%；在导师 DOI 数据上将 linkable recall 从 77.925% 提升到 85.469%，new-author false-link 为 0.251%。新增 hard-case 分组统计显示，hybrid 对 initial-only、中文拼音和 framework-UNKNOWN 但图支持强的 linkable 样本有效，但真实新作者且图支持强的边界样本仍需人工审核或更完整生产特征。因此文章二不宜写成“替代旧算法”，更适合定位为“旧算法复现与统一评测 + 风险导向三分决策扩展”。
+结论摘要：旧 ISTINA 超图思想在“真值作者已经存在于历史库”的 linkable 场景召回更强；当前 `framework_v1` 的优势是显著降低 new-author / truth-not-in-history 场景的误链接。本轮已实现 `risk_controlled_hybrid` 三分决策层：先接受 `framework_v1` 的高置信判断，若其输出 UNKNOWN，则仅在 ISTINA hypergraph proxy 有足够历史合著支持时接受 LINK。最新版本把 hypergraph proxy 从逐署名单独打分升级为论文级组合选择，更接近旧 ISTINA 的整篇论文优化思想。在 `hypergraph_support_threshold=3.0` 下，该层在 Crossref 上将 linkable recall 从 83.463% 提升到 85.852%，new-author false-link 控制在 0.535%；在导师 DOI 数据上将 linkable recall 从 77.925% 提升到 85.469%，new-author false-link 为 0.251%。新增 hard-case 分组统计显示，hybrid 对 initial-only、中文拼音和 framework-UNKNOWN 但图支持强的 linkable 样本有效，但真实新作者且图支持强的边界样本仍需人工审核或更完整生产特征。因此文章二不宜写成“替代旧算法”，更适合定位为“旧算法复现与统一评测 + 风险导向三分决策扩展”。
 
 ## 2026-06-29 在线三分决策生产门槛
 
@@ -157,11 +157,11 @@
 - hybrid linkable recall 不低于 `framework_v1_profile`
 - hypergraph fallback threshold ≥ 3.0
 
-本轮在两套大规模真实 ORCID 数据上重新运行最终算法和 ISTINA hypergraph proxy 对比后，在线门槛通过：
+本轮在两套大规模真实 ORCID 数据上重新运行最终算法和论文级 ISTINA hypergraph proxy 对比后，在线门槛通过：
 
 | 数据集 | Hybrid link P/R/F1 | Recall gain vs framework | New false-link | 门槛 |
 |---|---:|---:|---:|---|
-| Crossref ORCID | 99.550% / 85.864% / 92.202% | +2.400 pp | 0.569%（265 / 46,548） | PASS |
+| Crossref ORCID | 99.553% / 85.852% / 92.196% | +2.389 pp | 0.535%（249 / 46,548） | PASS |
 | 导师 DOI ORCID | 99.900% / 85.469% / 92.123% | +7.544 pp | 0.251%（32 / 12,729） | PASS |
 
 该门槛证明的是“风险控制在线流程可部署”：高置信 LINK 可以自动处理，NEW 与 UNKNOWN 仍应进入保守流程或人工审核。它不等价于“完全自动合并所有作者”，也不等价于“已经在真实 ISTINA worker_id 数据上替代当前 C++ 服务”。

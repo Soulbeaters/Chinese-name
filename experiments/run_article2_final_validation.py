@@ -12,6 +12,10 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.istina_hypergraph_proxy import HYPERGRAPH_ASSIGNMENT_BEAM_SIZE  # noqa: E402
+
 DEFAULT_CROSSREF_DATASET = Path(r"C:\istina\materia 材料\测试表单\crossref_authors.json")
 DEFAULT_ADVISOR_DATASET = Path(r"runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json")
 DEFAULT_CLUSTER_GATE = Path("results/article2_quality_gate_summary_20260628.json")
@@ -266,6 +270,7 @@ def main() -> None:
             "cutoff_year": args.cutoff_year,
             "max_profile_mentions": args.max_profile_mentions,
             "hypergraph_support_threshold": args.hypergraph_support_threshold,
+            "hypergraph_assignment_beam_size": HYPERGRAPH_ASSIGNMENT_BEAM_SIZE,
         },
     )
     print(

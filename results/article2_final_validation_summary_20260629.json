@@ -31,7 +31,8 @@
     "max_block_size": 200,
     "cutoff_year": 2021,
     "max_profile_mentions": 30,
-    "hypergraph_support_threshold": 3.0
+    "hypergraph_support_threshold": 3.0,
+    "hypergraph_assignment_beam_size": 256
   },
   "quality_gate_thresholds": {
     "cluster": {
@@ -72,9 +73,9 @@
     {
       "label": "Crossref ORCID",
       "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
-      "hybrid_linkable_precision": 0.9954968088897528,
-      "hybrid_linkable_recall": 0.8586358174756197,
-      "hybrid_new_author_false_link_rate": 0.005693048036435507
+      "hybrid_linkable_precision": 0.9955284816278919,
+      "hybrid_linkable_recall": 0.8585240450442898,
+      "hybrid_new_author_false_link_rate": 0.005349316834235627
     },
     {
       "label": "Advisor DOI ORCID",

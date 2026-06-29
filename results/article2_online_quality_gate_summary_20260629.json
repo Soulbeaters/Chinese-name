@@ -22,20 +22,20 @@
         "unknown_rate": 0.16159499259507643
       },
       "hybrid_linkable": {
-        "precision": 0.9954968088897528,
-        "recall": 0.8586358174756197,
-        "f1": 0.9220151828847482,
-        "unknown_rate": 0.13748009053566937
+        "precision": 0.9955284816278919,
+        "recall": 0.8585240450442898,
+        "f1": 0.9219643205449444,
+        "unknown_rate": 0.13761980607483165
       },
       "hybrid_new_author": {
-        "false_link_rate": 0.005693048036435507,
-        "false_links": 265,
+        "false_link_rate": 0.005349316834235627,
+        "false_links": 249,
         "evaluated_mentions": 46548,
-        "no_prediction_rate": 0.9943069519635644
+        "no_prediction_rate": 0.9946506831657643
       },
       "delta_vs_framework": {
-        "linkable_recall": 0.02400312962807727,
-        "linkable_unknown_rate": -0.024114902059407056
+        "linkable_recall": 0.023891357196747398,
+        "linkable_unknown_rate": -0.023975186520244773
       },
       "production_checks": {
         "hypergraph_support_threshold": true,
