@@ -1,0 +1,88 @@
+{
+  "thresholds": {
+    "hybrid_linkable_precision": 0.995,
+    "hybrid_new_author_false_link_rate": 0.01,
+    "hybrid_recall_gain_vs_framework": 0.0,
+    "hypergraph_support_threshold": 3.0
+  },
+  "datasets": [
+    {
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "history_mentions": 38480,
+      "test_mentions": 82335,
+      "truth_in_history_mentions": 35787,
+      "candidate_covered_mentions": 35380,
+      "hypergraph_support_threshold": 3.0,
+      "framework_linkable": {
+        "precision": 0.9955005999200107,
+        "recall": 0.8346326878475424,
+        "f1": 0.9079965344804001,
+        "unknown_rate": 0.16159499259507643
+      },
+      "hybrid_linkable": {
+        "precision": 0.9954968088897528,
+        "recall": 0.8586358174756197,
+        "f1": 0.9220151828847482,
+        "unknown_rate": 0.13748009053566937
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.005693048036435507,
+        "false_links": 265,
+        "evaluated_mentions": 46548,
+        "no_prediction_rate": 0.9943069519635644
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.02400312962807727,
+        "linkable_unknown_rate": -0.024114902059407056
+      },
+      "production_checks": {
+        "hypergraph_support_threshold": true,
+        "hybrid_linkable_precision": true,
+        "hybrid_new_author_false_link_rate": true,
+        "hybrid_recall_gain_vs_framework": true
+      },
+      "production_ready": true
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "history_mentions": 4118,
+      "test_mentions": 15062,
+      "truth_in_history_mentions": 2333,
+      "candidate_covered_mentions": 2278,
+      "hypergraph_support_threshold": 3.0,
+      "framework_linkable": {
+        "precision": 0.9989010989010989,
+        "recall": 0.7792541791684526,
+        "f1": 0.8755116783048399,
+        "unknown_rate": 0.2198885555079297
+      },
+      "hybrid_linkable": {
+        "precision": 0.998997995991984,
+        "recall": 0.8546935276468067,
+        "f1": 0.9212289212289212,
+        "unknown_rate": 0.14444920702957564
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.002513944536098672,
+        "false_links": 32,
+        "evaluated_mentions": 12729,
+        "no_prediction_rate": 0.9974860554639013
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.0754393484783541,
+        "linkable_unknown_rate": -0.07543934847835407
+      },
+      "production_checks": {
+        "hypergraph_support_threshold": true,
+        "hybrid_linkable_precision": true,
+        "hybrid_new_author_false_link_rate": true,
+        "hybrid_recall_gain_vs_framework": true
+      },
+      "production_ready": true
+    }
+  ],
+  "production_ready": true,
+  "scope": "LINK/NEW/UNKNOWN online gate; UNKNOWN remains a manual-review output, not an automatic merge."
+}

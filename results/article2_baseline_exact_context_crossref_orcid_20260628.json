@@ -1,6 +1,6 @@
 {
   "algorithm": "baseline_exact_context",
-  "profile": "balanced",
+  "profile": "conservative",
   "labeled_mentions": 150775,
   "unique_orcid": 45730,
   "blocks": 34316,
