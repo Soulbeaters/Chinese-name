@@ -39,6 +39,7 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
             "Compile Python sources",
             [sys.executable, "-m", "compileall", "-q", "src", "experiments", "tests"],
         ),
+        ("Patch whitespace check", ["git", "diff", "--check"]),
         (
             "Crossref baseline",
             script_command(
