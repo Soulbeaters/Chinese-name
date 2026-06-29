@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -13,6 +14,9 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CROSSREF_DATASET = Path(r"C:\istina\materia 材料\测试表单\crossref_authors.json")
 DEFAULT_ADVISOR_DATASET = Path(r"runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json")
+DEFAULT_CLUSTER_GATE = Path("results/article2_quality_gate_summary_20260628.json")
+DEFAULT_ONLINE_GATE = Path("results/article2_online_quality_gate_summary_20260629.json")
+DEFAULT_FINAL_SUMMARY = Path("results/article2_final_validation_summary_20260629.json")
 
 
 def script_command(script: str, *args: str | Path | int | float) -> list[str]:
@@ -28,10 +32,10 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
     advisor_framework = Path(
         "results/article2_framework_v1_final_balanced_advisor_orcid_20260628.json"
     )
-    cluster_gate = Path("results/article2_quality_gate_summary_20260628.json")
+    cluster_gate = DEFAULT_CLUSTER_GATE
     crossref_online = Path("results/article2_istina_proxy_online_crossref_orcid_20260628.json")
     advisor_online = Path("results/article2_istina_proxy_online_advisor_orcid_20260628.json")
-    online_gate = Path("results/article2_online_quality_gate_summary_20260629.json")
+    online_gate = DEFAULT_ONLINE_GATE
 
     return [
         ("Unit tests", [sys.executable, "-m", "pytest", "-q"]),
@@ -174,6 +178,54 @@ def run_step(label: str, command: list[str]) -> None:
     subprocess.run(command, cwd=PROJECT_ROOT, check=True)
 
 
+def write_final_summary(
+    cluster_gate_path: Path,
+    online_gate_path: Path,
+    output_path: Path,
+) -> dict[str, object]:
+    cluster_gate = json.loads((PROJECT_ROOT / cluster_gate_path).read_text(encoding="utf-8"))
+    online_gate = json.loads((PROJECT_ROOT / online_gate_path).read_text(encoding="utf-8"))
+    summary = {
+        "cluster_gate_path": str(cluster_gate_path),
+        "online_gate_path": str(online_gate_path),
+        "code_checks": {
+            "unit_tests": True,
+            "compileall": True,
+            "patch_whitespace_check": True,
+        },
+        "cluster_production_ready": cluster_gate["production_ready"],
+        "online_production_ready": online_gate["production_ready"],
+        "production_ready": (
+            cluster_gate["production_ready"] and online_gate["production_ready"]
+        ),
+        "cluster_datasets": [
+            {
+                "label": item["label"],
+                "dataset_sha256": item.get("dataset_sha256"),
+                "cluster_pairwise_precision": item["candidate"]["cluster_pairwise_precision"],
+                "b_cubed_f1": item["candidate"]["b_cubed_f1"],
+            }
+            for item in cluster_gate["datasets"]
+        ],
+        "online_datasets": [
+            {
+                "label": item["label"],
+                "dataset_sha256": item.get("dataset_sha256"),
+                "hybrid_linkable_precision": item["hybrid_linkable"]["precision"],
+                "hybrid_linkable_recall": item["hybrid_linkable"]["recall"],
+                "hybrid_new_author_false_link_rate": (
+                    item["hybrid_new_author"]["false_link_rate"]
+                ),
+            }
+            for item in online_gate["datasets"]
+        ],
+    }
+    target = PROJECT_ROOT / output_path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    return summary
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--crossref-dataset", type=Path, default=DEFAULT_CROSSREF_DATASET)
@@ -182,10 +234,21 @@ def main() -> None:
     parser.add_argument("--cutoff-year", type=int, default=2021)
     parser.add_argument("--max-profile-mentions", type=int, default=30)
     parser.add_argument("--hypergraph-support-threshold", type=float, default=3.0)
+    parser.add_argument("--summary-output", type=Path, default=DEFAULT_FINAL_SUMMARY)
     args = parser.parse_args()
 
     for label, command in build_steps(args):
         run_step(label, command)
+    summary = write_final_summary(
+        DEFAULT_CLUSTER_GATE,
+        DEFAULT_ONLINE_GATE,
+        args.summary_output,
+    )
+    print(
+        "\n=== Final validation summary ===\n"
+        + json.dumps(summary, ensure_ascii=False, indent=2),
+        flush=True,
+    )
 
 
 if __name__ == "__main__":

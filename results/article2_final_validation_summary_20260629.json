@@ -1,0 +1,42 @@
+{
+  "cluster_gate_path": "results\\article2_quality_gate_summary_20260628.json",
+  "online_gate_path": "results\\article2_online_quality_gate_summary_20260629.json",
+  "code_checks": {
+    "unit_tests": true,
+    "compileall": true,
+    "patch_whitespace_check": true
+  },
+  "cluster_production_ready": true,
+  "online_production_ready": true,
+  "production_ready": true,
+  "cluster_datasets": [
+    {
+      "label": "Crossref ORCID",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "cluster_pairwise_precision": 0.9937645238240242,
+      "b_cubed_f1": 0.9505398453019599
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "cluster_pairwise_precision": 0.9903875037548814,
+      "b_cubed_f1": 0.9649542518810483
+    }
+  ],
+  "online_datasets": [
+    {
+      "label": "Crossref ORCID",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hybrid_linkable_precision": 0.9954968088897528,
+      "hybrid_linkable_recall": 0.8586358174756197,
+      "hybrid_new_author_false_link_rate": 0.005693048036435507
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hybrid_linkable_precision": 0.998997995991984,
+      "hybrid_linkable_recall": 0.8546935276468067,
+      "hybrid_new_author_false_link_rate": 0.002513944536098672
+    }
+  ]
+}

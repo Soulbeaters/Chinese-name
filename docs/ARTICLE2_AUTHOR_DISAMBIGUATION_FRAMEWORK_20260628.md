@@ -181,6 +181,8 @@
 python experiments\run_article2_final_validation.py
 ```
 
+该命令会生成统一验收摘要：`results/article2_final_validation_summary_20260629.json`。
+
 分步命令如下：
 
 ```powershell
