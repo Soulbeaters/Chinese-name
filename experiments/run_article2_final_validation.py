@@ -21,6 +21,7 @@ DEFAULT_ADVISOR_DATASET = Path(r"runs\advisor_doi_20260507\advisor_doi_crossref_
 DEFAULT_CLUSTER_GATE = Path("results/article2_quality_gate_summary_20260628.json")
 DEFAULT_ONLINE_GATE = Path("results/article2_online_quality_gate_summary_20260629.json")
 DEFAULT_FINAL_SUMMARY = Path("results/article2_final_validation_summary_20260629.json")
+DEFAULT_THRESHOLD_SWEEP = Path("results/article2_hybrid_threshold_sweep_20260629.json")
 RESULT_PATHS = {
     "crossref_baseline": Path("results/article2_baseline_exact_context_crossref_orcid_20260628.json"),
     "advisor_baseline": Path("results/article2_baseline_exact_context_advisor_orcid_20260628.json"),
@@ -34,6 +35,7 @@ RESULT_PATHS = {
     "crossref_online": Path("results/article2_istina_proxy_online_crossref_orcid_20260628.json"),
     "advisor_online": Path("results/article2_istina_proxy_online_advisor_orcid_20260628.json"),
     "online_gate": DEFAULT_ONLINE_GATE,
+    "threshold_sweep": DEFAULT_THRESHOLD_SWEEP,
     "final_summary": DEFAULT_FINAL_SUMMARY,
 }
 
@@ -184,15 +186,42 @@ def run_step(label: str, command: list[str]) -> None:
     subprocess.run(command, cwd=PROJECT_ROOT, check=True)
 
 
+def validate_threshold_sweep_evidence(
+    threshold_sweep_path: Path,
+    expected_threshold: float,
+) -> dict[str, object]:
+    sweep = json.loads((PROJECT_ROOT / threshold_sweep_path).read_text(encoding="utf-8"))
+    selected_threshold = float(sweep["selection"]["threshold"])
+    if abs(selected_threshold - expected_threshold) > 1e-9:
+        raise ValueError(
+            "Threshold sweep selected "
+            f"{selected_threshold}, but final validation uses {expected_threshold}."
+        )
+    return {
+        "path": str(threshold_sweep_path),
+        "selected_threshold": selected_threshold,
+        "threshold_count": len(sweep["thresholds"]),
+        "row_count": len(sweep["rows"]),
+        "selection_reason": sweep["selection"]["reason"],
+    }
+
+
 def write_final_summary(
     cluster_gate_path: Path,
     online_gate_path: Path,
     output_path: Path,
     validation_steps: list[str] | None = None,
     validation_config: dict[str, object] | None = None,
+    threshold_sweep_path: Path | None = None,
+    expected_threshold: float | None = None,
 ) -> dict[str, object]:
     cluster_gate = json.loads((PROJECT_ROOT / cluster_gate_path).read_text(encoding="utf-8"))
     online_gate = json.loads((PROJECT_ROOT / online_gate_path).read_text(encoding="utf-8"))
+    threshold_sweep = (
+        validate_threshold_sweep_evidence(threshold_sweep_path, expected_threshold)
+        if threshold_sweep_path is not None and expected_threshold is not None
+        else None
+    )
     summary = {
         "cluster_gate_path": str(cluster_gate_path),
         "online_gate_path": str(online_gate_path),
@@ -213,9 +242,13 @@ def write_final_summary(
         },
         "cluster_production_ready": cluster_gate["production_ready"],
         "online_production_ready": online_gate["production_ready"],
+        "threshold_sweep_ready": threshold_sweep is not None,
         "production_ready": (
-            cluster_gate["production_ready"] and online_gate["production_ready"]
+            cluster_gate["production_ready"]
+            and online_gate["production_ready"]
+            and threshold_sweep is not None
         ),
+        "threshold_sweep": threshold_sweep,
         "cluster_datasets": [
             {
                 "label": item["label"],
@@ -262,7 +295,7 @@ def main() -> None:
         DEFAULT_CLUSTER_GATE,
         DEFAULT_ONLINE_GATE,
         args.summary_output,
-        [label for label, _ in steps],
+        [label for label, _ in steps] + ["Threshold sweep evidence check"],
         {
             "crossref_dataset": str(args.crossref_dataset),
             "advisor_dataset": str(args.advisor_dataset),
@@ -272,6 +305,8 @@ def main() -> None:
             "hypergraph_support_threshold": args.hypergraph_support_threshold,
             "hypergraph_assignment_beam_size": HYPERGRAPH_ASSIGNMENT_BEAM_SIZE,
         },
+        DEFAULT_THRESHOLD_SWEEP,
+        args.hypergraph_support_threshold,
     )
     print(
         "\n=== Final validation summary ===\n"

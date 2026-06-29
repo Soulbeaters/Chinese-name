@@ -47,6 +47,7 @@ def test_final_validation_runner_builds_all_pipeline_steps():
 def test_final_validation_summary_combines_gate_outputs(tmp_path):
     cluster_path = tmp_path / "cluster.json"
     online_path = tmp_path / "online.json"
+    threshold_sweep_path = tmp_path / "threshold_sweep.json"
     output_path = tmp_path / "summary.json"
     cluster_path.write_text(
         json.dumps(
@@ -93,6 +94,19 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
         ),
         encoding="utf-8",
     )
+    threshold_sweep_path.write_text(
+        json.dumps(
+            {
+                "thresholds": [1.0, 1.25],
+                "selection": {
+                    "threshold": 1.25,
+                    "reason": "test selection",
+                },
+                "rows": [{"label": "Crossref ORCID"}],
+            }
+        ),
+        encoding="utf-8",
+    )
 
     summary = write_final_summary(
         cluster_path,
@@ -100,6 +114,8 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
         output_path,
         ["Unit tests", "Online quality gate"],
         {"hypergraph_support_threshold": 1.25},
+        threshold_sweep_path,
+        1.25,
     )
 
     assert summary["production_ready"] is True
@@ -113,4 +129,6 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
     assert summary["code_checks"]["unit_tests"] is True
     assert summary["cluster_datasets"][0]["dataset_sha256"] == "sha-crossref"
     assert summary["online_datasets"][0]["hybrid_new_author_false_link_rate"] == 0.006
+    assert summary["threshold_sweep_ready"] is True
+    assert summary["threshold_sweep"]["selected_threshold"] == 1.25
     assert json.loads(output_path.read_text(encoding="utf-8")) == summary

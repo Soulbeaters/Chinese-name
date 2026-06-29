@@ -10,6 +10,7 @@
     "crossref_online": "results\\article2_istina_proxy_online_crossref_orcid_20260628.json",
     "advisor_online": "results\\article2_istina_proxy_online_advisor_orcid_20260628.json",
     "online_gate": "results\\article2_online_quality_gate_summary_20260629.json",
+    "threshold_sweep": "results\\article2_hybrid_threshold_sweep_20260629.json",
     "final_summary": "results\\article2_final_validation_summary_20260629.json"
   },
   "validation_steps": [
@@ -23,7 +24,8 @@
     "Cluster quality gate",
     "Crossref online comparison",
     "Advisor online comparison",
-    "Online quality gate"
+    "Online quality gate",
+    "Threshold sweep evidence check"
   ],
   "validation_config": {
     "crossref_dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
@@ -54,7 +56,15 @@
   },
   "cluster_production_ready": true,
   "online_production_ready": true,
+  "threshold_sweep_ready": true,
   "production_ready": true,
+  "threshold_sweep": {
+    "path": "results\\article2_hybrid_threshold_sweep_20260629.json",
+    "selected_threshold": 1.25,
+    "threshold_count": 10,
+    "row_count": 20,
+    "selection_reason": "Selected the production-ready threshold with at least 0.000250 precision safety margin and the highest mean linkable F1 across datasets."
+  },
   "cluster_datasets": [
     {
       "label": "Crossref ORCID",
