@@ -34,6 +34,11 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
     online_gate = Path("results/article2_online_quality_gate_summary_20260629.json")
 
     return [
+        ("Unit tests", [sys.executable, "-m", "pytest", "-q"]),
+        (
+            "Compile Python sources",
+            [sys.executable, "-m", "compileall", "-q", "src", "experiments", "tests"],
+        ),
         (
             "Crossref baseline",
             script_command(

@@ -26,6 +26,8 @@ def test_final_validation_runner_builds_all_pipeline_steps():
     labels = [label for label, _ in steps]
 
     assert labels == [
+        "Unit tests",
+        "Compile Python sources",
         "Crossref baseline",
         "Advisor baseline",
         "Crossref framework_v1",
@@ -35,6 +37,6 @@ def test_final_validation_runner_builds_all_pipeline_steps():
         "Advisor online comparison",
         "Online quality gate",
     ]
-    assert any("author_disambiguation_quality_gate.py" in part for part in steps[4][1])
+    assert any("author_disambiguation_quality_gate.py" in part for part in steps[6][1])
     assert any("online_disambiguation_quality_gate.py" in part for part in steps[-1][1])
-    assert "3.0" in steps[5][1]
+    assert "3.0" in steps[7][1]

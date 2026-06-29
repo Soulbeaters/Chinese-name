@@ -175,7 +175,7 @@
 
 ## 复现实验命令
 
-推荐使用统一最终验证入口，它会顺序重跑两套大规模数据上的 baseline、`framework_v1`、ISTINA proxy / hybrid 对比，并执行两个生产门槛：
+推荐使用统一最终验证入口，它会先运行 `pytest` 与 `compileall`，再顺序重跑两套大规模数据上的 baseline、`framework_v1`、ISTINA proxy / hybrid 对比，并执行两个生产门槛：
 
 ```powershell
 python experiments\run_article2_final_validation.py
