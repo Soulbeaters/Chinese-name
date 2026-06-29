@@ -175,6 +175,14 @@
 
 ## 复现实验命令
 
+推荐使用统一最终验证入口，它会顺序重跑两套大规模数据上的 baseline、`framework_v1`、ISTINA proxy / hybrid 对比，并执行两个生产门槛：
+
+```powershell
+python experiments\run_article2_final_validation.py
+```
+
+分步命令如下：
+
 ```powershell
 python experiments\evaluate_author_disambiguation_framework.py --dataset "C:\istina\materia 材料\测试表单\crossref_authors.json" --output results\article2_framework_v1_final_balanced_crossref_orcid_20260628.json --algorithm framework_v1 --profile balanced --max-block-size 200
 
