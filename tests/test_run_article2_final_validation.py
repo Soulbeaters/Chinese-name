@@ -84,6 +84,7 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
                         "hybrid_linkable": {
                             "precision": 0.996,
                             "recall": 0.86,
+                            "f1": 0.923,
                         },
                         "hybrid_new_author": {
                             "false_link_rate": 0.006,
@@ -98,11 +99,29 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
         json.dumps(
             {
                 "thresholds": [1.0, 1.25],
+                "validation_config": {
+                    "cutoff_year": 2021,
+                    "max_profile_mentions": 30,
+                },
                 "selection": {
                     "threshold": 1.25,
                     "reason": "test selection",
                 },
-                "rows": [{"label": "Crossref ORCID"}],
+                "rows": [
+                    {
+                        "label": "Crossref ORCID",
+                        "dataset_sha256": "sha-crossref",
+                        "hypergraph_support_threshold": 1.25,
+                        "hybrid_linkable": {
+                            "precision": 0.996,
+                            "recall": 0.86,
+                            "f1": 0.923,
+                        },
+                        "hybrid_new_author": {
+                            "false_link_rate": 0.006,
+                        },
+                    }
+                ],
             }
         ),
         encoding="utf-8",
@@ -113,7 +132,11 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
         online_path,
         output_path,
         ["Unit tests", "Online quality gate"],
-        {"hypergraph_support_threshold": 1.25},
+        {
+            "hypergraph_support_threshold": 1.25,
+            "cutoff_year": 2021,
+            "max_profile_mentions": 30,
+        },
         threshold_sweep_path,
         1.25,
     )
@@ -131,4 +154,5 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
     assert summary["online_datasets"][0]["hybrid_new_author_false_link_rate"] == 0.006
     assert summary["threshold_sweep_ready"] is True
     assert summary["threshold_sweep"]["selected_threshold"] == 1.25
+    assert summary["threshold_sweep"]["selected_dataset_count"] == 1
     assert json.loads(output_path.read_text(encoding="utf-8")) == summary

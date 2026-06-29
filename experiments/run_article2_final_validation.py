@@ -189,6 +189,8 @@ def run_step(label: str, command: list[str]) -> None:
 def validate_threshold_sweep_evidence(
     threshold_sweep_path: Path,
     expected_threshold: float,
+    online_gate: dict[str, object] | None = None,
+    validation_config: dict[str, object] | None = None,
 ) -> dict[str, object]:
     sweep = json.loads((PROJECT_ROOT / threshold_sweep_path).read_text(encoding="utf-8"))
     selected_threshold = float(sweep["selection"]["threshold"])
@@ -197,11 +199,52 @@ def validate_threshold_sweep_evidence(
             "Threshold sweep selected "
             f"{selected_threshold}, but final validation uses {expected_threshold}."
         )
+    if validation_config is not None:
+        sweep_config = sweep["validation_config"]
+        for key in ["cutoff_year", "max_profile_mentions"]:
+            if sweep_config[key] != validation_config[key]:
+                raise ValueError(
+                    f"Threshold sweep {key}={sweep_config[key]} does not match "
+                    f"final validation {key}={validation_config[key]}."
+                )
+
+    selected_rows = {
+        row["label"]: row
+        for row in sweep["rows"]
+        if abs(float(row["hypergraph_support_threshold"]) - expected_threshold) <= 1e-9
+    }
+    if online_gate is not None:
+        for item in online_gate["datasets"]:
+            row = selected_rows.get(item["label"])
+            if row is None:
+                raise ValueError(
+                    f"Threshold sweep has no selected-threshold row for {item['label']}."
+                )
+            if row["dataset_sha256"] != item.get("dataset_sha256"):
+                raise ValueError(
+                    f"Threshold sweep dataset hash for {item['label']} does not match "
+                    "the online gate result."
+                )
+            metric_pairs = [
+                (row["hybrid_linkable"]["precision"], item["hybrid_linkable"]["precision"]),
+                (row["hybrid_linkable"]["recall"], item["hybrid_linkable"]["recall"]),
+                (row["hybrid_linkable"]["f1"], item["hybrid_linkable"]["f1"]),
+                (
+                    row["hybrid_new_author"]["false_link_rate"],
+                    item["hybrid_new_author"]["false_link_rate"],
+                ),
+            ]
+            if any(abs(left - right) > 1e-12 for left, right in metric_pairs):
+                raise ValueError(
+                    f"Threshold sweep metrics for {item['label']} do not match "
+                    "the online gate result."
+                )
     return {
         "path": str(threshold_sweep_path),
         "selected_threshold": selected_threshold,
         "threshold_count": len(sweep["thresholds"]),
         "row_count": len(sweep["rows"]),
+        "selected_dataset_count": len(selected_rows),
         "selection_reason": sweep["selection"]["reason"],
     }
 
@@ -218,7 +261,12 @@ def write_final_summary(
     cluster_gate = json.loads((PROJECT_ROOT / cluster_gate_path).read_text(encoding="utf-8"))
     online_gate = json.loads((PROJECT_ROOT / online_gate_path).read_text(encoding="utf-8"))
     threshold_sweep = (
-        validate_threshold_sweep_evidence(threshold_sweep_path, expected_threshold)
+        validate_threshold_sweep_evidence(
+            threshold_sweep_path,
+            expected_threshold,
+            online_gate,
+            validation_config,
+        )
         if threshold_sweep_path is not None and expected_threshold is not None
         else None
     )
