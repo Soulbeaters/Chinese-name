@@ -185,6 +185,7 @@ def write_final_summary(
     online_gate_path: Path,
     output_path: Path,
     validation_steps: list[str] | None = None,
+    validation_config: dict[str, object] | None = None,
 ) -> dict[str, object]:
     cluster_gate = json.loads((PROJECT_ROOT / cluster_gate_path).read_text(encoding="utf-8"))
     online_gate = json.loads((PROJECT_ROOT / online_gate_path).read_text(encoding="utf-8"))
@@ -196,6 +197,7 @@ def write_final_summary(
             for name, path in RESULT_PATHS.items()
         },
         "validation_steps": validation_steps or [],
+        "validation_config": validation_config or {},
         "code_checks": {
             "unit_tests": True,
             "compileall": True,
@@ -253,6 +255,14 @@ def main() -> None:
         DEFAULT_ONLINE_GATE,
         args.summary_output,
         [label for label, _ in steps],
+        {
+            "crossref_dataset": str(args.crossref_dataset),
+            "advisor_dataset": str(args.advisor_dataset),
+            "max_block_size": args.max_block_size,
+            "cutoff_year": args.cutoff_year,
+            "max_profile_mentions": args.max_profile_mentions,
+            "hypergraph_support_threshold": args.hypergraph_support_threshold,
+        },
     )
     print(
         "\n=== Final validation summary ===\n"

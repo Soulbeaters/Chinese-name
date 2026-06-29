@@ -93,10 +93,12 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
         online_path,
         output_path,
         ["Unit tests", "Online quality gate"],
+        {"hypergraph_support_threshold": 3.0},
     )
 
     assert summary["production_ready"] is True
     assert summary["validation_steps"] == ["Unit tests", "Online quality gate"]
+    assert summary["validation_config"]["hypergraph_support_threshold"] == 3.0
     assert summary["result_paths"]["final_summary"].endswith(
         "article2_final_validation_summary_20260629.json"
     )

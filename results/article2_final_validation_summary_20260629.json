@@ -25,6 +25,14 @@
     "Advisor online comparison",
     "Online quality gate"
   ],
+  "validation_config": {
+    "crossref_dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+    "advisor_dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+    "max_block_size": 200,
+    "cutoff_year": 2021,
+    "max_profile_mentions": 30,
+    "hypergraph_support_threshold": 3.0
+  },
   "code_checks": {
     "unit_tests": true,
     "compileall": true,
