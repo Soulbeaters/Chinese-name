@@ -57,6 +57,7 @@ def dataset_summary(
     return {
         "label": label,
         "dataset": result["dataset"],
+        "dataset_sha256": result.get("dataset_sha256"),
         "history_mentions": result["history_mentions"],
         "test_mentions": result["test_mentions"],
         "truth_in_history_mentions": result["truth_in_history_mentions"],

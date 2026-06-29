@@ -9,6 +9,7 @@
     {
       "label": "Crossref ORCID",
       "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
       "history_mentions": 38480,
       "test_mentions": 82335,
       "truth_in_history_mentions": 35787,
@@ -47,6 +48,7 @@
     {
       "label": "Advisor DOI ORCID",
       "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
       "history_mentions": 4118,
       "test_mentions": 15062,
       "truth_in_history_mentions": 2333,

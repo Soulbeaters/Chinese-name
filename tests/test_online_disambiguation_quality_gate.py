@@ -19,6 +19,7 @@ def _result(
 ):
     return {
         "dataset": "synthetic.json",
+        "dataset_sha256": "abc123",
         "history_mentions": 100,
         "test_mentions": 200,
         "truth_in_history_mentions": 80,
@@ -64,6 +65,7 @@ def test_online_quality_gate_passes_for_high_precision_low_false_link_hybrid():
     assert summary["production_ready"] is True
     assert summary["production_checks"]["hybrid_linkable_precision"] is True
     assert summary["production_checks"]["hybrid_new_author_false_link_rate"] is True
+    assert summary["dataset_sha256"] == "abc123"
     assert round(summary["delta_vs_framework"]["linkable_recall"], 3) == 0.06
 
 
