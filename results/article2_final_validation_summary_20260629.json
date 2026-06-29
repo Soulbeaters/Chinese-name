@@ -63,6 +63,7 @@
     "selected_threshold": 1.25,
     "threshold_count": 10,
     "row_count": 20,
+    "expected_row_count": 20,
     "selected_dataset_count": 2,
     "selection_reason": "Selected the production-ready threshold with at least 0.000250 precision safety margin and the highest mean linkable F1 across datasets."
   },

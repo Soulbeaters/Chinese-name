@@ -214,6 +214,18 @@ def validate_threshold_sweep_evidence(
         if abs(float(row["hypergraph_support_threshold"]) - expected_threshold) <= 1e-9
     }
     if online_gate is not None:
+        online_labels = {item["label"] for item in online_gate["datasets"]}
+        expected_row_count = len(sweep["thresholds"]) * len(online_labels)
+        if len(sweep["rows"]) != expected_row_count:
+            raise ValueError(
+                f"Threshold sweep has {len(sweep['rows'])} rows, expected "
+                f"{expected_row_count} rows for all thresholds and datasets."
+            )
+        if set(selected_rows) != online_labels:
+            raise ValueError(
+                "Threshold sweep selected-threshold datasets do not match "
+                "the online gate datasets."
+            )
         sweep_config = sweep["validation_config"]
         threshold_pairs = [
             (
@@ -273,6 +285,11 @@ def validate_threshold_sweep_evidence(
         "selected_threshold": selected_threshold,
         "threshold_count": len(sweep["thresholds"]),
         "row_count": len(sweep["rows"]),
+        "expected_row_count": (
+            len(sweep["thresholds"]) * len(online_gate["datasets"])
+            if online_gate is not None
+            else None
+        ),
         "selected_dataset_count": len(selected_rows),
         "selection_reason": sweep["selection"]["reason"],
     }

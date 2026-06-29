@@ -117,6 +117,19 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
                     {
                         "label": "Crossref ORCID",
                         "dataset_sha256": "sha-crossref",
+                        "hypergraph_support_threshold": 1.0,
+                        "hybrid_linkable": {
+                            "precision": 0.996,
+                            "recall": 0.85,
+                            "f1": 0.92,
+                        },
+                        "hybrid_new_author": {
+                            "false_link_rate": 0.006,
+                        },
+                    },
+                    {
+                        "label": "Crossref ORCID",
+                        "dataset_sha256": "sha-crossref",
                         "hypergraph_support_threshold": 1.25,
                         "hybrid_linkable": {
                             "precision": 0.996,
@@ -160,5 +173,6 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
     assert summary["online_datasets"][0]["hybrid_new_author_false_link_rate"] == 0.006
     assert summary["threshold_sweep_ready"] is True
     assert summary["threshold_sweep"]["selected_threshold"] == 1.25
+    assert summary["threshold_sweep"]["expected_row_count"] == 2
     assert summary["threshold_sweep"]["selected_dataset_count"] == 1
     assert json.loads(output_path.read_text(encoding="utf-8")) == summary
