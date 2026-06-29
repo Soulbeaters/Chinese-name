@@ -95,7 +95,7 @@ tests/test_istina_hypergraph_proxy.py
   1. `name_most_frequent`：姓名候选中历史出现次数最多者；
   2. `istina_hypergraph_proxy`：按整篇论文的候选作者组合进行历史合著支持优化，并约束同一历史作者不重复分配给同一篇论文的多个署名；
   3. `framework_v1_profile`：用当前 `framework_v1 balanced` pairwise 规则做 profile linking；不能高置信判断时输出 UNKNOWN。
-  4. `risk_controlled_hybrid`：先接受 `framework_v1_profile` 的高置信结果；若 framework 输出 UNKNOWN，则仅在 ISTINA hypergraph proxy 的论文级组合选择结果具有历史合著支持分数 `>= 3.0` 时接受其 LINK，否则输出 UNKNOWN。
+  4. `risk_controlled_hybrid`：先接受 `framework_v1_profile` 的高置信结果；若 framework 输出 UNKNOWN，则仅在 ISTINA hypergraph proxy 的论文级组合选择结果具有历史合著支持分数 `>= 1.25` 时接受其 LINK，否则输出 UNKNOWN。
 
 当前 proxy 已从逐署名单独打分升级为论文级 beam 组合选择（默认 beam size = 256），更接近旧 ISTINA C++ 服务“为整篇论文寻找最一致作者组合”的目标函数思想。
 
@@ -109,9 +109,9 @@ results/article2_istina_proxy_online_advisor_orcid_20260628.json
 复现实验命令：
 
 ```powershell
-python experiments\evaluate_istina_hypergraph_proxy.py --dataset "C:\istina\materia 材料\测试表单\crossref_authors.json" --output results\article2_istina_proxy_online_crossref_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 3.0
+python experiments\evaluate_istina_hypergraph_proxy.py --dataset "C:\istina\materia 材料\测试表单\crossref_authors.json" --output results\article2_istina_proxy_online_crossref_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 1.25
 
-python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json" --output results\article2_istina_proxy_online_advisor_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 3.0
+python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json" --output results\article2_istina_proxy_online_advisor_orcid_20260628.json --cutoff-year 2021 --max-profile-mentions 30 --hypergraph-support-threshold 1.25
 ```
 
 ## 5. Crossref ORCID 大规模数据结果
@@ -134,7 +134,7 @@ python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_d
 | name_most_frequent | 93.796% | 93.796% | 93.796% | 0.000% | 85.573% |
 | istina_hypergraph_proxy | 97.834% | 97.773% | 97.803% | 0.062% | 93.865% |
 | framework_v1_profile | 99.590% | 84.423% | 91.382% | 15.229% | 72.430% |
-| risk_controlled_hybrid | 99.592% | 86.840% | 92.780% | 12.804% | 72.858% |
+| risk_controlled_hybrid | 99.581% | 89.330% | 94.177% | 10.294% | 73.974% |
 
 ### 5.2 Linkable end-to-end
 
@@ -145,7 +145,7 @@ python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_d
 | name_most_frequent | 93.539% | 92.729% | 93.133% | 0.866% |
 | istina_hypergraph_proxy | 97.569% | 96.661% | 97.113% | 0.931% |
 | framework_v1_profile | 99.550% | 83.463% | 90.800% | 16.159% |
-| risk_controlled_hybrid | 99.553% | 85.852% | 92.196% | 13.762% |
+| risk_controlled_hybrid | 99.543% | 88.314% | 93.593% | 11.281% |
 
 ### 5.3 New-author / truth-not-in-history 风险
 
@@ -156,7 +156,7 @@ python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_d
 | name_most_frequent | 11.425% | 88.575% | 5,318 / 46,548 |
 | istina_hypergraph_proxy | 11.371% | 88.629% | 5,293 / 46,548 |
 | framework_v1_profile | 0.455% | 99.545% | 212 / 46,548 |
-| risk_controlled_hybrid | 0.535% | 99.465% | 249 / 46,548 |
+| risk_controlled_hybrid | 0.715% | 99.285% | 333 / 46,548 |
 
 ## 6. 导师 DOI ORCID 数据结果
 
@@ -176,7 +176,7 @@ python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_d
 | name_most_frequent | 99.254% | 99.254% | 99.254% | 0.000% | 97.302% |
 | istina_hypergraph_proxy | 99.561% | 99.517% | 99.539% | 0.044% | 98.254% |
 | framework_v1_profile | 100.000% | 79.807% | 88.770% | 20.193% | 64.444% |
-| risk_controlled_hybrid | 100.000% | 87.533% | 93.352% | 12.467% | 69.206% |
+| risk_controlled_hybrid | 100.000% | 91.572% | 95.600% | 8.428% | 74.127% |
 
 ### 6.2 Linkable end-to-end
 
@@ -185,7 +185,7 @@ python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_d
 | name_most_frequent | 99.167% | 96.914% | 98.027% | 2.272% |
 | istina_hypergraph_proxy | 99.473% | 97.171% | 98.309% | 2.315% |
 | framework_v1_profile | 99.890% | 77.925% | 87.551% | 21.989% |
-| risk_controlled_hybrid | 99.900% | 85.469% | 92.123% | 14.445% |
+| risk_controlled_hybrid | 99.904% | 89.413% | 94.368% | 10.502% |
 
 ### 6.3 New-author / truth-not-in-history 风险
 
@@ -194,11 +194,11 @@ python experiments\evaluate_istina_hypergraph_proxy.py --dataset "runs\advisor_d
 | name_most_frequent | 2.545% | 97.455% | 324 / 12,729 |
 | istina_hypergraph_proxy | 2.530% | 97.470% | 322 / 12,729 |
 | framework_v1_profile | 0.244% | 99.756% | 31 / 12,729 |
-| risk_controlled_hybrid | 0.251% | 99.749% | 32 / 12,729 |
+| risk_controlled_hybrid | 0.259% | 99.741% | 33 / 12,729 |
 
 ## 7. Hard-case 分组结果
 
-这组统计用于回答“同名、initial、中文拼音、新作者边界样本”是否真实改善。`risk_controlled_hybrid` 的阈值采用 3.0；后续又测试了 4.0、5.0、候选数安全门和论文级组合优化。最终采用论文级组合优化，因为它在两套大数据上保持质量门禁通过，并把 Crossref new-author false-link 从 265 降到 249。
+这组统计用于回答“同名、initial、中文拼音、新作者边界样本”是否真实改善。`risk_controlled_hybrid` 采用论文级组合优化后，进一步扫测了 0.5 / 1.0 / 1.25 / 1.5 / 1.75 / 2.0 / 2.5 / 3.0 / 3.5 / 4.0。0.5 在 Crossref 上未通过生产门槛；1.0 虽然 F1 最高，但 precision 距 99.5% 门槛过近。最终采用 1.25 作为召回与风险的生产折中点。
 
 ### 7.1 Crossref ORCID hard cases
 
@@ -206,21 +206,21 @@ Linkable 场景中，hybrid 的主要价值是用强历史合著图恢复 framew
 
 | Case | N | ISTINA proxy Recall / Wrong | framework_v1 Precision / Recall / Wrong / UNKNOWN | hybrid Precision / Recall / Wrong / UNKNOWN |
 |---|---:|---:|---:|---:|
-| ambiguous_candidates | 5,552 | 85.303% / 816 | 96.913% / 72.370% / 128 / 25.324% | 96.902% / 73.811% / 131 / 23.829% |
-| exact_name_ambiguous | 1,852 | 86.447% / 251 | 92.221% / 71.058% / 111 / 22.948% | 92.281% / 71.652% / 111 / 22.354% |
-| initial_only_signature | 5,785 | 96.802% / 154 | 99.446% / 74.434% / 24 / 25.151% | 99.460% / 82.748% / 26 / 16.802% |
-| chinese_like_signature | 10,860 | 93.085% / 647 | 99.353% / 73.564% / 52 / 25.958% | 99.346% / 74.107% / 53 / 25.405% |
-| framework_unknown_graph_supported | 858 | 99.650% / 3 | 0.000% / 0.000% / 0 / 100.000% | 99.650% / 99.650% / 3 / 0.000% |
+| ambiguous_candidates | 5,552 | 85.303% / 816 | 96.913% / 72.370% / 128 / 25.324% | 96.794% / 75.054% / 138 / 22.460% |
+| exact_name_ambiguous | 1,852 | 86.447% / 251 | 92.221% / 71.058% / 111 / 22.948% | 92.366% / 72.516% / 111 / 21.490% |
+| initial_only_signature | 5,785 | 96.802% / 154 | 99.446% / 74.434% / 24 / 25.151% | 99.410% / 87.347% / 30 / 12.135% |
+| chinese_like_signature | 10,860 | 93.085% / 647 | 99.353% / 73.564% / 52 / 25.958% | 99.314% / 74.687% / 56 / 24.797% |
+| framework_unknown_graph_supported | 1,746 | 99.427% / 10 | 0.000% / 0.000% / 0 / 100.000% | 99.427% / 99.427% / 10 / 0.000% |
 
 New-author 场景中，framework_v1 最保守，hybrid 为了提高 linkable 召回会增加少量 false-link，但仍显著低于无风险控制的 ISTINA proxy。
 
 | Case | N | ISTINA proxy false-link | framework_v1 false-link | hybrid false-link |
 |---|---:|---:|---:|---:|
-| new_author_with_candidates | 5,318 | 99.530% | 3.986% / 212 | 4.682% / 249 |
-| ambiguous_candidates | 2,394 | 99.833% | 2.339% / 56 | 3.175% / 76 |
-| exact_name_ambiguous | 538 | 100.000% | 3.346% / 18 | 4.089% / 22 |
-| initial_only_signature | 10,705 | 6.782% | 0.187% / 20 | 0.439% / 47 |
-| chinese_like_signature | 10,822 | 39.004% | 0.767% / 83 | 0.850% / 92 |
+| new_author_with_candidates | 5,318 | 99.530% | 3.986% / 212 | 6.262% / 333 |
+| ambiguous_candidates | 2,394 | 99.833% | 2.339% / 56 | 5.514% / 132 |
+| exact_name_ambiguous | 538 | 100.000% | 3.346% / 18 | 5.762% / 31 |
+| initial_only_signature | 10,705 | 6.782% | 0.187% / 20 | 0.710% / 76 |
+| chinese_like_signature | 10,822 | 39.004% | 0.767% / 83 | 1.321% / 143 |
 
 ### 7.2 导师 DOI ORCID hard cases
 
@@ -228,13 +228,13 @@ New-author 场景中，framework_v1 最保守，hybrid 为了提高 linkable 召
 |---|---:|---:|---:|---:|
 | ambiguous_candidates | 77 | 87.013% / 10 | 100.000% / 75.325% / 0 / 24.675% | 100.000% / 79.221% / 0 / 20.779% |
 | exact_name_ambiguous | 18 | 50.000% / 9 | 100.000% / 38.889% / 0 / 61.111% | 100.000% / 38.889% / 0 / 61.111% |
-| initial_only_signature | 465 | 99.355% / 1 | 99.742% / 83.226% / 1 / 16.559% | 99.751% / 86.237% / 1 / 13.548% |
-| chinese_like_signature | 173 | 92.486% / 9 | 100.000% / 61.850% / 0 / 38.150% | 100.000% / 65.896% / 0 / 34.104% |
+| initial_only_signature | 465 | 99.355% / 1 | 99.742% / 83.226% / 1 / 16.559% | 99.769% / 92.903% / 1 / 6.882% |
+| chinese_like_signature | 173 | 92.486% / 9 | 100.000% / 61.850% / 0 / 38.150% | 100.000% / 67.630% / 0 / 32.370% |
 | framework_unknown_graph_supported | 176 | 100.000% / 0 | 0.000% / 0.000% / 0 / 100.000% | 100.000% / 100.000% / 0 / 0.000% |
 
 | Case | N | ISTINA proxy false-link | framework_v1 false-link | hybrid false-link |
 |---|---:|---:|---:|---:|
-| new_author_with_candidates | 324 | 99.383% | 9.568% / 31 | 9.877% / 32 |
+| new_author_with_candidates | 324 | 99.383% | 9.568% / 31 | 10.185% / 33 |
 | ambiguous_candidates | 45 | 100.000% | 4.444% / 2 | 4.444% / 2 |
 | exact_name_ambiguous | 1 | 100.000% | 0.000% / 0 | 0.000% / 0 |
 | initial_only_signature | 3,133 | 3.511% | 0.447% / 14 | 0.479% / 15 |
@@ -249,7 +249,7 @@ New-author 场景中，framework_v1 最保守，hybrid 为了提高 linkable 召
 1. 旧 ISTINA 超图思想在 linkable 场景更强，尤其是整篇论文作者组合归属。
 2. 当前 `framework_v1` 不应被写成“替代旧算法”的主张。
 3. 当前 `framework_v1` 的价值在风险控制：它显著降低 new-author / truth-not-in-history 场景的误链接。
-4. `risk_controlled_hybrid` 是当前最适合作为文章二扩展点的三分决策层：它牺牲少量 NEW 场景保守性，换取明显更高的 linkable 召回；在阈值 3.0 和论文级组合优化下，new-author false-link 在 Crossref 上为 0.535%，在导师 DOI 数据上为 0.251%。
+4. `risk_controlled_hybrid` 是当前最适合作为文章二扩展点的三分决策层：它牺牲少量 NEW 场景保守性，换取明显更高的 linkable 召回；在阈值 1.25 和论文级组合优化下，new-author false-link 在 Crossref 上为 0.715%，在导师 DOI 数据上为 0.259%。
 5. 文章二更合理的方向是：
 
    ```text

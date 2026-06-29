@@ -3,7 +3,7 @@
     "hybrid_linkable_precision": 0.995,
     "hybrid_new_author_false_link_rate": 0.01,
     "hybrid_recall_gain_vs_framework": 0.0,
-    "hypergraph_support_threshold": 3.0
+    "hypergraph_support_threshold": 1.25
   },
   "datasets": [
     {
@@ -14,7 +14,7 @@
       "test_mentions": 82335,
       "truth_in_history_mentions": 35787,
       "candidate_covered_mentions": 35380,
-      "hypergraph_support_threshold": 3.0,
+      "hypergraph_support_threshold": 1.25,
       "framework_linkable": {
         "precision": 0.9955005999200107,
         "recall": 0.8346326878475424,
@@ -22,20 +22,20 @@
         "unknown_rate": 0.16159499259507643
       },
       "hybrid_linkable": {
-        "precision": 0.9955284816278919,
-        "recall": 0.8585240450442898,
-        "f1": 0.9219643205449444,
-        "unknown_rate": 0.13761980607483165
+        "precision": 0.9954330708661417,
+        "recall": 0.883141923044681,
+        "f1": 0.9359314153723144,
+        "unknown_rate": 0.11280632631961326
       },
       "hybrid_new_author": {
-        "false_link_rate": 0.005349316834235627,
-        "false_links": 249,
+        "false_link_rate": 0.007153905645784996,
+        "false_links": 333,
         "evaluated_mentions": 46548,
-        "no_prediction_rate": 0.9946506831657643
+        "no_prediction_rate": 0.992846094354215
       },
       "delta_vs_framework": {
-        "linkable_recall": 0.023891357196747398,
-        "linkable_unknown_rate": -0.023975186520244773
+        "linkable_recall": 0.04850923519713857,
+        "linkable_unknown_rate": -0.04878866627546316
       },
       "production_checks": {
         "hypergraph_support_threshold": true,
@@ -53,7 +53,7 @@
       "test_mentions": 15062,
       "truth_in_history_mentions": 2333,
       "candidate_covered_mentions": 2278,
-      "hypergraph_support_threshold": 3.0,
+      "hypergraph_support_threshold": 1.25,
       "framework_linkable": {
         "precision": 0.9989010989010989,
         "recall": 0.7792541791684526,
@@ -61,20 +61,20 @@
         "unknown_rate": 0.2198885555079297
       },
       "hybrid_linkable": {
-        "precision": 0.998997995991984,
-        "recall": 0.8546935276468067,
-        "f1": 0.9212289212289212,
-        "unknown_rate": 0.14444920702957564
+        "precision": 0.9990421455938697,
+        "recall": 0.894127732533219,
+        "f1": 0.9436779009273919,
+        "unknown_rate": 0.10501500214316331
       },
       "hybrid_new_author": {
-        "false_link_rate": 0.002513944536098672,
-        "false_links": 32,
+        "false_link_rate": 0.002592505302851756,
+        "false_links": 33,
         "evaluated_mentions": 12729,
-        "no_prediction_rate": 0.9974860554639013
+        "no_prediction_rate": 0.9974074946971483
       },
       "delta_vs_framework": {
-        "linkable_recall": 0.0754393484783541,
-        "linkable_unknown_rate": -0.07543934847835407
+        "linkable_recall": 0.11487355336476635,
+        "linkable_unknown_rate": -0.1148735533647664
       },
       "production_checks": {
         "hypergraph_support_threshold": true,

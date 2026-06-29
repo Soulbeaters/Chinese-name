@@ -251,7 +251,7 @@ def main() -> None:
     parser.add_argument("--max-block-size", type=int, default=200)
     parser.add_argument("--cutoff-year", type=int, default=2021)
     parser.add_argument("--max-profile-mentions", type=int, default=30)
-    parser.add_argument("--hypergraph-support-threshold", type=float, default=3.0)
+    parser.add_argument("--hypergraph-support-threshold", type=float, default=1.25)
     parser.add_argument("--summary-output", type=Path, default=DEFAULT_FINAL_SUMMARY)
     args = parser.parse_args()
 

@@ -52,7 +52,7 @@ HYPERGRAPH_ASSIGNMENT_BEAM_SIZE = 256
 class OnlineBenchmarkConfig:
     cutoff_year: int = 2021
     max_profile_mentions: int = 30
-    hypergraph_support_threshold: float = 3.0
+    hypergraph_support_threshold: float = 1.25
 
 
 @dataclass

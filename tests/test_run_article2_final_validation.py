@@ -20,7 +20,7 @@ def test_final_validation_runner_builds_all_pipeline_steps():
         max_block_size=200,
         cutoff_year=2021,
         max_profile_mentions=30,
-        hypergraph_support_threshold=3.0,
+        hypergraph_support_threshold=1.25,
     )
 
     steps = build_steps(args)
@@ -41,7 +41,7 @@ def test_final_validation_runner_builds_all_pipeline_steps():
     ]
     assert any("author_disambiguation_quality_gate.py" in part for part in steps[7][1])
     assert any("online_disambiguation_quality_gate.py" in part for part in steps[-1][1])
-    assert "3.0" in steps[8][1]
+    assert "1.25" in steps[8][1]
 
 
 def test_final_validation_summary_combines_gate_outputs(tmp_path):
@@ -99,12 +99,12 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
         online_path,
         output_path,
         ["Unit tests", "Online quality gate"],
-        {"hypergraph_support_threshold": 3.0},
+        {"hypergraph_support_threshold": 1.25},
     )
 
     assert summary["production_ready"] is True
     assert summary["validation_steps"] == ["Unit tests", "Online quality gate"]
-    assert summary["validation_config"]["hypergraph_support_threshold"] == 3.0
+    assert summary["validation_config"]["hypergraph_support_threshold"] == 1.25
     assert summary["quality_gate_thresholds"]["cluster"]["b_cubed_f1"] == 0.95
     assert summary["quality_gate_thresholds"]["online"]["hybrid_linkable_precision"] == 0.995
     assert summary["result_paths"]["final_summary"].endswith(

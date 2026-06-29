@@ -1,7 +1,7 @@
 {
   "cutoff_year": 2021,
   "max_profile_mentions": 30,
-  "hypergraph_support_threshold": 3.0,
+  "hypergraph_support_threshold": 1.25,
   "hypergraph_assignment_beam_size": 256,
   "history_mentions": 38480,
   "history_authors": 16040,
@@ -94,17 +94,17 @@
     },
     "risk_controlled_hybrid": {
       "evaluated_mentions": 35380,
-      "predicted_mentions": 30850,
-      "correct": 30724,
-      "wrong": 126,
-      "unknown": 4530,
-      "precision": 0.9959157212317666,
-      "recall": 0.86840022611645,
-      "f1": 0.9277970708138306,
-      "accuracy_counting_unknown_as_wrong": 0.86840022611645,
-      "unknown_rate": 0.1280384397964952,
-      "paper_exact": 8681,
-      "paper_exact_rate": 0.7285774234158624
+      "predicted_mentions": 31738,
+      "correct": 31605,
+      "wrong": 133,
+      "unknown": 3642,
+      "precision": 0.9958094397882664,
+      "recall": 0.8933013001695873,
+      "f1": 0.9417741887422152,
+      "accuracy_counting_unknown_as_wrong": 0.8933013001695873,
+      "unknown_rate": 0.10293951384963256,
+      "paper_exact": 8814,
+      "paper_exact_rate": 0.7397398237515737
     }
   },
   "linkable_end_to_end_methods": {
@@ -146,15 +146,15 @@
     },
     "risk_controlled_hybrid": {
       "evaluated_mentions": 35787,
-      "predicted_mentions": 30862,
-      "correct": 30724,
-      "wrong": 138,
-      "unknown": 4925,
-      "precision": 0.9955284816278919,
-      "recall": 0.8585240450442898,
-      "f1": 0.9219643205449444,
-      "accuracy_counting_unknown_as_wrong": 0.8585240450442898,
-      "unknown_rate": 0.13761980607483165
+      "predicted_mentions": 31750,
+      "correct": 31605,
+      "wrong": 145,
+      "unknown": 4037,
+      "precision": 0.9954330708661417,
+      "recall": 0.883141923044681,
+      "f1": 0.9359314153723144,
+      "accuracy_counting_unknown_as_wrong": 0.883141923044681,
+      "unknown_rate": 0.11280632631961326
     }
   },
   "new_author_methods": {
@@ -181,10 +181,10 @@
     },
     "risk_controlled_hybrid": {
       "evaluated_mentions": 46548,
-      "false_links": 249,
-      "no_prediction": 46299,
-      "false_link_rate": 0.005349316834235627,
-      "no_prediction_rate": 0.9946506831657643
+      "false_links": 333,
+      "no_prediction": 46215,
+      "false_link_rate": 0.007153905645784996,
+      "no_prediction_rate": 0.992846094354215
     }
   },
   "hard_case_linkable_methods": {
@@ -227,15 +227,15 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 5552,
-        "predicted_mentions": 4229,
-        "correct": 4098,
-        "wrong": 131,
-        "unknown": 1323,
-        "precision": 0.9690234097895484,
-        "recall": 0.7381123919308358,
-        "f1": 0.8379511297413352,
-        "accuracy_counting_unknown_as_wrong": 0.7381123919308358,
-        "unknown_rate": 0.23829250720461095
+        "predicted_mentions": 4305,
+        "correct": 4167,
+        "wrong": 138,
+        "unknown": 1247,
+        "precision": 0.9679442508710802,
+        "recall": 0.7505403458213257,
+        "f1": 0.8454905143552804,
+        "accuracy_counting_unknown_as_wrong": 0.7505403458213257,
+        "unknown_rate": 0.22460374639769454
       }
     },
     "chinese_like_signature": {
@@ -277,15 +277,15 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 10860,
-        "predicted_mentions": 8101,
-        "correct": 8048,
-        "wrong": 53,
-        "unknown": 2759,
-        "precision": 0.9934575978274287,
-        "recall": 0.7410681399631676,
-        "f1": 0.8489003744528243,
-        "accuracy_counting_unknown_as_wrong": 0.7410681399631676,
-        "unknown_rate": 0.2540515653775322
+        "predicted_mentions": 8167,
+        "correct": 8111,
+        "wrong": 56,
+        "unknown": 2693,
+        "precision": 0.9931431370148157,
+        "recall": 0.7468692449355433,
+        "f1": 0.85257791559363,
+        "accuracy_counting_unknown_as_wrong": 0.7468692449355433,
+        "unknown_rate": 0.2479742173112339
       }
     },
     "exact_name_ambiguous": {
@@ -327,48 +327,48 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 1852,
-        "predicted_mentions": 1438,
-        "correct": 1327,
+        "predicted_mentions": 1454,
+        "correct": 1343,
         "wrong": 111,
-        "unknown": 414,
-        "precision": 0.9228094575799722,
-        "recall": 0.7165226781857451,
-        "f1": 0.8066869300911854,
-        "accuracy_counting_unknown_as_wrong": 0.7165226781857451,
-        "unknown_rate": 0.22354211663066956
+        "unknown": 398,
+        "precision": 0.9236588720770289,
+        "recall": 0.7251619870410367,
+        "f1": 0.8124621899576526,
+        "accuracy_counting_unknown_as_wrong": 0.7251619870410367,
+        "unknown_rate": 0.21490280777537796
       }
     },
     "framework_unknown_graph_supported": {
       "name_most_frequent": {
-        "evaluated_mentions": 858,
-        "predicted_mentions": 858,
-        "correct": 800,
-        "wrong": 58,
+        "evaluated_mentions": 1746,
+        "predicted_mentions": 1746,
+        "correct": 1643,
+        "wrong": 103,
         "unknown": 0,
-        "precision": 0.9324009324009324,
-        "recall": 0.9324009324009324,
-        "f1": 0.9324009324009324,
-        "accuracy_counting_unknown_as_wrong": 0.9324009324009324,
+        "precision": 0.9410080183276059,
+        "recall": 0.9410080183276059,
+        "f1": 0.9410080183276059,
+        "accuracy_counting_unknown_as_wrong": 0.9410080183276059,
         "unknown_rate": 0.0
       },
       "istina_hypergraph_proxy": {
-        "evaluated_mentions": 858,
-        "predicted_mentions": 858,
-        "correct": 855,
-        "wrong": 3,
+        "evaluated_mentions": 1746,
+        "predicted_mentions": 1746,
+        "correct": 1736,
+        "wrong": 10,
         "unknown": 0,
-        "precision": 0.9965034965034965,
-        "recall": 0.9965034965034965,
-        "f1": 0.9965034965034965,
-        "accuracy_counting_unknown_as_wrong": 0.9965034965034965,
+        "precision": 0.9942726231386025,
+        "recall": 0.9942726231386025,
+        "f1": 0.9942726231386025,
+        "accuracy_counting_unknown_as_wrong": 0.9942726231386025,
         "unknown_rate": 0.0
       },
       "framework_v1_profile": {
-        "evaluated_mentions": 858,
+        "evaluated_mentions": 1746,
         "predicted_mentions": 0,
         "correct": 0,
         "wrong": 0,
-        "unknown": 858,
+        "unknown": 1746,
         "precision": 0.0,
         "recall": 0.0,
         "f1": 0.0,
@@ -376,65 +376,65 @@
         "unknown_rate": 1.0
       },
       "risk_controlled_hybrid": {
-        "evaluated_mentions": 858,
-        "predicted_mentions": 858,
-        "correct": 855,
-        "wrong": 3,
+        "evaluated_mentions": 1746,
+        "predicted_mentions": 1746,
+        "correct": 1736,
+        "wrong": 10,
         "unknown": 0,
-        "precision": 0.9965034965034965,
-        "recall": 0.9965034965034965,
-        "f1": 0.9965034965034965,
-        "accuracy_counting_unknown_as_wrong": 0.9965034965034965,
+        "precision": 0.9942726231386025,
+        "recall": 0.9942726231386025,
+        "f1": 0.9942726231386025,
+        "accuracy_counting_unknown_as_wrong": 0.9942726231386025,
         "unknown_rate": 0.0
       }
     },
     "graph_supported_candidate": {
       "name_most_frequent": {
-        "evaluated_mentions": 12996,
-        "predicted_mentions": 12996,
-        "correct": 12556,
-        "wrong": 440,
+        "evaluated_mentions": 20615,
+        "predicted_mentions": 20615,
+        "correct": 19625,
+        "wrong": 990,
         "unknown": 0,
-        "precision": 0.9661434287473069,
-        "recall": 0.9661434287473069,
-        "f1": 0.9661434287473069,
-        "accuracy_counting_unknown_as_wrong": 0.9661434287473069,
+        "precision": 0.9519767159835072,
+        "recall": 0.9519767159835072,
+        "f1": 0.9519767159835072,
+        "accuracy_counting_unknown_as_wrong": 0.9519767159835072,
         "unknown_rate": 0.0
       },
       "istina_hypergraph_proxy": {
-        "evaluated_mentions": 12996,
-        "predicted_mentions": 12996,
-        "correct": 12983,
-        "wrong": 13,
+        "evaluated_mentions": 20615,
+        "predicted_mentions": 20615,
+        "correct": 20567,
+        "wrong": 48,
         "unknown": 0,
-        "precision": 0.9989996922129886,
-        "recall": 0.9989996922129886,
-        "f1": 0.9989996922129886,
-        "accuracy_counting_unknown_as_wrong": 0.9989996922129886,
+        "precision": 0.9976715983507155,
+        "recall": 0.9976715983507155,
+        "f1": 0.9976715983507155,
+        "accuracy_counting_unknown_as_wrong": 0.9976715983507155,
         "unknown_rate": 0.0
       },
       "framework_v1_profile": {
-        "evaluated_mentions": 12996,
-        "predicted_mentions": 12138,
-        "correct": 12106,
-        "wrong": 32,
-        "unknown": 858,
-        "precision": 0.9973636513428901,
-        "recall": 0.9315173899661434,
-        "f1": 0.9633166229012493,
-        "accuracy_counting_unknown_as_wrong": 0.9315173899661434,
-        "unknown_rate": 0.06602031394275161
+        "evaluated_mentions": 20615,
+        "predicted_mentions": 18869,
+        "correct": 18792,
+        "wrong": 77,
+        "unknown": 1746,
+        "precision": 0.9959192326037416,
+        "recall": 0.9115692456948824,
+        "f1": 0.9518792422246986,
+        "accuracy_counting_unknown_as_wrong": 0.9115692456948824,
+        "unknown_rate": 0.08469560999272374
       },
       "risk_controlled_hybrid": {
-        "evaluated_mentions": 12996,
-        "predicted_mentions": 12996,
-        "correct": 12961,
-        "wrong": 35,
+        "evaluated_mentions": 20615,
+        "predicted_mentions": 20615,
+        "correct": 20528,
+        "wrong": 87,
         "unknown": 0,
-        "precision": 0.9973068636503539,
-        "recall": 0.9973068636503539,
-        "f1": 0.9973068636503539,
-        "accuracy_counting_unknown_as_wrong": 0.9973068636503539,
+        "precision": 0.9957797720106718,
+        "recall": 0.9957797720106718,
+        "f1": 0.9957797720106718,
+        "accuracy_counting_unknown_as_wrong": 0.9957797720106718,
         "unknown_rate": 0.0
       }
     },
@@ -477,15 +477,15 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 5785,
-        "predicted_mentions": 4813,
-        "correct": 4787,
-        "wrong": 26,
-        "unknown": 972,
-        "precision": 0.9945979638479119,
-        "recall": 0.8274848746758859,
-        "f1": 0.9033779958482733,
-        "accuracy_counting_unknown_as_wrong": 0.8274848746758859,
-        "unknown_rate": 0.16802074330164218
+        "predicted_mentions": 5083,
+        "correct": 5053,
+        "wrong": 30,
+        "unknown": 702,
+        "precision": 0.9940979736376155,
+        "recall": 0.8734658599827139,
+        "f1": 0.9298859035701141,
+        "accuracy_counting_unknown_as_wrong": 0.8734658599827139,
+        "unknown_rate": 0.12134831460674157
       }
     }
   },
@@ -514,10 +514,10 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 2394,
-        "false_links": 76,
-        "no_prediction": 2318,
-        "false_link_rate": 0.031746031746031744,
-        "no_prediction_rate": 0.9682539682539683
+        "false_links": 132,
+        "no_prediction": 2262,
+        "false_link_rate": 0.05513784461152882,
+        "no_prediction_rate": 0.9448621553884712
       }
     },
     "chinese_like_signature": {
@@ -544,10 +544,10 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 10822,
-        "false_links": 92,
-        "no_prediction": 10730,
-        "false_link_rate": 0.008501201256699316,
-        "no_prediction_rate": 0.9914987987433007
+        "false_links": 143,
+        "no_prediction": 10679,
+        "false_link_rate": 0.013213823692478284,
+        "no_prediction_rate": 0.9867861763075217
       }
     },
     "exact_name_ambiguous": {
@@ -574,37 +574,37 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 538,
-        "false_links": 22,
-        "no_prediction": 516,
-        "false_link_rate": 0.040892193308550186,
-        "no_prediction_rate": 0.9591078066914498
+        "false_links": 31,
+        "no_prediction": 507,
+        "false_link_rate": 0.05762081784386617,
+        "no_prediction_rate": 0.9423791821561338
       }
     },
     "framework_unknown_graph_supported": {
       "name_most_frequent": {
-        "evaluated_mentions": 37,
-        "false_links": 37,
+        "evaluated_mentions": 121,
+        "false_links": 121,
         "no_prediction": 0,
         "false_link_rate": 1.0,
         "no_prediction_rate": 0.0
       },
       "istina_hypergraph_proxy": {
-        "evaluated_mentions": 37,
-        "false_links": 37,
+        "evaluated_mentions": 121,
+        "false_links": 121,
         "no_prediction": 0,
         "false_link_rate": 1.0,
         "no_prediction_rate": 0.0
       },
       "framework_v1_profile": {
-        "evaluated_mentions": 37,
+        "evaluated_mentions": 121,
         "false_links": 0,
-        "no_prediction": 37,
+        "no_prediction": 121,
         "false_link_rate": 0.0,
         "no_prediction_rate": 1.0
       },
       "risk_controlled_hybrid": {
-        "evaluated_mentions": 37,
-        "false_links": 37,
+        "evaluated_mentions": 121,
+        "false_links": 121,
         "no_prediction": 0,
         "false_link_rate": 1.0,
         "no_prediction_rate": 0.0
@@ -612,29 +612,29 @@
     },
     "graph_supported_candidate": {
       "name_most_frequent": {
-        "evaluated_mentions": 70,
-        "false_links": 70,
+        "evaluated_mentions": 194,
+        "false_links": 194,
         "no_prediction": 0,
         "false_link_rate": 1.0,
         "no_prediction_rate": 0.0
       },
       "istina_hypergraph_proxy": {
-        "evaluated_mentions": 70,
-        "false_links": 70,
+        "evaluated_mentions": 194,
+        "false_links": 194,
         "no_prediction": 0,
         "false_link_rate": 1.0,
         "no_prediction_rate": 0.0
       },
       "framework_v1_profile": {
-        "evaluated_mentions": 70,
-        "false_links": 33,
-        "no_prediction": 37,
-        "false_link_rate": 0.4714285714285714,
-        "no_prediction_rate": 0.5285714285714286
+        "evaluated_mentions": 194,
+        "false_links": 73,
+        "no_prediction": 121,
+        "false_link_rate": 0.37628865979381443,
+        "no_prediction_rate": 0.6237113402061856
       },
       "risk_controlled_hybrid": {
-        "evaluated_mentions": 70,
-        "false_links": 70,
+        "evaluated_mentions": 194,
+        "false_links": 194,
         "no_prediction": 0,
         "false_link_rate": 1.0,
         "no_prediction_rate": 0.0
@@ -664,10 +664,10 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 10705,
-        "false_links": 47,
-        "no_prediction": 10658,
-        "false_link_rate": 0.004390471742176553,
-        "no_prediction_rate": 0.9956095282578235
+        "false_links": 76,
+        "no_prediction": 10629,
+        "false_link_rate": 0.007099486221391873,
+        "no_prediction_rate": 0.9929005137786081
       }
     },
     "new_author_with_candidates": {
@@ -694,10 +694,10 @@
       },
       "risk_controlled_hybrid": {
         "evaluated_mentions": 5318,
-        "false_links": 249,
-        "no_prediction": 5069,
-        "false_link_rate": 0.04682211357653253,
-        "no_prediction_rate": 0.9531778864234675
+        "false_links": 333,
+        "no_prediction": 4985,
+        "false_link_rate": 0.06261752538548326,
+        "no_prediction_rate": 0.9373824746145167
       }
     }
   },

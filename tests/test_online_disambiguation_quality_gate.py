@@ -15,7 +15,7 @@ def _result(
     hybrid_precision: float,
     hybrid_recall: float,
     new_false_link: float,
-    threshold: float = 3.0,
+    threshold: float = 1.25,
 ):
     return {
         "dataset": "synthetic.json",
@@ -58,7 +58,7 @@ def test_online_quality_gate_passes_for_high_precision_low_false_link_hybrid():
             "hybrid_linkable_precision": 0.995,
             "hybrid_new_author_false_link_rate": 0.01,
             "hybrid_recall_gain_vs_framework": 0.0,
-            "hypergraph_support_threshold": 3.0,
+            "hypergraph_support_threshold": 1.25,
         },
     )
 
@@ -77,7 +77,7 @@ def test_online_quality_gate_fails_when_new_author_false_link_is_too_high():
             "hybrid_linkable_precision": 0.995,
             "hybrid_new_author_false_link_rate": 0.01,
             "hybrid_recall_gain_vs_framework": 0.0,
-            "hypergraph_support_threshold": 3.0,
+            "hypergraph_support_threshold": 1.25,
         },
     )
 

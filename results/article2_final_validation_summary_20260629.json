@@ -31,7 +31,7 @@
     "max_block_size": 200,
     "cutoff_year": 2021,
     "max_profile_mentions": 30,
-    "hypergraph_support_threshold": 3.0,
+    "hypergraph_support_threshold": 1.25,
     "hypergraph_assignment_beam_size": 256
   },
   "quality_gate_thresholds": {
@@ -44,7 +44,7 @@
       "hybrid_linkable_precision": 0.995,
       "hybrid_new_author_false_link_rate": 0.01,
       "hybrid_recall_gain_vs_framework": 0.0,
-      "hypergraph_support_threshold": 3.0
+      "hypergraph_support_threshold": 1.25
     }
   },
   "code_checks": {
@@ -73,16 +73,16 @@
     {
       "label": "Crossref ORCID",
       "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
-      "hybrid_linkable_precision": 0.9955284816278919,
-      "hybrid_linkable_recall": 0.8585240450442898,
-      "hybrid_new_author_false_link_rate": 0.005349316834235627
+      "hybrid_linkable_precision": 0.9954330708661417,
+      "hybrid_linkable_recall": 0.883141923044681,
+      "hybrid_new_author_false_link_rate": 0.007153905645784996
     },
     {
       "label": "Advisor DOI ORCID",
       "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
-      "hybrid_linkable_precision": 0.998997995991984,
-      "hybrid_linkable_recall": 0.8546935276468067,
-      "hybrid_new_author_false_link_rate": 0.002513944536098672
+      "hybrid_linkable_precision": 0.9990421455938697,
+      "hybrid_linkable_recall": 0.894127732533219,
+      "hybrid_new_author_false_link_rate": 0.002592505302851756
     }
   ]
 }
