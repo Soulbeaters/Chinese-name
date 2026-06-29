@@ -76,6 +76,9 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
                 "production_ready": True,
                 "thresholds": {
                     "hybrid_linkable_precision": 0.995,
+                    "hybrid_new_author_false_link_rate": 0.01,
+                    "hybrid_recall_gain_vs_framework": 0.0,
+                    "hypergraph_support_threshold": 1.25,
                 },
                 "datasets": [
                     {
@@ -102,6 +105,9 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
                 "validation_config": {
                     "cutoff_year": 2021,
                     "max_profile_mentions": 30,
+                    "min_hybrid_linkable_precision": 0.995,
+                    "max_hybrid_new_author_false_link_rate": 0.01,
+                    "min_hybrid_recall_gain_vs_framework": 0.0,
                 },
                 "selection": {
                     "threshold": 1.25,

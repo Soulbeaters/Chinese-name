@@ -214,6 +214,35 @@ def validate_threshold_sweep_evidence(
         if abs(float(row["hypergraph_support_threshold"]) - expected_threshold) <= 1e-9
     }
     if online_gate is not None:
+        sweep_config = sweep["validation_config"]
+        threshold_pairs = [
+            (
+                sweep_config["min_hybrid_linkable_precision"],
+                online_gate["thresholds"]["hybrid_linkable_precision"],
+                "hybrid_linkable_precision",
+            ),
+            (
+                sweep_config["max_hybrid_new_author_false_link_rate"],
+                online_gate["thresholds"]["hybrid_new_author_false_link_rate"],
+                "hybrid_new_author_false_link_rate",
+            ),
+            (
+                sweep_config["min_hybrid_recall_gain_vs_framework"],
+                online_gate["thresholds"]["hybrid_recall_gain_vs_framework"],
+                "hybrid_recall_gain_vs_framework",
+            ),
+            (
+                expected_threshold,
+                online_gate["thresholds"]["hypergraph_support_threshold"],
+                "hypergraph_support_threshold",
+            ),
+        ]
+        for sweep_value, online_value, name in threshold_pairs:
+            if abs(float(sweep_value) - float(online_value)) > 1e-12:
+                raise ValueError(
+                    f"Threshold sweep {name}={sweep_value} does not match "
+                    f"online gate {name}={online_value}."
+                )
         for item in online_gate["datasets"]:
             row = selected_rows.get(item["label"])
             if row is None:
