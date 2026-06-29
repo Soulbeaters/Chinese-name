@@ -181,7 +181,7 @@
 python experiments\run_article2_final_validation.py
 ```
 
-该命令会生成统一验收摘要：`results/article2_final_validation_summary_20260629.json`，其中包含代码检查、生产门槛、验证参数、数据 SHA-256 和所有结果文件路径。
+该命令会生成统一验收摘要：`results/article2_final_validation_summary_20260629.json`，其中包含代码检查、生产门槛阈值、验证参数、数据 SHA-256 和所有结果文件路径。
 
 分步命令如下：
 

@@ -33,6 +33,19 @@
     "max_profile_mentions": 30,
     "hypergraph_support_threshold": 3.0
   },
+  "quality_gate_thresholds": {
+    "cluster": {
+      "candidate_pairwise_precision": 0.99,
+      "cluster_pairwise_precision": 0.99,
+      "b_cubed_f1": 0.95
+    },
+    "online": {
+      "hybrid_linkable_precision": 0.995,
+      "hybrid_new_author_false_link_rate": 0.01,
+      "hybrid_recall_gain_vs_framework": 0.0,
+      "hypergraph_support_threshold": 3.0
+    }
+  },
   "code_checks": {
     "unit_tests": true,
     "compileall": true,

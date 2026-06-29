@@ -198,6 +198,10 @@ def write_final_summary(
         },
         "validation_steps": validation_steps or [],
         "validation_config": validation_config or {},
+        "quality_gate_thresholds": {
+            "cluster": cluster_gate["thresholds"],
+            "online": online_gate["thresholds"],
+        },
         "code_checks": {
             "unit_tests": True,
             "compileall": True,
