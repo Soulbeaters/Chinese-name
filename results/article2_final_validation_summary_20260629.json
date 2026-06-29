@@ -1,6 +1,17 @@
 {
   "cluster_gate_path": "results\\article2_quality_gate_summary_20260628.json",
   "online_gate_path": "results\\article2_online_quality_gate_summary_20260629.json",
+  "result_paths": {
+    "crossref_baseline": "results\\article2_baseline_exact_context_crossref_orcid_20260628.json",
+    "advisor_baseline": "results\\article2_baseline_exact_context_advisor_orcid_20260628.json",
+    "crossref_framework": "results\\article2_framework_v1_final_balanced_crossref_orcid_20260628.json",
+    "advisor_framework": "results\\article2_framework_v1_final_balanced_advisor_orcid_20260628.json",
+    "cluster_gate": "results\\article2_quality_gate_summary_20260628.json",
+    "crossref_online": "results\\article2_istina_proxy_online_crossref_orcid_20260628.json",
+    "advisor_online": "results\\article2_istina_proxy_online_advisor_orcid_20260628.json",
+    "online_gate": "results\\article2_online_quality_gate_summary_20260629.json",
+    "final_summary": "results\\article2_final_validation_summary_20260629.json"
+  },
   "validation_steps": [
     "Unit tests",
     "Compile Python sources",

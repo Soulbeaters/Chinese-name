@@ -17,6 +17,21 @@ DEFAULT_ADVISOR_DATASET = Path(r"runs\advisor_doi_20260507\advisor_doi_crossref_
 DEFAULT_CLUSTER_GATE = Path("results/article2_quality_gate_summary_20260628.json")
 DEFAULT_ONLINE_GATE = Path("results/article2_online_quality_gate_summary_20260629.json")
 DEFAULT_FINAL_SUMMARY = Path("results/article2_final_validation_summary_20260629.json")
+RESULT_PATHS = {
+    "crossref_baseline": Path("results/article2_baseline_exact_context_crossref_orcid_20260628.json"),
+    "advisor_baseline": Path("results/article2_baseline_exact_context_advisor_orcid_20260628.json"),
+    "crossref_framework": Path(
+        "results/article2_framework_v1_final_balanced_crossref_orcid_20260628.json"
+    ),
+    "advisor_framework": Path(
+        "results/article2_framework_v1_final_balanced_advisor_orcid_20260628.json"
+    ),
+    "cluster_gate": DEFAULT_CLUSTER_GATE,
+    "crossref_online": Path("results/article2_istina_proxy_online_crossref_orcid_20260628.json"),
+    "advisor_online": Path("results/article2_istina_proxy_online_advisor_orcid_20260628.json"),
+    "online_gate": DEFAULT_ONLINE_GATE,
+    "final_summary": DEFAULT_FINAL_SUMMARY,
+}
 
 
 def script_command(script: str, *args: str | Path | int | float) -> list[str]:
@@ -24,19 +39,6 @@ def script_command(script: str, *args: str | Path | int | float) -> list[str]:
 
 
 def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
-    crossref_baseline = Path("results/article2_baseline_exact_context_crossref_orcid_20260628.json")
-    advisor_baseline = Path("results/article2_baseline_exact_context_advisor_orcid_20260628.json")
-    crossref_framework = Path(
-        "results/article2_framework_v1_final_balanced_crossref_orcid_20260628.json"
-    )
-    advisor_framework = Path(
-        "results/article2_framework_v1_final_balanced_advisor_orcid_20260628.json"
-    )
-    cluster_gate = DEFAULT_CLUSTER_GATE
-    crossref_online = Path("results/article2_istina_proxy_online_crossref_orcid_20260628.json")
-    advisor_online = Path("results/article2_istina_proxy_online_advisor_orcid_20260628.json")
-    online_gate = DEFAULT_ONLINE_GATE
-
     return [
         ("Unit tests", [sys.executable, "-m", "pytest", "-q"]),
         (
@@ -51,7 +53,7 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
                 "--dataset",
                 args.crossref_dataset,
                 "--output",
-                crossref_baseline,
+                RESULT_PATHS["crossref_baseline"],
                 "--algorithm",
                 "baseline_exact_context",
                 "--profile",
@@ -67,7 +69,7 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
                 "--dataset",
                 args.advisor_dataset,
                 "--output",
-                advisor_baseline,
+                RESULT_PATHS["advisor_baseline"],
                 "--algorithm",
                 "baseline_exact_context",
                 "--profile",
@@ -83,7 +85,7 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
                 "--dataset",
                 args.crossref_dataset,
                 "--output",
-                crossref_framework,
+                RESULT_PATHS["crossref_framework"],
                 "--algorithm",
                 "framework_v1",
                 "--profile",
@@ -99,7 +101,7 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
                 "--dataset",
                 args.advisor_dataset,
                 "--output",
-                advisor_framework,
+                RESULT_PATHS["advisor_framework"],
                 "--algorithm",
                 "framework_v1",
                 "--profile",
@@ -113,15 +115,15 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
             script_command(
                 "experiments/author_disambiguation_quality_gate.py",
                 "--output",
-                cluster_gate,
+                RESULT_PATHS["cluster_gate"],
                 "--pair",
                 "Crossref ORCID",
-                crossref_baseline,
-                crossref_framework,
+                RESULT_PATHS["crossref_baseline"],
+                RESULT_PATHS["crossref_framework"],
                 "--pair",
                 "Advisor DOI ORCID",
-                advisor_baseline,
-                advisor_framework,
+                RESULT_PATHS["advisor_baseline"],
+                RESULT_PATHS["advisor_framework"],
             ),
         ),
         (
@@ -131,7 +133,7 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
                 "--dataset",
                 args.crossref_dataset,
                 "--output",
-                crossref_online,
+                RESULT_PATHS["crossref_online"],
                 "--cutoff-year",
                 args.cutoff_year,
                 "--max-profile-mentions",
@@ -147,7 +149,7 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
                 "--dataset",
                 args.advisor_dataset,
                 "--output",
-                advisor_online,
+                RESULT_PATHS["advisor_online"],
                 "--cutoff-year",
                 args.cutoff_year,
                 "--max-profile-mentions",
@@ -161,13 +163,13 @@ def build_steps(args: argparse.Namespace) -> list[tuple[str, list[str]]]:
             script_command(
                 "experiments/online_disambiguation_quality_gate.py",
                 "--output",
-                online_gate,
+                RESULT_PATHS["online_gate"],
                 "--result",
                 "Crossref ORCID",
-                crossref_online,
+                RESULT_PATHS["crossref_online"],
                 "--result",
                 "Advisor DOI ORCID",
-                advisor_online,
+                RESULT_PATHS["advisor_online"],
             ),
         ),
     ]
@@ -189,6 +191,10 @@ def write_final_summary(
     summary = {
         "cluster_gate_path": str(cluster_gate_path),
         "online_gate_path": str(online_gate_path),
+        "result_paths": {
+            name: str(path)
+            for name, path in RESULT_PATHS.items()
+        },
         "validation_steps": validation_steps or [],
         "code_checks": {
             "unit_tests": True,

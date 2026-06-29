@@ -97,6 +97,9 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
 
     assert summary["production_ready"] is True
     assert summary["validation_steps"] == ["Unit tests", "Online quality gate"]
+    assert summary["result_paths"]["final_summary"].endswith(
+        "article2_final_validation_summary_20260629.json"
+    )
     assert summary["code_checks"]["unit_tests"] is True
     assert summary["cluster_datasets"][0]["dataset_sha256"] == "sha-crossref"
     assert summary["online_datasets"][0]["hybrid_new_author_false_link_rate"] == 0.006
