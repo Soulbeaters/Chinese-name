@@ -88,9 +88,15 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
         encoding="utf-8",
     )
 
-    summary = write_final_summary(cluster_path, online_path, output_path)
+    summary = write_final_summary(
+        cluster_path,
+        online_path,
+        output_path,
+        ["Unit tests", "Online quality gate"],
+    )
 
     assert summary["production_ready"] is True
+    assert summary["validation_steps"] == ["Unit tests", "Online quality gate"]
     assert summary["code_checks"]["unit_tests"] is True
     assert summary["cluster_datasets"][0]["dataset_sha256"] == "sha-crossref"
     assert summary["online_datasets"][0]["hybrid_new_author_false_link_rate"] == 0.006

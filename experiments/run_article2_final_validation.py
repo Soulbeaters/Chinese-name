@@ -182,12 +182,14 @@ def write_final_summary(
     cluster_gate_path: Path,
     online_gate_path: Path,
     output_path: Path,
+    validation_steps: list[str] | None = None,
 ) -> dict[str, object]:
     cluster_gate = json.loads((PROJECT_ROOT / cluster_gate_path).read_text(encoding="utf-8"))
     online_gate = json.loads((PROJECT_ROOT / online_gate_path).read_text(encoding="utf-8"))
     summary = {
         "cluster_gate_path": str(cluster_gate_path),
         "online_gate_path": str(online_gate_path),
+        "validation_steps": validation_steps or [],
         "code_checks": {
             "unit_tests": True,
             "compileall": True,
@@ -237,12 +239,14 @@ def main() -> None:
     parser.add_argument("--summary-output", type=Path, default=DEFAULT_FINAL_SUMMARY)
     args = parser.parse_args()
 
-    for label, command in build_steps(args):
+    steps = build_steps(args)
+    for label, command in steps:
         run_step(label, command)
     summary = write_final_summary(
         DEFAULT_CLUSTER_GATE,
         DEFAULT_ONLINE_GATE,
         args.summary_output,
+        [label for label, _ in steps],
     )
     print(
         "\n=== Final validation summary ===\n"

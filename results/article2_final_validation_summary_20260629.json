@@ -1,6 +1,19 @@
 {
   "cluster_gate_path": "results\\article2_quality_gate_summary_20260628.json",
   "online_gate_path": "results\\article2_online_quality_gate_summary_20260629.json",
+  "validation_steps": [
+    "Unit tests",
+    "Compile Python sources",
+    "Patch whitespace check",
+    "Crossref baseline",
+    "Advisor baseline",
+    "Crossref framework_v1",
+    "Advisor framework_v1",
+    "Cluster quality gate",
+    "Crossref online comparison",
+    "Advisor online comparison",
+    "Online quality gate"
+  ],
   "code_checks": {
     "unit_tests": true,
     "compileall": true,
