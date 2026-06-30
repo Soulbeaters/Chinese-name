@@ -13,8 +13,10 @@ from src.author_disambiguation import (  # noqa: E402
     affiliation_tokens,
     build_affiliation_weights,
     build_coauthor_sets,
+    coauthor_name_key,
     decide_pair,
     evaluate_mentions,
+    parse_coauthor_values,
     row_to_mention,
 )
 
@@ -156,6 +158,62 @@ def test_exact_non_chinese_full_name_merges_without_context():
     decision = _decision(left, right)
     assert decision.same_author is True
     assert decision.rule == "exact_non_chinese_full_name"
+
+
+def test_strict_common_exact_non_chinese_full_name_requires_context():
+    left = _mention(
+        {
+            "firstname": "Elizabeth L.",
+            "lastname": "Johnson",
+            "doi": "10.test/a",
+            "year": 2022,
+            "affiliation": "",
+            "orcid": "0000-0002-5510-9762",
+        },
+        0,
+    )
+    right = _mention(
+        {
+            "firstname": "Elizabeth L.",
+            "lastname": "Johnson",
+            "doi": "10.test/b",
+            "year": 2025,
+            "affiliation": "",
+            "orcid": "0000-0003-5510-9762",
+        },
+        1,
+    )
+    decision = _decision(left, right, profile="strict", family_frequency=200)
+    assert decision.same_author is False
+    assert decision.rule == "strict_exact_name_requires_strong_context"
+
+
+def test_strict_profile_requires_strong_context_even_for_rare_exact_name():
+    left = _mention(
+        {
+            "firstname": "Javad",
+            "lastname": "Beheshtian",
+            "doi": "10.test/a",
+            "year": 2012,
+            "affiliation": "Department of Chemistry",
+            "orcid": "0000-0001-0000-0001",
+        },
+        0,
+    )
+    right = _mention(
+        {
+            "firstname": "Javad",
+            "lastname": "Beheshtian",
+            "doi": "10.test/b",
+            "year": 2018,
+            "affiliation": "Department of Physics",
+            "orcid": "0000-0002-0000-0002",
+        },
+        1,
+    )
+    decision = _decision(left, right, profile="strict", family_frequency=3)
+    assert decision.same_author is False
+    assert decision.rule == "strict_exact_name_requires_strong_context"
 
 
 def test_given_prefix_variant_merges_under_strong_affiliation():
@@ -322,6 +380,37 @@ def test_orcid_is_label_only_not_decision_feature():
 
     assert same_label_decision.same_author == different_label_decision.same_author
     assert same_label_decision.rule == different_label_decision.rule
+
+
+def test_optional_explicit_coauthors_are_added_to_context():
+    left = _mention(
+        {
+            "firstname": "B.",
+            "lastname": "Rajakumar",
+            "doi": "10.test/a",
+            "coauthors": ["A. Parandaman", "B. Rajakumar"],
+            "orcid": "0000-0003-0788-1499",
+        },
+        0,
+    )
+    right = _mention(
+        {
+            "firstname": "Balla",
+            "lastname": "Rajakumar",
+            "doi": "10.test/b",
+            "coauthors": "['A. Parandaman','S. Vijayakumar']",
+            "orcid": "0000-0003-0788-1499",
+        },
+        1,
+    )
+
+    coauthors = build_coauthor_sets([left, right])
+
+    shared_key = coauthor_name_key("A. Parandaman")
+    assert parse_coauthor_values("['A. Parandaman','B. Rajakumar']")
+    assert shared_key in coauthors[0]
+    assert shared_key in coauthors[1]
+    assert coauthor_name_key("B. Rajakumar") not in coauthors[0]
 
 
 def test_evaluate_mentions_reports_cluster_metrics():

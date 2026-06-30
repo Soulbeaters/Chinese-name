@@ -51,7 +51,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--profile",
-        choices=["conservative", "balanced"],
+        choices=["conservative", "balanced", "strict"],
         default="conservative",
     )
     parser.add_argument("--max-block-size", type=int, default=200)

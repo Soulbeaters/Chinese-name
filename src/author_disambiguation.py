@@ -8,6 +8,7 @@ features.  Those identifiers are accepted only by the evaluation layer as labels
 from __future__ import annotations
 
 import hashlib
+import ast
 import math
 import re
 from collections import Counter, defaultdict
@@ -73,6 +74,7 @@ class AuthorMention:
     year: int | None
     affiliation: str
     label_orcid: str = ""
+    explicit_coauthor_keys: tuple[str, ...] = field(default_factory=tuple)
     given_tokens: tuple[str, ...] = field(default_factory=tuple)
     family_tokens: tuple[str, ...] = field(default_factory=tuple)
 
@@ -187,6 +189,56 @@ def normalized_tokens(value: str) -> tuple[str, ...]:
     return tuple(tokens)
 
 
+def split_display_name(value: str) -> tuple[str, str]:
+    """Best-effort split of a display name into given/family parts."""
+
+    text = " ".join(str(value or "").replace(".", " ").split())
+    if not text:
+        return "", ""
+    if "," in text:
+        family, given = [part.strip() for part in text.split(",", 1)]
+        return given, family
+    tokens = text.split()
+    if len(tokens) < 2:
+        return "", ""
+    return " ".join(tokens[:-1]), tokens[-1]
+
+
+def coauthor_name_key(value: str) -> str:
+    given, family = split_display_name(value)
+    given_tokens = normalized_tokens(given)
+    family_tokens = normalized_tokens(family)
+    if given_tokens and family_tokens:
+        return f"{' '.join(family_tokens)}|{' '.join(given_tokens)}"
+    tokens = normalized_tokens(value)
+    return " ".join(tokens)
+
+
+def parse_coauthor_values(value: Any) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if isinstance(value, list):
+        raw_items = value
+    elif isinstance(value, tuple):
+        raw_items = list(value)
+    else:
+        text = str(value or "").strip()
+        if not text:
+            return ()
+        try:
+            parsed = ast.literal_eval(text)
+        except (SyntaxError, ValueError):
+            parsed = [item.strip() for item in text.split(";")]
+        raw_items = parsed if isinstance(parsed, list) else [text]
+    keys = {
+        coauthor_name_key(str(item))
+        for item in raw_items
+        if str(item or "").strip()
+    }
+    keys.discard("")
+    return tuple(sorted(keys))
+
+
 @lru_cache(maxsize=None)
 def affiliation_tokens(value: str) -> frozenset[str]:
     tokens = {
@@ -242,6 +294,7 @@ def row_to_mention(row: Mapping[str, Any], index: int) -> AuthorMention:
         year=safe_year(row.get("year")),
         affiliation=str(row.get("affiliation", "") or ""),
         label_orcid=normalize_orcid(row.get("orcid")),
+        explicit_coauthor_keys=parse_coauthor_values(row.get("coauthors")),
         given_tokens=normalized_tokens(firstname),
         family_tokens=normalized_tokens(lastname),
     )
@@ -290,7 +343,10 @@ def build_coauthor_sets(mentions: list[AuthorMention]) -> dict[int, set[str]]:
     coauthors: dict[int, set[str]] = {}
     for position, mention in enumerate(mentions):
         names = set(names_by_paper.get(mention.paper_key, set()))
+        names.update(mention.explicit_coauthor_keys)
         names.discard(mention.entity_name_key)
+        if mention.original_name:
+            names.discard(coauthor_name_key(mention.original_name))
         coauthors[position] = names
     return coauthors
 
@@ -424,6 +480,25 @@ def framework_v1_decision(
         return False, "year_gap_gt_25_without_strong_context", 0.0
 
     if relation == "exact":
+        if profile == "strict":
+            if co >= 0.30:
+                return True, "strict_exact_name_coauthor_jaccard_ge_0.30", 0.93
+            if initial_only:
+                return False, "strict_initial_only_name_requires_coauthor", 0.0
+            if chinese_like:
+                if co >= 0.20 and aff >= 0.35:
+                    return True, "strict_cn_like_exact_name_affiliation_and_coauthor", 0.86
+                return False, "strict_cn_like_exact_name_requires_coauthor", 0.0
+            if co >= 0.12 and aff >= 0.55 and raw_aff >= 0.45 and features.family_frequency <= 50:
+                return True, "strict_exact_name_affiliation_and_coauthor", 0.86
+            if (
+                features.family_frequency <= 5
+                and aff >= 0.55
+                and raw_aff >= 0.45
+                and (year_gap is None or year_gap <= 5)
+            ):
+                return True, "strict_exact_name_rare_family_strong_affiliation", 0.74
+            return False, "strict_exact_name_requires_strong_context", 0.0
         if co >= 0.12:
             return True, "exact_name_coauthor_jaccard_ge_0.12", 0.91
         if initial_only:
@@ -449,6 +524,10 @@ def framework_v1_decision(
         return True, "exact_non_chinese_full_name", 0.60
 
     if relation == "prefix":
+        if profile == "strict":
+            if co >= 0.30:
+                return True, "strict_given_prefix_coauthor_jaccard_ge_0.30", 0.90
+            return False, "strict_given_prefix_requires_coauthor", 0.0
         if co >= 0.16:
             return True, "given_prefix_coauthor_jaccard_ge_0.16", 0.88
         if aff >= 0.58 and (year_gap is None or year_gap <= 12):
@@ -460,6 +539,10 @@ def framework_v1_decision(
         return False, "given_prefix_insufficient_context", 0.0
 
     if relation == "initial_compatible":
+        if profile == "strict":
+            if co >= 0.45:
+                return True, "strict_given_initial_coauthor_jaccard_ge_0.45", 0.92
+            return False, "strict_given_initial_requires_coauthor", 0.0
         if co >= 0.30:
             return True, "given_initial_coauthor_jaccard_ge_0.30", 0.90
         if aff >= 0.72 and raw_aff >= 0.55 and (year_gap is None or year_gap <= 8):

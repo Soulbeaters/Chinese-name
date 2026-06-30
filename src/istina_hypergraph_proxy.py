@@ -53,6 +53,7 @@ class OnlineBenchmarkConfig:
     cutoff_year: int = 2021
     max_profile_mentions: int = 30
     hypergraph_support_threshold: float = 1.25
+    framework_profile: str = "balanced"
 
 
 @dataclass
@@ -283,10 +284,11 @@ def choose_framework_profile(
     affiliation_weights: dict[str, float],
     family_frequencies: Counter[str],
     max_profile_mentions: int,
+    framework_profile: str = "balanced",
 ) -> str | None:
     best_author: str | None = None
     best_score = 0.0
-    config = DisambiguationConfig(algorithm="framework_v1", profile="balanced")
+    config = DisambiguationConfig(algorithm="framework_v1", profile=framework_profile)
 
     for author_id in candidates:
         profile_positions = sorted(
@@ -542,6 +544,7 @@ def evaluate_online_assignment(
                 affiliation_weights,
                 family_frequencies,
                 config.max_profile_mentions,
+                config.framework_profile,
             )
             predictions = {
                 "name_most_frequent": choose_name_most_frequent(candidate_sets[position], profiles),
@@ -604,6 +607,7 @@ def evaluate_online_assignment(
         "cutoff_year": config.cutoff_year,
         "max_profile_mentions": config.max_profile_mentions,
         "hypergraph_support_threshold": config.hypergraph_support_threshold,
+        "framework_profile": config.framework_profile,
         "hypergraph_assignment_beam_size": HYPERGRAPH_ASSIGNMENT_BEAM_SIZE,
         "history_mentions": len(history_positions),
         "history_authors": len(history_author_ids),

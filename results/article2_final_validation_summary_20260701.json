@@ -1,0 +1,100 @@
+{
+  "cluster_gate_path": "results\\article2_quality_gate_summary_20260628.json",
+  "online_gate_path": "results\\article2_online_quality_gate_summary_20260629.json",
+  "result_paths": {
+    "crossref_baseline": "results\\article2_baseline_exact_context_crossref_orcid_20260628.json",
+    "advisor_baseline": "results\\article2_baseline_exact_context_advisor_orcid_20260628.json",
+    "crossref_framework": "results\\article2_framework_v1_final_balanced_crossref_orcid_20260628.json",
+    "advisor_framework": "results\\article2_framework_v1_final_balanced_advisor_orcid_20260628.json",
+    "cluster_gate": "results\\article2_quality_gate_summary_20260628.json",
+    "crossref_online": "results\\article2_istina_proxy_online_crossref_orcid_20260628.json",
+    "advisor_online": "results\\article2_istina_proxy_online_advisor_orcid_20260628.json",
+    "online_gate": "results\\article2_online_quality_gate_summary_20260629.json",
+    "threshold_sweep": "results\\article2_hybrid_threshold_sweep_20260629.json",
+    "final_summary": "results\\article2_final_validation_summary_20260629.json"
+  },
+  "validation_steps": [
+    "Unit tests",
+    "Compile Python sources",
+    "Patch whitespace check",
+    "Crossref baseline",
+    "Advisor baseline",
+    "Crossref framework_v1",
+    "Advisor framework_v1",
+    "Cluster quality gate",
+    "Crossref online comparison",
+    "Advisor online comparison",
+    "Online quality gate",
+    "Threshold sweep evidence check"
+  ],
+  "validation_config": {
+    "crossref_dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+    "advisor_dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+    "max_block_size": 200,
+    "cutoff_year": 2021,
+    "max_profile_mentions": 30,
+    "hypergraph_support_threshold": 1.25,
+    "hypergraph_assignment_beam_size": 256
+  },
+  "quality_gate_thresholds": {
+    "cluster": {
+      "candidate_pairwise_precision": 0.99,
+      "cluster_pairwise_precision": 0.99,
+      "b_cubed_f1": 0.95
+    },
+    "online": {
+      "hybrid_linkable_precision": 0.995,
+      "hybrid_new_author_false_link_rate": 0.01,
+      "hybrid_recall_gain_vs_framework": 0.0,
+      "hypergraph_support_threshold": 1.25
+    }
+  },
+  "code_checks": {
+    "unit_tests": true,
+    "compileall": true,
+    "patch_whitespace_check": true
+  },
+  "cluster_production_ready": true,
+  "online_production_ready": true,
+  "threshold_sweep_ready": true,
+  "production_ready": true,
+  "threshold_sweep": {
+    "path": "results\\article2_hybrid_threshold_sweep_20260629.json",
+    "selected_threshold": 1.25,
+    "threshold_count": 10,
+    "row_count": 20,
+    "expected_row_count": 20,
+    "selected_dataset_count": 2,
+    "selection_reason": "Selected the production-ready threshold with at least 0.000250 precision safety margin and the highest mean linkable F1 across datasets."
+  },
+  "cluster_datasets": [
+    {
+      "label": "Crossref ORCID",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "cluster_pairwise_precision": 0.9937645238240242,
+      "b_cubed_f1": 0.9505398453019599
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "cluster_pairwise_precision": 0.9903875037548814,
+      "b_cubed_f1": 0.9649542518810483
+    }
+  ],
+  "online_datasets": [
+    {
+      "label": "Crossref ORCID",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
+      "hybrid_linkable_precision": 0.9954330708661417,
+      "hybrid_linkable_recall": 0.883141923044681,
+      "hybrid_new_author_false_link_rate": 0.007153905645784996
+    },
+    {
+      "label": "Advisor DOI ORCID",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
+      "hybrid_linkable_precision": 0.9990421455938697,
+      "hybrid_linkable_recall": 0.894127732533219,
+      "hybrid_new_author_false_link_rate": 0.002592505302851756
+    }
+  ]
+}

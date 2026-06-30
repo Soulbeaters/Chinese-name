@@ -35,6 +35,7 @@ def compact_result(result: dict[str, Any]) -> dict[str, Any]:
         "dataset": result["dataset"],
         "cutoff_year": result["cutoff_year"],
         "hypergraph_support_threshold": result["hypergraph_support_threshold"],
+        "framework_profile": result["framework_profile"],
         "hypergraph_assignment_beam_size": result["hypergraph_assignment_beam_size"],
         "history_mentions": result["history_mentions"],
         "history_authors": result["history_authors"],
@@ -133,12 +134,18 @@ def main() -> None:
     parser.add_argument("--cutoff-year", type=int, default=2021)
     parser.add_argument("--max-profile-mentions", type=int, default=30)
     parser.add_argument("--hypergraph-support-threshold", type=float, default=1.25)
+    parser.add_argument(
+        "--framework-profile",
+        choices=["conservative", "balanced", "strict"],
+        default="balanced",
+    )
     args = parser.parse_args()
 
     config = OnlineBenchmarkConfig(
         cutoff_year=args.cutoff_year,
         max_profile_mentions=args.max_profile_mentions,
         hypergraph_support_threshold=args.hypergraph_support_threshold,
+        framework_profile=args.framework_profile,
     )
     result = evaluate_file(args.dataset, config)
 
