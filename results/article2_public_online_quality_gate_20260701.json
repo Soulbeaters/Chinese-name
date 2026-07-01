@@ -83,6 +83,45 @@
         "hybrid_recall_gain_vs_framework": true
       },
       "production_ready": true
+    },
+    {
+      "label": "S2AND public strict",
+      "dataset": "runs\\public_s2and_20260701\\s2and_public_mentions.json",
+      "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552",
+      "history_mentions": 16928,
+      "test_mentions": 11681,
+      "truth_in_history_mentions": 3809,
+      "candidate_covered_mentions": 3727,
+      "hypergraph_support_threshold": 1.25,
+      "framework_linkable": {
+        "precision": 1.0,
+        "recall": 0.007088474665266474,
+        "f1": 0.014077163712200209,
+        "unknown_rate": 0.9929115253347335
+      },
+      "hybrid_linkable": {
+        "precision": 1.0,
+        "recall": 0.009713835652402206,
+        "f1": 0.01924076963078523,
+        "unknown_rate": 0.9902861643475978
+      },
+      "hybrid_new_author": {
+        "false_link_rate": 0.0,
+        "false_links": 0,
+        "evaluated_mentions": 7872,
+        "no_prediction_rate": 1.0
+      },
+      "delta_vs_framework": {
+        "linkable_recall": 0.002625360987135732,
+        "linkable_unknown_rate": -0.0026253609871357275
+      },
+      "production_checks": {
+        "hypergraph_support_threshold": true,
+        "hybrid_linkable_precision": true,
+        "hybrid_new_author_false_link_rate": true,
+        "hybrid_recall_gain_vs_framework": true
+      },
+      "production_ready": true
     }
   ],
   "production_ready": true,

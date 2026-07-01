@@ -1,0 +1,633 @@
+{
+  "cutoff_year": 2000,
+  "max_profile_mentions": 30,
+  "hypergraph_support_threshold": 1.25,
+  "framework_profile": "balanced",
+  "hypergraph_assignment_beam_size": 256,
+  "history_mentions": 16928,
+  "history_authors": 2878,
+  "test_mentions": 11681,
+  "truth_in_history_mentions": 3809,
+  "candidate_covered_mentions": 3727,
+  "candidate_coverage_vs_truth_in_history": 0.978472039905487,
+  "evaluated_papers": 3693,
+  "candidate_size_histogram": {
+    "0": 3044,
+    "1": 2031,
+    "2": 1969,
+    "3": 1515,
+    "4": 653,
+    "5": 518,
+    "6": 140,
+    "7": 604,
+    "8": 380,
+    "9": 193,
+    "10": 328,
+    "11": 8,
+    "12": 238,
+    "13": 11,
+    "15": 21,
+    "17": 28
+  },
+  "methods": {
+    "name_most_frequent": {
+      "evaluated_mentions": 3727,
+      "predicted_mentions": 3727,
+      "correct": 2910,
+      "wrong": 817,
+      "unknown": 0,
+      "precision": 0.7807888382076738,
+      "recall": 0.7807888382076738,
+      "f1": 0.7807888382076739,
+      "accuracy_counting_unknown_as_wrong": 0.7807888382076738,
+      "unknown_rate": 0.0,
+      "paper_exact": 2876,
+      "paper_exact_rate": 0.7787706471703222
+    },
+    "istina_hypergraph_proxy": {
+      "evaluated_mentions": 3727,
+      "predicted_mentions": 3727,
+      "correct": 2966,
+      "wrong": 761,
+      "unknown": 0,
+      "precision": 0.7958143278776496,
+      "recall": 0.7958143278776496,
+      "f1": 0.7958143278776496,
+      "accuracy_counting_unknown_as_wrong": 0.7958143278776496,
+      "unknown_rate": 0.0,
+      "paper_exact": 2932,
+      "paper_exact_rate": 0.793934470620092
+    },
+    "framework_v1_profile": {
+      "evaluated_mentions": 3727,
+      "predicted_mentions": 2541,
+      "correct": 2225,
+      "wrong": 316,
+      "unknown": 1186,
+      "precision": 0.8756395120031484,
+      "recall": 0.5969949020660048,
+      "f1": 0.709955328653478,
+      "accuracy_counting_unknown_as_wrong": 0.5969949020660048,
+      "unknown_rate": 0.3182184062248457,
+      "paper_exact": 2196,
+      "paper_exact_rate": 0.59463850528026
+    },
+    "risk_controlled_hybrid": {
+      "evaluated_mentions": 3727,
+      "predicted_mentions": 2547,
+      "correct": 2231,
+      "wrong": 316,
+      "unknown": 1180,
+      "precision": 0.8759324695720455,
+      "recall": 0.5986047759592166,
+      "f1": 0.7111890341090213,
+      "accuracy_counting_unknown_as_wrong": 0.5986047759592166,
+      "unknown_rate": 0.316608532331634,
+      "paper_exact": 2200,
+      "paper_exact_rate": 0.5957216355266721
+    }
+  },
+  "linkable_end_to_end_methods": {
+    "name_most_frequent": {
+      "evaluated_mentions": 3809,
+      "predicted_mentions": 3791,
+      "correct": 2910,
+      "wrong": 881,
+      "unknown": 18,
+      "precision": 0.7676074914270641,
+      "recall": 0.7639800472564978,
+      "f1": 0.7657894736842106,
+      "accuracy_counting_unknown_as_wrong": 0.7639800472564978,
+      "unknown_rate": 0.0047256497768443165
+    },
+    "istina_hypergraph_proxy": {
+      "evaluated_mentions": 3809,
+      "predicted_mentions": 3791,
+      "correct": 2966,
+      "wrong": 825,
+      "unknown": 18,
+      "precision": 0.7823793194407808,
+      "recall": 0.7786820687844579,
+      "f1": 0.7805263157894737,
+      "accuracy_counting_unknown_as_wrong": 0.7786820687844579,
+      "unknown_rate": 0.0047256497768443165
+    },
+    "framework_v1_profile": {
+      "evaluated_mentions": 3809,
+      "predicted_mentions": 2541,
+      "correct": 2225,
+      "wrong": 316,
+      "unknown": 1268,
+      "precision": 0.8756395120031484,
+      "recall": 0.5841428196377002,
+      "f1": 0.7007874015748031,
+      "accuracy_counting_unknown_as_wrong": 0.5841428196377002,
+      "unknown_rate": 0.3328957731688107
+    },
+    "risk_controlled_hybrid": {
+      "evaluated_mentions": 3809,
+      "predicted_mentions": 2547,
+      "correct": 2231,
+      "wrong": 316,
+      "unknown": 1262,
+      "precision": 0.8759324695720455,
+      "recall": 0.5857180362299816,
+      "f1": 0.7020138451856515,
+      "accuracy_counting_unknown_as_wrong": 0.5857180362299816,
+      "unknown_rate": 0.33132055657652926
+    }
+  },
+  "new_author_methods": {
+    "name_most_frequent": {
+      "evaluated_mentions": 7872,
+      "false_links": 4846,
+      "no_prediction": 3026,
+      "false_link_rate": 0.615599593495935,
+      "no_prediction_rate": 0.38440040650406504
+    },
+    "istina_hypergraph_proxy": {
+      "evaluated_mentions": 7872,
+      "false_links": 4846,
+      "no_prediction": 3026,
+      "false_link_rate": 0.615599593495935,
+      "no_prediction_rate": 0.38440040650406504
+    },
+    "framework_v1_profile": {
+      "evaluated_mentions": 7872,
+      "false_links": 641,
+      "no_prediction": 7231,
+      "false_link_rate": 0.08142784552845528,
+      "no_prediction_rate": 0.9185721544715447
+    },
+    "risk_controlled_hybrid": {
+      "evaluated_mentions": 7872,
+      "false_links": 641,
+      "no_prediction": 7231,
+      "false_link_rate": 0.08142784552845528,
+      "no_prediction_rate": 0.9185721544715447
+    }
+  },
+  "hard_case_linkable_methods": {
+    "ambiguous_candidates": {
+      "name_most_frequent": {
+        "evaluated_mentions": 2833,
+        "predicted_mentions": 2833,
+        "correct": 1953,
+        "wrong": 880,
+        "unknown": 0,
+        "precision": 0.6893752206141899,
+        "recall": 0.6893752206141899,
+        "f1": 0.6893752206141899,
+        "accuracy_counting_unknown_as_wrong": 0.6893752206141899,
+        "unknown_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 2833,
+        "predicted_mentions": 2833,
+        "correct": 2009,
+        "wrong": 824,
+        "unknown": 0,
+        "precision": 0.7091422520296505,
+        "recall": 0.7091422520296505,
+        "f1": 0.7091422520296505,
+        "accuracy_counting_unknown_as_wrong": 0.7091422520296505,
+        "unknown_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 2833,
+        "predicted_mentions": 1816,
+        "correct": 1500,
+        "wrong": 316,
+        "unknown": 1017,
+        "precision": 0.8259911894273128,
+        "recall": 0.5294740557712672,
+        "f1": 0.6453000645300064,
+        "accuracy_counting_unknown_as_wrong": 0.5294740557712672,
+        "unknown_rate": 0.35898340981291915
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 2833,
+        "predicted_mentions": 1817,
+        "correct": 1501,
+        "wrong": 316,
+        "unknown": 1016,
+        "precision": 0.8260869565217391,
+        "recall": 0.5298270384751147,
+        "f1": 0.6455913978494623,
+        "accuracy_counting_unknown_as_wrong": 0.5298270384751147,
+        "unknown_rate": 0.35863042710907167
+      }
+    },
+    "chinese_like_signature": {
+      "name_most_frequent": {
+        "evaluated_mentions": 1827,
+        "predicted_mentions": 1823,
+        "correct": 1270,
+        "wrong": 553,
+        "unknown": 4,
+        "precision": 0.6966538672517828,
+        "recall": 0.6951286261631089,
+        "f1": 0.695890410958904,
+        "accuracy_counting_unknown_as_wrong": 0.6951286261631089,
+        "unknown_rate": 0.0021893814997263274
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 1827,
+        "predicted_mentions": 1823,
+        "correct": 1287,
+        "wrong": 536,
+        "unknown": 4,
+        "precision": 0.7059791552386177,
+        "recall": 0.7044334975369458,
+        "f1": 0.7052054794520549,
+        "accuracy_counting_unknown_as_wrong": 0.7044334975369458,
+        "unknown_rate": 0.0021893814997263274
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 1827,
+        "predicted_mentions": 675,
+        "correct": 650,
+        "wrong": 25,
+        "unknown": 1152,
+        "precision": 0.9629629629629629,
+        "recall": 0.35577449370552816,
+        "f1": 0.5195843325339727,
+        "accuracy_counting_unknown_as_wrong": 0.35577449370552816,
+        "unknown_rate": 0.6305418719211823
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 1827,
+        "predicted_mentions": 675,
+        "correct": 650,
+        "wrong": 25,
+        "unknown": 1152,
+        "precision": 0.9629629629629629,
+        "recall": 0.35577449370552816,
+        "f1": 0.5195843325339727,
+        "accuracy_counting_unknown_as_wrong": 0.35577449370552816,
+        "unknown_rate": 0.6305418719211823
+      }
+    },
+    "exact_name_ambiguous": {
+      "name_most_frequent": {
+        "evaluated_mentions": 2692,
+        "predicted_mentions": 2692,
+        "correct": 1866,
+        "wrong": 826,
+        "unknown": 0,
+        "precision": 0.6931649331352154,
+        "recall": 0.6931649331352154,
+        "f1": 0.6931649331352154,
+        "accuracy_counting_unknown_as_wrong": 0.6931649331352154,
+        "unknown_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 2692,
+        "predicted_mentions": 2692,
+        "correct": 1884,
+        "wrong": 808,
+        "unknown": 0,
+        "precision": 0.6998514115898959,
+        "recall": 0.6998514115898959,
+        "f1": 0.6998514115898959,
+        "accuracy_counting_unknown_as_wrong": 0.6998514115898959,
+        "unknown_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 2692,
+        "predicted_mentions": 1702,
+        "correct": 1390,
+        "wrong": 312,
+        "unknown": 990,
+        "precision": 0.8166862514688602,
+        "recall": 0.5163447251114414,
+        "f1": 0.6326809285389169,
+        "accuracy_counting_unknown_as_wrong": 0.5163447251114414,
+        "unknown_rate": 0.36775631500742945
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 2692,
+        "predicted_mentions": 1702,
+        "correct": 1390,
+        "wrong": 312,
+        "unknown": 990,
+        "precision": 0.8166862514688602,
+        "recall": 0.5163447251114414,
+        "f1": 0.6326809285389169,
+        "accuracy_counting_unknown_as_wrong": 0.5163447251114414,
+        "unknown_rate": 0.36775631500742945
+      }
+    },
+    "framework_unknown_graph_supported": {
+      "name_most_frequent": {
+        "evaluated_mentions": 6,
+        "predicted_mentions": 6,
+        "correct": 6,
+        "wrong": 0,
+        "unknown": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "accuracy_counting_unknown_as_wrong": 1.0,
+        "unknown_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 6,
+        "predicted_mentions": 6,
+        "correct": 6,
+        "wrong": 0,
+        "unknown": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "accuracy_counting_unknown_as_wrong": 1.0,
+        "unknown_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 6,
+        "predicted_mentions": 0,
+        "correct": 0,
+        "wrong": 0,
+        "unknown": 6,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "accuracy_counting_unknown_as_wrong": 0.0,
+        "unknown_rate": 1.0
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 6,
+        "predicted_mentions": 6,
+        "correct": 6,
+        "wrong": 0,
+        "unknown": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "accuracy_counting_unknown_as_wrong": 1.0,
+        "unknown_rate": 0.0
+      }
+    },
+    "graph_supported_candidate": {
+      "name_most_frequent": {
+        "evaluated_mentions": 26,
+        "predicted_mentions": 26,
+        "correct": 25,
+        "wrong": 1,
+        "unknown": 0,
+        "precision": 0.9615384615384616,
+        "recall": 0.9615384615384616,
+        "f1": 0.9615384615384616,
+        "accuracy_counting_unknown_as_wrong": 0.9615384615384616,
+        "unknown_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 26,
+        "predicted_mentions": 26,
+        "correct": 26,
+        "wrong": 0,
+        "unknown": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "accuracy_counting_unknown_as_wrong": 1.0,
+        "unknown_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 26,
+        "predicted_mentions": 20,
+        "correct": 20,
+        "wrong": 0,
+        "unknown": 6,
+        "precision": 1.0,
+        "recall": 0.7692307692307693,
+        "f1": 0.8695652173913044,
+        "accuracy_counting_unknown_as_wrong": 0.7692307692307693,
+        "unknown_rate": 0.23076923076923078
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 26,
+        "predicted_mentions": 26,
+        "correct": 26,
+        "wrong": 0,
+        "unknown": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "accuracy_counting_unknown_as_wrong": 1.0,
+        "unknown_rate": 0.0
+      }
+    },
+    "initial_only_signature": {
+      "name_most_frequent": {
+        "evaluated_mentions": 115,
+        "predicted_mentions": 113,
+        "correct": 100,
+        "wrong": 13,
+        "unknown": 2,
+        "precision": 0.8849557522123894,
+        "recall": 0.8695652173913043,
+        "f1": 0.8771929824561404,
+        "accuracy_counting_unknown_as_wrong": 0.8695652173913043,
+        "unknown_rate": 0.017391304347826087
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 115,
+        "predicted_mentions": 113,
+        "correct": 101,
+        "wrong": 12,
+        "unknown": 2,
+        "precision": 0.8938053097345132,
+        "recall": 0.8782608695652174,
+        "f1": 0.8859649122807017,
+        "accuracy_counting_unknown_as_wrong": 0.8782608695652174,
+        "unknown_rate": 0.017391304347826087
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 115,
+        "predicted_mentions": 49,
+        "correct": 29,
+        "wrong": 20,
+        "unknown": 66,
+        "precision": 0.5918367346938775,
+        "recall": 0.25217391304347825,
+        "f1": 0.35365853658536583,
+        "accuracy_counting_unknown_as_wrong": 0.25217391304347825,
+        "unknown_rate": 0.5739130434782609
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 115,
+        "predicted_mentions": 51,
+        "correct": 31,
+        "wrong": 20,
+        "unknown": 64,
+        "precision": 0.6078431372549019,
+        "recall": 0.26956521739130435,
+        "f1": 0.37349397590361444,
+        "accuracy_counting_unknown_as_wrong": 0.26956521739130435,
+        "unknown_rate": 0.5565217391304348
+      }
+    }
+  },
+  "hard_case_new_author_methods": {
+    "ambiguous_candidates": {
+      "name_most_frequent": {
+        "evaluated_mentions": 3773,
+        "false_links": 3773,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 3773,
+        "false_links": 3773,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 3773,
+        "false_links": 426,
+        "no_prediction": 3347,
+        "false_link_rate": 0.1129075006626027,
+        "no_prediction_rate": 0.8870924993373973
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 3773,
+        "false_links": 426,
+        "no_prediction": 3347,
+        "false_link_rate": 0.1129075006626027,
+        "no_prediction_rate": 0.8870924993373973
+      }
+    },
+    "chinese_like_signature": {
+      "name_most_frequent": {
+        "evaluated_mentions": 5988,
+        "false_links": 4070,
+        "no_prediction": 1918,
+        "false_link_rate": 0.6796927187708751,
+        "no_prediction_rate": 0.32030728122912494
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 5988,
+        "false_links": 4070,
+        "no_prediction": 1918,
+        "false_link_rate": 0.6796927187708751,
+        "no_prediction_rate": 0.32030728122912494
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 5988,
+        "false_links": 56,
+        "no_prediction": 5932,
+        "false_link_rate": 0.009352037408149633,
+        "no_prediction_rate": 0.9906479625918504
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 5988,
+        "false_links": 56,
+        "no_prediction": 5932,
+        "false_link_rate": 0.009352037408149633,
+        "no_prediction_rate": 0.9906479625918504
+      }
+    },
+    "exact_name_ambiguous": {
+      "name_most_frequent": {
+        "evaluated_mentions": 3432,
+        "false_links": 3432,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 3432,
+        "false_links": 3432,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 3432,
+        "false_links": 378,
+        "no_prediction": 3054,
+        "false_link_rate": 0.11013986013986014,
+        "no_prediction_rate": 0.8898601398601399
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 3432,
+        "false_links": 378,
+        "no_prediction": 3054,
+        "false_link_rate": 0.11013986013986014,
+        "no_prediction_rate": 0.8898601398601399
+      }
+    },
+    "initial_only_signature": {
+      "name_most_frequent": {
+        "evaluated_mentions": 113,
+        "false_links": 98,
+        "no_prediction": 15,
+        "false_link_rate": 0.8672566371681416,
+        "no_prediction_rate": 0.13274336283185842
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 113,
+        "false_links": 98,
+        "no_prediction": 15,
+        "false_link_rate": 0.8672566371681416,
+        "no_prediction_rate": 0.13274336283185842
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 113,
+        "false_links": 25,
+        "no_prediction": 88,
+        "false_link_rate": 0.22123893805309736,
+        "no_prediction_rate": 0.7787610619469026
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 113,
+        "false_links": 25,
+        "no_prediction": 88,
+        "false_link_rate": 0.22123893805309736,
+        "no_prediction_rate": 0.7787610619469026
+      }
+    },
+    "new_author_with_candidates": {
+      "name_most_frequent": {
+        "evaluated_mentions": 4846,
+        "false_links": 4846,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "istina_hypergraph_proxy": {
+        "evaluated_mentions": 4846,
+        "false_links": 4846,
+        "no_prediction": 0,
+        "false_link_rate": 1.0,
+        "no_prediction_rate": 0.0
+      },
+      "framework_v1_profile": {
+        "evaluated_mentions": 4846,
+        "false_links": 641,
+        "no_prediction": 4205,
+        "false_link_rate": 0.13227404044572844,
+        "no_prediction_rate": 0.8677259595542716
+      },
+      "risk_controlled_hybrid": {
+        "evaluated_mentions": 4846,
+        "false_links": 641,
+        "no_prediction": 4205,
+        "false_link_rate": 0.13227404044572844,
+        "no_prediction_rate": 0.8677259595542716
+      }
+    }
+  },
+  "limitations": [
+    "This is a source-faithful Python proxy, not the compiled ISTINA C++ service.",
+    "ORCID labels are used as surrogate historical author ids for evaluation.",
+    "Only ORCID-labeled mentions are used, matching the available gold labels."
+  ],
+  "dataset": "runs\\public_s2and_20260701\\s2and_public_mentions.json",
+  "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552",
+  "labeled_mentions": 28760,
+  "unique_orcid": 5023
+}
