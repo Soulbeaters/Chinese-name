@@ -113,13 +113,15 @@ Suggested gates:
 
 ### Stage A: no new heavy dependency
 
-1. Add a public-data supervised feature exporter.
+1. Add a public-data supervised feature exporter. **Status: implemented in `experiments/export_author_linker_features.py`.**
 2. Export pair/profile features from S2AND, DBLP, LAGOS, and local ORCID datasets.
 3. Save reproducible train/validation/test manifests with SHA-256 hashes.
 4. Measure the oracle ceiling:
    - candidate coverage;
    - best possible recall if the true author is in the candidate set;
    - UNKNOWN cases that lack enough features.
+
+The first export was generated on 2026-07-02 across Crossref ORCID, Advisor DOI ORCID, DBLP, LAGOS-AND, and S2AND. It produced `428,436` supervised candidate-pair rows: `119,962` positive pairs and `308,474` negative pairs. The large JSONL feature file is kept under ignored `runs/`; the committed manifest is `results/article2_supervised_feature_export_manifest_20260702.json`.
 
 ### Stage B: optional supervised model
 
