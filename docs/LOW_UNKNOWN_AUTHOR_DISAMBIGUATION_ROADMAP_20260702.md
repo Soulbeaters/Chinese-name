@@ -134,6 +134,20 @@ The first export was generated on 2026-07-02 across Crossref ORCID, Advisor DOI 
    - risk-controlled hybrid;
    - S2AND-style supervised model.
 
+On 2026-07-02, a no-dependency logistic-regression baseline was tested as a first sanity check on the exported pairwise features. It used leave-one-dataset-out validation over Crossref ORCID, Advisor DOI ORCID, DBLP, LAGOS-AND, and S2AND. The result is saved as `results/article2_supervised_linker_baseline_20260702.json`.
+
+This simple baseline is **not** a production candidate:
+
+| Held-out dataset | Logistic P/R/F1 | Current balanced P/R/F1 | Strict P/R/F1 |
+|---|---:|---:|---:|
+| Advisor DOI ORCID | 99.460 / 37.797 / 54.777 | 99.049 / 77.227 / 86.787 | 99.513 / 27.612 / 43.230 |
+| Crossref ORCID | 97.771 / 41.416 / 58.185 | 97.570 / 75.660 / 85.230 | 98.236 / 29.844 / 45.780 |
+| DBLP public | 99.766 / 15.360 / 26.621 | 99.302 / 80.256 / 88.769 | 99.492 / 19.572 / 32.709 |
+| LAGOS-AND public | 99.452 / 5.804 / 10.968 | 89.632 / 70.716 / 79.058 | 99.618 / 9.380 / 17.146 |
+| S2AND public | 94.944 / 15.024 / 25.943 | 64.477 / 61.132 / 62.760 | 94.137 / 10.212 / 18.425 |
+
+The simple model is too conservative and does not solve the high-UNKNOWN problem. Its value is diagnostic: pairwise scalar features alone are not enough. The next supervised iteration should use profile-level/ranking features and a stronger optional learner such as LightGBM, with threshold calibration on validation folds.
+
 ### Stage C: graph/GNN extension
 
 1. Build a heterogeneous graph schema:
