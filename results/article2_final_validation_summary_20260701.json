@@ -10,8 +10,11 @@
     "crossref_online": "results\\article2_istina_proxy_online_crossref_orcid_20260628.json",
     "advisor_online": "results\\article2_istina_proxy_online_advisor_orcid_20260628.json",
     "online_gate": "results\\article2_online_quality_gate_summary_20260629.json",
+    "public_cluster_gate": "results\\article2_public_cluster_quality_gate_20260701.json",
+    "public_strict_cluster_gate": "results\\article2_public_strict_cluster_quality_gate_20260701.json",
+    "public_online_gate": "results\\article2_public_online_quality_gate_20260701.json",
     "threshold_sweep": "results\\article2_hybrid_threshold_sweep_20260629.json",
-    "final_summary": "results\\article2_final_validation_summary_20260629.json"
+    "final_summary": "results\\article2_final_validation_summary_20260701.json"
   },
   "validation_steps": [
     "Unit tests",
@@ -25,7 +28,8 @@
     "Crossref online comparison",
     "Advisor online comparison",
     "Online quality gate",
-    "Threshold sweep evidence check"
+    "Threshold sweep evidence check",
+    "Public scientific-data evidence check"
   ],
   "validation_config": {
     "crossref_dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
@@ -57,6 +61,7 @@
   "cluster_production_ready": true,
   "online_production_ready": true,
   "threshold_sweep_ready": true,
+  "public_risk_control_ready": true,
   "production_ready": true,
   "threshold_sweep": {
     "path": "results\\article2_hybrid_threshold_sweep_20260629.json",
@@ -66,6 +71,91 @@
     "expected_row_count": 20,
     "selected_dataset_count": 2,
     "selection_reason": "Selected the production-ready threshold with at least 0.000250 precision safety margin and the highest mean linkable F1 across datasets."
+  },
+  "public_validation": {
+    "cluster_gate_path": "results\\article2_public_cluster_quality_gate_20260701.json",
+    "strict_cluster_gate_path": "results\\article2_public_strict_cluster_quality_gate_20260701.json",
+    "online_gate_path": "results\\article2_public_online_quality_gate_20260701.json",
+    "balanced_cluster_ready": false,
+    "strict_cluster_ready": false,
+    "online_risk_control_ready": true,
+    "scope": "LINK/NEW/UNKNOWN online gate; UNKNOWN remains a manual-review output, not an automatic merge.",
+    "balanced_cluster_datasets": [
+      {
+        "label": "DBLP public balanced",
+        "dataset_sha256": "08d0799748fb8a525d413d27135582ef7543db488c15d350131143b20d46bf9c",
+        "candidate_profile": "balanced",
+        "production_ready": false,
+        "cluster_pairwise_precision": 0.9493348009694865,
+        "b_cubed_f1": 0.9719221585145194
+      },
+      {
+        "label": "LAGOS-AND public balanced",
+        "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385",
+        "candidate_profile": "balanced",
+        "production_ready": false,
+        "cluster_pairwise_precision": 0.7906517740994932,
+        "b_cubed_f1": 0.8930554848179586
+      },
+      {
+        "label": "S2AND public balanced",
+        "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552",
+        "candidate_profile": "balanced",
+        "production_ready": false,
+        "cluster_pairwise_precision": 0.8672355707567336,
+        "b_cubed_f1": 0.8004877089573005
+      }
+    ],
+    "strict_cluster_datasets": [
+      {
+        "label": "LAGOS-AND public strict",
+        "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385",
+        "candidate_profile": "strict",
+        "production_ready": false,
+        "cluster_pairwise_precision": 0.9953260286568079,
+        "b_cubed_f1": 0.7293162030341419
+      },
+      {
+        "label": "S2AND public strict",
+        "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552",
+        "candidate_profile": "strict",
+        "production_ready": false,
+        "cluster_pairwise_precision": 0.9848958427433196,
+        "b_cubed_f1": 0.522397245314513
+      }
+    ],
+    "online_datasets": [
+      {
+        "label": "DBLP public balanced",
+        "dataset_sha256": "08d0799748fb8a525d413d27135582ef7543db488c15d350131143b20d46bf9c",
+        "history_mentions": 34389,
+        "test_mentions": 25611,
+        "production_ready": true,
+        "hybrid_linkable_precision": 0.9959644874899112,
+        "hybrid_linkable_recall": 0.8270777479892761,
+        "hybrid_new_author_false_link_rate": 0.004862236628849271
+      },
+      {
+        "label": "LAGOS-AND public strict",
+        "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385",
+        "history_mentions": 76899,
+        "test_mentions": 3099,
+        "production_ready": true,
+        "hybrid_linkable_precision": 1.0,
+        "hybrid_linkable_recall": 0.015625,
+        "hybrid_new_author_false_link_rate": 0.0005497526113249038
+      },
+      {
+        "label": "S2AND public strict",
+        "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552",
+        "history_mentions": 16928,
+        "test_mentions": 11681,
+        "production_ready": true,
+        "hybrid_linkable_precision": 1.0,
+        "hybrid_linkable_recall": 0.009713835652402206,
+        "hybrid_new_author_false_link_rate": 0.0
+      }
+    ]
   },
   "cluster_datasets": [
     {

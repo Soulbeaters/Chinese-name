@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Run the full Article 2 validation pipeline on the two local large datasets."""
+"""Run the full Article 2 validation pipeline and evidence checks."""
 
 from __future__ import annotations
 
@@ -20,7 +20,12 @@ DEFAULT_CROSSREF_DATASET = Path(r"C:\istina\materia 材料\测试表单\crossref
 DEFAULT_ADVISOR_DATASET = Path(r"runs\advisor_doi_20260507\advisor_doi_crossref_api_authors.json")
 DEFAULT_CLUSTER_GATE = Path("results/article2_quality_gate_summary_20260628.json")
 DEFAULT_ONLINE_GATE = Path("results/article2_online_quality_gate_summary_20260629.json")
-DEFAULT_FINAL_SUMMARY = Path("results/article2_final_validation_summary_20260629.json")
+DEFAULT_PUBLIC_CLUSTER_GATE = Path("results/article2_public_cluster_quality_gate_20260701.json")
+DEFAULT_PUBLIC_STRICT_CLUSTER_GATE = Path(
+    "results/article2_public_strict_cluster_quality_gate_20260701.json"
+)
+DEFAULT_PUBLIC_ONLINE_GATE = Path("results/article2_public_online_quality_gate_20260701.json")
+DEFAULT_FINAL_SUMMARY = Path("results/article2_final_validation_summary_20260701.json")
 DEFAULT_THRESHOLD_SWEEP = Path("results/article2_hybrid_threshold_sweep_20260629.json")
 RESULT_PATHS = {
     "crossref_baseline": Path("results/article2_baseline_exact_context_crossref_orcid_20260628.json"),
@@ -35,6 +40,9 @@ RESULT_PATHS = {
     "crossref_online": Path("results/article2_istina_proxy_online_crossref_orcid_20260628.json"),
     "advisor_online": Path("results/article2_istina_proxy_online_advisor_orcid_20260628.json"),
     "online_gate": DEFAULT_ONLINE_GATE,
+    "public_cluster_gate": DEFAULT_PUBLIC_CLUSTER_GATE,
+    "public_strict_cluster_gate": DEFAULT_PUBLIC_STRICT_CLUSTER_GATE,
+    "public_online_gate": DEFAULT_PUBLIC_ONLINE_GATE,
     "threshold_sweep": DEFAULT_THRESHOLD_SWEEP,
     "final_summary": DEFAULT_FINAL_SUMMARY,
 }
@@ -295,6 +303,72 @@ def validate_threshold_sweep_evidence(
     }
 
 
+def summarize_public_evidence(
+    public_cluster_gate_path: Path,
+    public_strict_cluster_gate_path: Path,
+    public_online_gate_path: Path,
+) -> dict[str, object]:
+    public_cluster_gate = json.loads(
+        (PROJECT_ROOT / public_cluster_gate_path).read_text(encoding="utf-8")
+    )
+    public_strict_cluster_gate = json.loads(
+        (PROJECT_ROOT / public_strict_cluster_gate_path).read_text(encoding="utf-8")
+    )
+    public_online_gate = json.loads(
+        (PROJECT_ROOT / public_online_gate_path).read_text(encoding="utf-8")
+    )
+    return {
+        "cluster_gate_path": str(public_cluster_gate_path),
+        "strict_cluster_gate_path": str(public_strict_cluster_gate_path),
+        "online_gate_path": str(public_online_gate_path),
+        "balanced_cluster_ready": public_cluster_gate["production_ready"],
+        "strict_cluster_ready": public_strict_cluster_gate["production_ready"],
+        "online_risk_control_ready": public_online_gate["production_ready"],
+        "scope": public_online_gate.get("scope"),
+        "balanced_cluster_datasets": [
+            {
+                "label": item["label"],
+                "dataset_sha256": item.get("dataset_sha256"),
+                "candidate_profile": item.get("candidate_profile"),
+                "production_ready": item["production_ready"],
+                "cluster_pairwise_precision": item["candidate"][
+                    "cluster_pairwise_precision"
+                ],
+                "b_cubed_f1": item["candidate"]["b_cubed_f1"],
+            }
+            for item in public_cluster_gate["datasets"]
+        ],
+        "strict_cluster_datasets": [
+            {
+                "label": item["label"],
+                "dataset_sha256": item.get("dataset_sha256"),
+                "candidate_profile": item.get("candidate_profile"),
+                "production_ready": item["production_ready"],
+                "cluster_pairwise_precision": item["candidate"][
+                    "cluster_pairwise_precision"
+                ],
+                "b_cubed_f1": item["candidate"]["b_cubed_f1"],
+            }
+            for item in public_strict_cluster_gate["datasets"]
+        ],
+        "online_datasets": [
+            {
+                "label": item["label"],
+                "dataset_sha256": item.get("dataset_sha256"),
+                "history_mentions": item["history_mentions"],
+                "test_mentions": item["test_mentions"],
+                "production_ready": item["production_ready"],
+                "hybrid_linkable_precision": item["hybrid_linkable"]["precision"],
+                "hybrid_linkable_recall": item["hybrid_linkable"]["recall"],
+                "hybrid_new_author_false_link_rate": item["hybrid_new_author"][
+                    "false_link_rate"
+                ],
+            }
+            for item in public_online_gate["datasets"]
+        ],
+    }
+
+
 def write_final_summary(
     cluster_gate_path: Path,
     online_gate_path: Path,
@@ -303,6 +377,9 @@ def write_final_summary(
     validation_config: dict[str, object] | None = None,
     threshold_sweep_path: Path | None = None,
     expected_threshold: float | None = None,
+    public_cluster_gate_path: Path | None = None,
+    public_strict_cluster_gate_path: Path | None = None,
+    public_online_gate_path: Path | None = None,
 ) -> dict[str, object]:
     cluster_gate = json.loads((PROJECT_ROOT / cluster_gate_path).read_text(encoding="utf-8"))
     online_gate = json.loads((PROJECT_ROOT / online_gate_path).read_text(encoding="utf-8"))
@@ -314,6 +391,24 @@ def write_final_summary(
             validation_config,
         )
         if threshold_sweep_path is not None and expected_threshold is not None
+        else None
+    )
+    public_validation = (
+        summarize_public_evidence(
+            public_cluster_gate_path,
+            public_strict_cluster_gate_path,
+            public_online_gate_path,
+        )
+        if (
+            public_cluster_gate_path is not None
+            and public_strict_cluster_gate_path is not None
+            and public_online_gate_path is not None
+        )
+        else None
+    )
+    public_risk_control_ready = (
+        bool(public_validation["online_risk_control_ready"])
+        if public_validation is not None
         else None
     )
     summary = {
@@ -337,12 +432,15 @@ def write_final_summary(
         "cluster_production_ready": cluster_gate["production_ready"],
         "online_production_ready": online_gate["production_ready"],
         "threshold_sweep_ready": threshold_sweep is not None,
+        "public_risk_control_ready": public_risk_control_ready,
         "production_ready": (
             cluster_gate["production_ready"]
             and online_gate["production_ready"]
             and threshold_sweep is not None
+            and (public_risk_control_ready is not False)
         ),
         "threshold_sweep": threshold_sweep,
+        "public_validation": public_validation,
         "cluster_datasets": [
             {
                 "label": item["label"],
@@ -389,7 +487,8 @@ def main() -> None:
         DEFAULT_CLUSTER_GATE,
         DEFAULT_ONLINE_GATE,
         args.summary_output,
-        [label for label, _ in steps] + ["Threshold sweep evidence check"],
+        [label for label, _ in steps]
+        + ["Threshold sweep evidence check", "Public scientific-data evidence check"],
         {
             "crossref_dataset": str(args.crossref_dataset),
             "advisor_dataset": str(args.advisor_dataset),
@@ -401,6 +500,9 @@ def main() -> None:
         },
         DEFAULT_THRESHOLD_SWEEP,
         args.hypergraph_support_threshold,
+        DEFAULT_PUBLIC_CLUSTER_GATE,
+        DEFAULT_PUBLIC_STRICT_CLUSTER_GATE,
+        DEFAULT_PUBLIC_ONLINE_GATE,
     )
     print(
         "\n=== Final validation summary ===\n"
