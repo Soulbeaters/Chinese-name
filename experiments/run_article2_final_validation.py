@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import sys
@@ -194,6 +195,56 @@ def run_step(label: str, command: list[str]) -> None:
     subprocess.run(command, cwd=PROJECT_ROOT, check=True)
 
 
+def resolve_dataset_path(dataset: str) -> Path:
+    path = Path(dataset)
+    return path if path.is_absolute() else PROJECT_ROOT / path
+
+
+def file_sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def validate_gate_dataset_hashes(
+    gate_label: str,
+    gate: dict[str, object],
+    hash_cache: dict[Path, str],
+) -> list[dict[str, object]]:
+    checks: list[dict[str, object]] = []
+    for item in gate["datasets"]:
+        dataset_label = item["label"]
+        dataset = item.get("dataset")
+        expected_hash = item.get("dataset_sha256")
+        if not dataset or not expected_hash:
+            raise ValueError(f"{gate_label} / {dataset_label} has no dataset hash evidence.")
+        dataset_path = resolve_dataset_path(str(dataset))
+        if not dataset_path.exists():
+            raise FileNotFoundError(
+                f"{gate_label} / {dataset_label} dataset does not exist: {dataset_path}"
+            )
+        actual_hash = hash_cache.get(dataset_path)
+        if actual_hash is None:
+            actual_hash = file_sha256(dataset_path)
+            hash_cache[dataset_path] = actual_hash
+        if actual_hash != expected_hash:
+            raise ValueError(
+                f"{gate_label} / {dataset_label} dataset hash mismatch: "
+                f"expected {expected_hash}, got {actual_hash}."
+            )
+        checks.append(
+            {
+                "gate": gate_label,
+                "label": dataset_label,
+                "dataset": str(dataset),
+                "dataset_sha256": actual_hash,
+            }
+        )
+    return checks
+
+
 def validate_threshold_sweep_evidence(
     threshold_sweep_path: Path,
     expected_threshold: float,
@@ -307,6 +358,7 @@ def summarize_public_evidence(
     public_cluster_gate_path: Path,
     public_strict_cluster_gate_path: Path,
     public_online_gate_path: Path,
+    hash_cache: dict[Path, str],
 ) -> dict[str, object]:
     public_cluster_gate = json.loads(
         (PROJECT_ROOT / public_cluster_gate_path).read_text(encoding="utf-8")
@@ -317,10 +369,21 @@ def summarize_public_evidence(
     public_online_gate = json.loads(
         (PROJECT_ROOT / public_online_gate_path).read_text(encoding="utf-8")
     )
+    dataset_hash_checks = (
+        validate_gate_dataset_hashes("Public balanced cluster gate", public_cluster_gate, hash_cache)
+        + validate_gate_dataset_hashes(
+            "Public strict cluster gate",
+            public_strict_cluster_gate,
+            hash_cache,
+        )
+        + validate_gate_dataset_hashes("Public online gate", public_online_gate, hash_cache)
+    )
     return {
         "cluster_gate_path": str(public_cluster_gate_path),
         "strict_cluster_gate_path": str(public_strict_cluster_gate_path),
         "online_gate_path": str(public_online_gate_path),
+        "dataset_hashes_valid": True,
+        "dataset_hash_checks": dataset_hash_checks,
         "balanced_cluster_ready": public_cluster_gate["production_ready"],
         "strict_cluster_ready": public_strict_cluster_gate["production_ready"],
         "online_risk_control_ready": public_online_gate["production_ready"],
@@ -383,6 +446,11 @@ def write_final_summary(
 ) -> dict[str, object]:
     cluster_gate = json.loads((PROJECT_ROOT / cluster_gate_path).read_text(encoding="utf-8"))
     online_gate = json.loads((PROJECT_ROOT / online_gate_path).read_text(encoding="utf-8"))
+    hash_cache: dict[Path, str] = {}
+    dataset_hash_checks = (
+        validate_gate_dataset_hashes("Cluster gate", cluster_gate, hash_cache)
+        + validate_gate_dataset_hashes("Online gate", online_gate, hash_cache)
+    )
     threshold_sweep = (
         validate_threshold_sweep_evidence(
             threshold_sweep_path,
@@ -398,6 +466,7 @@ def write_final_summary(
             public_cluster_gate_path,
             public_strict_cluster_gate_path,
             public_online_gate_path,
+            hash_cache,
         )
         if (
             public_cluster_gate_path is not None
@@ -411,6 +480,8 @@ def write_final_summary(
         if public_validation is not None
         else None
     )
+    if public_validation is not None:
+        dataset_hash_checks.extend(public_validation["dataset_hash_checks"])
     summary = {
         "cluster_gate_path": str(cluster_gate_path),
         "online_gate_path": str(online_gate_path),
@@ -429,6 +500,8 @@ def write_final_summary(
             "compileall": True,
             "patch_whitespace_check": True,
         },
+        "dataset_hashes_valid": True,
+        "dataset_hash_checks": dataset_hash_checks,
         "cluster_production_ready": cluster_gate["production_ready"],
         "online_production_ready": online_gate["production_ready"],
         "threshold_sweep_ready": threshold_sweep is not None,

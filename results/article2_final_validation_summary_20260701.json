@@ -58,6 +58,81 @@
     "compileall": true,
     "patch_whitespace_check": true
   },
+  "dataset_hashes_valid": true,
+  "dataset_hash_checks": [
+    {
+      "gate": "Cluster gate",
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806"
+    },
+    {
+      "gate": "Cluster gate",
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02"
+    },
+    {
+      "gate": "Online gate",
+      "label": "Crossref ORCID",
+      "dataset": "C:\\istina\\materia 材料\\测试表单\\crossref_authors.json",
+      "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806"
+    },
+    {
+      "gate": "Online gate",
+      "label": "Advisor DOI ORCID",
+      "dataset": "runs\\advisor_doi_20260507\\advisor_doi_crossref_api_authors.json",
+      "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02"
+    },
+    {
+      "gate": "Public balanced cluster gate",
+      "label": "DBLP public balanced",
+      "dataset": "runs\\public_dblp_20260701\\dblp_public_mentions.json",
+      "dataset_sha256": "08d0799748fb8a525d413d27135582ef7543db488c15d350131143b20d46bf9c"
+    },
+    {
+      "gate": "Public balanced cluster gate",
+      "label": "LAGOS-AND public balanced",
+      "dataset": "runs\\public_lagos_and_20260701\\lagos_public_mentions.json",
+      "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385"
+    },
+    {
+      "gate": "Public balanced cluster gate",
+      "label": "S2AND public balanced",
+      "dataset": "runs\\public_s2and_20260701\\s2and_public_mentions.json",
+      "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552"
+    },
+    {
+      "gate": "Public strict cluster gate",
+      "label": "LAGOS-AND public strict",
+      "dataset": "runs\\public_lagos_and_20260701\\lagos_public_mentions.json",
+      "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385"
+    },
+    {
+      "gate": "Public strict cluster gate",
+      "label": "S2AND public strict",
+      "dataset": "runs\\public_s2and_20260701\\s2and_public_mentions.json",
+      "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552"
+    },
+    {
+      "gate": "Public online gate",
+      "label": "DBLP public balanced",
+      "dataset": "runs\\public_dblp_20260701\\dblp_public_mentions.json",
+      "dataset_sha256": "08d0799748fb8a525d413d27135582ef7543db488c15d350131143b20d46bf9c"
+    },
+    {
+      "gate": "Public online gate",
+      "label": "LAGOS-AND public strict",
+      "dataset": "runs\\public_lagos_and_20260701\\lagos_public_mentions.json",
+      "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385"
+    },
+    {
+      "gate": "Public online gate",
+      "label": "S2AND public strict",
+      "dataset": "runs\\public_s2and_20260701\\s2and_public_mentions.json",
+      "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552"
+    }
+  ],
   "cluster_production_ready": true,
   "online_production_ready": true,
   "threshold_sweep_ready": true,
@@ -76,6 +151,57 @@
     "cluster_gate_path": "results\\article2_public_cluster_quality_gate_20260701.json",
     "strict_cluster_gate_path": "results\\article2_public_strict_cluster_quality_gate_20260701.json",
     "online_gate_path": "results\\article2_public_online_quality_gate_20260701.json",
+    "dataset_hashes_valid": true,
+    "dataset_hash_checks": [
+      {
+        "gate": "Public balanced cluster gate",
+        "label": "DBLP public balanced",
+        "dataset": "runs\\public_dblp_20260701\\dblp_public_mentions.json",
+        "dataset_sha256": "08d0799748fb8a525d413d27135582ef7543db488c15d350131143b20d46bf9c"
+      },
+      {
+        "gate": "Public balanced cluster gate",
+        "label": "LAGOS-AND public balanced",
+        "dataset": "runs\\public_lagos_and_20260701\\lagos_public_mentions.json",
+        "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385"
+      },
+      {
+        "gate": "Public balanced cluster gate",
+        "label": "S2AND public balanced",
+        "dataset": "runs\\public_s2and_20260701\\s2and_public_mentions.json",
+        "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552"
+      },
+      {
+        "gate": "Public strict cluster gate",
+        "label": "LAGOS-AND public strict",
+        "dataset": "runs\\public_lagos_and_20260701\\lagos_public_mentions.json",
+        "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385"
+      },
+      {
+        "gate": "Public strict cluster gate",
+        "label": "S2AND public strict",
+        "dataset": "runs\\public_s2and_20260701\\s2and_public_mentions.json",
+        "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552"
+      },
+      {
+        "gate": "Public online gate",
+        "label": "DBLP public balanced",
+        "dataset": "runs\\public_dblp_20260701\\dblp_public_mentions.json",
+        "dataset_sha256": "08d0799748fb8a525d413d27135582ef7543db488c15d350131143b20d46bf9c"
+      },
+      {
+        "gate": "Public online gate",
+        "label": "LAGOS-AND public strict",
+        "dataset": "runs\\public_lagos_and_20260701\\lagos_public_mentions.json",
+        "dataset_sha256": "de3107acd7206d0fee7420714ea9ac037d57e8da8c7f42ce25d6e6781ae4b385"
+      },
+      {
+        "gate": "Public online gate",
+        "label": "S2AND public strict",
+        "dataset": "runs\\public_s2and_20260701\\s2and_public_mentions.json",
+        "dataset_sha256": "77b3d7a8a1ec97332ecb98b8c7bd61e1928e57c10a80e2cb25c98b6be1f4c552"
+      }
+    ],
     "balanced_cluster_ready": false,
     "strict_cluster_ready": false,
     "online_risk_control_ready": true,

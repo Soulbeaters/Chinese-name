@@ -4,16 +4,28 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
+
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from experiments.run_article2_final_validation import build_steps, write_final_summary  # noqa: E402
 
 
-def public_cluster_gate(production_ready: bool) -> dict[str, object]:
+def write_dataset(path: Path, content: str) -> str:
+    path.write_text(content, encoding="utf-8")
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def public_cluster_gate(
+    production_ready: bool,
+    dataset: Path,
+    dataset_sha256: str,
+) -> dict[str, object]:
     return {
         "production_ready": production_ready,
         "thresholds": {
@@ -24,7 +36,8 @@ def public_cluster_gate(production_ready: bool) -> dict[str, object]:
         "datasets": [
             {
                 "label": "DBLP public balanced",
-                "dataset_sha256": "sha-dblp",
+                "dataset": str(dataset),
+                "dataset_sha256": dataset_sha256,
                 "candidate_profile": "balanced",
                 "production_ready": production_ready,
                 "candidate": {
@@ -36,7 +49,11 @@ def public_cluster_gate(production_ready: bool) -> dict[str, object]:
     }
 
 
-def public_online_gate(production_ready: bool) -> dict[str, object]:
+def public_online_gate(
+    production_ready: bool,
+    dataset: Path,
+    dataset_sha256: str,
+) -> dict[str, object]:
     return {
         "production_ready": production_ready,
         "scope": "LINK/NEW/UNKNOWN online gate",
@@ -49,7 +66,8 @@ def public_online_gate(production_ready: bool) -> dict[str, object]:
         "datasets": [
             {
                 "label": "DBLP public balanced",
-                "dataset_sha256": "sha-dblp",
+                "dataset": str(dataset),
+                "dataset_sha256": dataset_sha256,
                 "history_mentions": 100,
                 "test_mentions": 50,
                 "production_ready": production_ready,
@@ -105,6 +123,10 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
     public_strict_cluster_path = tmp_path / "public_strict_cluster.json"
     public_online_path = tmp_path / "public_online.json"
     output_path = tmp_path / "summary.json"
+    internal_dataset = tmp_path / "internal.json"
+    public_dataset = tmp_path / "public.json"
+    internal_sha = write_dataset(internal_dataset, "internal records")
+    public_sha = write_dataset(public_dataset, "public records")
     cluster_path.write_text(
         json.dumps(
             {
@@ -115,7 +137,8 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
                 "datasets": [
                     {
                         "label": "Crossref ORCID",
-                        "dataset_sha256": "sha-crossref",
+                        "dataset": str(internal_dataset),
+                        "dataset_sha256": internal_sha,
                         "candidate": {
                             "cluster_pairwise_precision": 0.993,
                             "b_cubed_f1": 0.951,
@@ -139,7 +162,8 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
                 "datasets": [
                     {
                         "label": "Crossref ORCID",
-                        "dataset_sha256": "sha-crossref",
+                        "dataset": str(internal_dataset),
+                        "dataset_sha256": internal_sha,
                         "hybrid_linkable": {
                             "precision": 0.996,
                             "recall": 0.86,
@@ -172,7 +196,7 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
                 "rows": [
                     {
                         "label": "Crossref ORCID",
-                        "dataset_sha256": "sha-crossref",
+                        "dataset_sha256": internal_sha,
                         "hypergraph_support_threshold": 1.0,
                         "hybrid_linkable": {
                             "precision": 0.996,
@@ -185,7 +209,7 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
                     },
                     {
                         "label": "Crossref ORCID",
-                        "dataset_sha256": "sha-crossref",
+                        "dataset_sha256": internal_sha,
                         "hypergraph_support_threshold": 1.25,
                         "hybrid_linkable": {
                             "precision": 0.996,
@@ -202,15 +226,15 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
         encoding="utf-8",
     )
     public_cluster_path.write_text(
-        json.dumps(public_cluster_gate(False)),
+        json.dumps(public_cluster_gate(False, public_dataset, public_sha)),
         encoding="utf-8",
     )
     public_strict_cluster_path.write_text(
-        json.dumps(public_cluster_gate(False)),
+        json.dumps(public_cluster_gate(False, public_dataset, public_sha)),
         encoding="utf-8",
     )
     public_online_path.write_text(
-        json.dumps(public_online_gate(True)),
+        json.dumps(public_online_gate(True, public_dataset, public_sha)),
         encoding="utf-8",
     )
 
@@ -240,8 +264,10 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
     assert summary["result_paths"]["final_summary"].endswith(
         "article2_final_validation_summary_20260701.json"
     )
+    assert summary["dataset_hashes_valid"] is True
+    assert summary["dataset_hash_checks"][0]["dataset_sha256"] == internal_sha
     assert summary["code_checks"]["unit_tests"] is True
-    assert summary["cluster_datasets"][0]["dataset_sha256"] == "sha-crossref"
+    assert summary["cluster_datasets"][0]["dataset_sha256"] == internal_sha
     assert summary["online_datasets"][0]["hybrid_new_author_false_link_rate"] == 0.006
     assert summary["threshold_sweep_ready"] is True
     assert summary["threshold_sweep"]["selected_threshold"] == 1.25
@@ -249,7 +275,7 @@ def test_final_validation_summary_combines_gate_outputs(tmp_path):
     assert summary["threshold_sweep"]["selected_dataset_count"] == 1
     assert summary["public_validation"]["balanced_cluster_ready"] is False
     assert summary["public_validation"]["online_risk_control_ready"] is True
-    assert summary["public_validation"]["online_datasets"][0]["dataset_sha256"] == "sha-dblp"
+    assert summary["public_validation"]["online_datasets"][0]["dataset_sha256"] == public_sha
     assert json.loads(output_path.read_text(encoding="utf-8")) == summary
 
 
@@ -260,6 +286,10 @@ def test_final_validation_summary_fails_when_public_online_gate_fails(tmp_path):
     public_strict_cluster_path = tmp_path / "public_strict_cluster.json"
     public_online_path = tmp_path / "public_online.json"
     output_path = tmp_path / "summary.json"
+    internal_dataset = tmp_path / "internal.json"
+    public_dataset = tmp_path / "public.json"
+    internal_sha = write_dataset(internal_dataset, "internal records")
+    public_sha = write_dataset(public_dataset, "public records")
 
     cluster_path.write_text(
         json.dumps(
@@ -269,7 +299,8 @@ def test_final_validation_summary_fails_when_public_online_gate_fails(tmp_path):
                 "datasets": [
                     {
                         "label": "Crossref ORCID",
-                        "dataset_sha256": "sha-crossref",
+                        "dataset": str(internal_dataset),
+                        "dataset_sha256": internal_sha,
                         "candidate": {
                             "cluster_pairwise_precision": 0.993,
                             "b_cubed_f1": 0.951,
@@ -288,7 +319,8 @@ def test_final_validation_summary_fails_when_public_online_gate_fails(tmp_path):
                 "datasets": [
                     {
                         "label": "Crossref ORCID",
-                        "dataset_sha256": "sha-crossref",
+                        "dataset": str(internal_dataset),
+                        "dataset_sha256": internal_sha,
                         "hybrid_linkable": {
                             "precision": 0.996,
                             "recall": 0.86,
@@ -303,15 +335,15 @@ def test_final_validation_summary_fails_when_public_online_gate_fails(tmp_path):
         encoding="utf-8",
     )
     public_cluster_path.write_text(
-        json.dumps(public_cluster_gate(False)),
+        json.dumps(public_cluster_gate(False, public_dataset, public_sha)),
         encoding="utf-8",
     )
     public_strict_cluster_path.write_text(
-        json.dumps(public_cluster_gate(False)),
+        json.dumps(public_cluster_gate(False, public_dataset, public_sha)),
         encoding="utf-8",
     )
     public_online_path.write_text(
-        json.dumps(public_online_gate(False)),
+        json.dumps(public_online_gate(False, public_dataset, public_sha)),
         encoding="utf-8",
     )
 
@@ -326,3 +358,38 @@ def test_final_validation_summary_fails_when_public_online_gate_fails(tmp_path):
 
     assert summary["public_risk_control_ready"] is False
     assert summary["production_ready"] is False
+
+
+def test_final_validation_summary_rejects_dataset_hash_mismatch(tmp_path):
+    dataset = tmp_path / "dataset.json"
+    write_dataset(dataset, "current records")
+    cluster_path = tmp_path / "cluster.json"
+    online_path = tmp_path / "online.json"
+    output_path = tmp_path / "summary.json"
+    gate = {
+        "production_ready": True,
+        "thresholds": {},
+        "datasets": [
+            {
+                "label": "Crossref ORCID",
+                "dataset": str(dataset),
+                "dataset_sha256": "wrong-hash",
+                "candidate": {
+                    "cluster_pairwise_precision": 0.993,
+                    "b_cubed_f1": 0.951,
+                },
+                "hybrid_linkable": {
+                    "precision": 0.996,
+                    "recall": 0.86,
+                },
+                "hybrid_new_author": {
+                    "false_link_rate": 0.006,
+                },
+            }
+        ],
+    }
+    cluster_path.write_text(json.dumps(gate), encoding="utf-8")
+    online_path.write_text(json.dumps(gate), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="dataset hash mismatch"):
+        write_final_summary(cluster_path, online_path, output_path)
