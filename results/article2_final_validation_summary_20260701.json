@@ -50,7 +50,9 @@
       "hybrid_linkable_precision": 0.995,
       "hybrid_new_author_false_link_rate": 0.01,
       "hybrid_recall_gain_vs_framework": 0.0,
-      "hypergraph_support_threshold": 1.25
+      "hypergraph_support_threshold": 1.25,
+      "low_unknown_linkable_recall": 0.9,
+      "low_unknown_rate": 0.1
     }
   },
   "code_checks": {
@@ -135,8 +137,11 @@
   ],
   "cluster_production_ready": true,
   "online_production_ready": true,
+  "online_low_unknown_ready": false,
   "threshold_sweep_ready": true,
   "public_risk_control_ready": true,
+  "public_low_unknown_ready": false,
+  "low_unknown_production_ready": false,
   "production_ready": true,
   "threshold_sweep": {
     "path": "results\\article2_hybrid_threshold_sweep_20260629.json",
@@ -205,6 +210,7 @@
     "balanced_cluster_ready": false,
     "strict_cluster_ready": false,
     "online_risk_control_ready": true,
+    "online_low_unknown_ready": false,
     "scope": "LINK/NEW/UNKNOWN online gate; UNKNOWN remains a manual-review output, not an automatic merge.",
     "balanced_cluster_datasets": [
       {
@@ -257,8 +263,10 @@
         "history_mentions": 34389,
         "test_mentions": 25611,
         "production_ready": true,
+        "low_unknown_ready": false,
         "hybrid_linkable_precision": 0.9959644874899112,
         "hybrid_linkable_recall": 0.8270777479892761,
+        "hybrid_linkable_unknown_rate": 0.1695710455764075,
         "hybrid_new_author_false_link_rate": 0.004862236628849271
       },
       {
@@ -267,8 +275,10 @@
         "history_mentions": 76899,
         "test_mentions": 3099,
         "production_ready": true,
+        "low_unknown_ready": false,
         "hybrid_linkable_precision": 1.0,
         "hybrid_linkable_recall": 0.015625,
+        "hybrid_linkable_unknown_rate": 0.984375,
         "hybrid_new_author_false_link_rate": 0.0005497526113249038
       },
       {
@@ -277,8 +287,10 @@
         "history_mentions": 16928,
         "test_mentions": 11681,
         "production_ready": true,
+        "low_unknown_ready": false,
         "hybrid_linkable_precision": 1.0,
         "hybrid_linkable_recall": 0.009713835652402206,
+        "hybrid_linkable_unknown_rate": 0.9902861643475978,
         "hybrid_new_author_false_link_rate": 0.0
       }
     ]
@@ -303,6 +315,8 @@
       "dataset_sha256": "3546bcf7fa3566ab5ddc7105829c28df890e34544700034c70efbe2af7639806",
       "hybrid_linkable_precision": 0.9954330708661417,
       "hybrid_linkable_recall": 0.883141923044681,
+      "hybrid_linkable_unknown_rate": 0.11280632631961326,
+      "low_unknown_ready": false,
       "hybrid_new_author_false_link_rate": 0.007153905645784996
     },
     {
@@ -310,6 +324,8 @@
       "dataset_sha256": "cf06727bf5c7241cb4729904db503c9224ad45145d780193d796e55d89eacf02",
       "hybrid_linkable_precision": 0.9990421455938697,
       "hybrid_linkable_recall": 0.894127732533219,
+      "hybrid_linkable_unknown_rate": 0.10501500214316331,
+      "low_unknown_ready": false,
       "hybrid_new_author_false_link_rate": 0.002592505302851756
     }
   ]

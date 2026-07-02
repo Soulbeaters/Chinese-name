@@ -15,6 +15,7 @@ def _result(
     hybrid_precision: float,
     hybrid_recall: float,
     new_false_link: float,
+    hybrid_unknown_rate: float = 0.13,
     threshold: float = 1.25,
 ):
     return {
@@ -36,7 +37,7 @@ def _result(
                 "precision": hybrid_precision,
                 "recall": hybrid_recall,
                 "f1": 0.91,
-                "unknown_rate": 0.13,
+                "unknown_rate": hybrid_unknown_rate,
             },
         },
         "new_author_methods": {
@@ -59,6 +60,8 @@ def test_online_quality_gate_passes_for_high_precision_low_false_link_hybrid():
             "hybrid_new_author_false_link_rate": 0.01,
             "hybrid_recall_gain_vs_framework": 0.0,
             "hypergraph_support_threshold": 1.25,
+            "low_unknown_linkable_recall": 0.90,
+            "low_unknown_rate": 0.10,
         },
     )
 
@@ -67,6 +70,7 @@ def test_online_quality_gate_passes_for_high_precision_low_false_link_hybrid():
     assert summary["production_checks"]["hybrid_new_author_false_link_rate"] is True
     assert summary["dataset_sha256"] == "abc123"
     assert round(summary["delta_vs_framework"]["linkable_recall"], 3) == 0.06
+    assert summary["low_unknown_ready"] is False
 
 
 def test_online_quality_gate_fails_when_new_author_false_link_is_too_high():
@@ -78,8 +82,35 @@ def test_online_quality_gate_fails_when_new_author_false_link_is_too_high():
             "hybrid_new_author_false_link_rate": 0.01,
             "hybrid_recall_gain_vs_framework": 0.0,
             "hypergraph_support_threshold": 1.25,
+            "low_unknown_linkable_recall": 0.90,
+            "low_unknown_rate": 0.10,
         },
     )
 
     assert summary["production_ready"] is False
     assert summary["production_checks"]["hybrid_new_author_false_link_rate"] is False
+
+
+def test_online_quality_gate_reports_low_unknown_readiness_separately():
+    summary = dataset_summary(
+        "synthetic",
+        _result(
+            hybrid_precision=0.996,
+            hybrid_recall=0.93,
+            hybrid_unknown_rate=0.07,
+            new_false_link=0.006,
+        ),
+        {
+            "hybrid_linkable_precision": 0.995,
+            "hybrid_new_author_false_link_rate": 0.01,
+            "hybrid_recall_gain_vs_framework": 0.0,
+            "hypergraph_support_threshold": 1.25,
+            "low_unknown_linkable_recall": 0.90,
+            "low_unknown_rate": 0.10,
+        },
+    )
+
+    assert summary["production_ready"] is True
+    assert summary["low_unknown_ready"] is True
+    assert summary["low_unknown_checks"]["hybrid_linkable_recall"] is True
+    assert summary["low_unknown_checks"]["hybrid_linkable_unknown_rate"] is True

@@ -387,6 +387,7 @@ def summarize_public_evidence(
         "balanced_cluster_ready": public_cluster_gate["production_ready"],
         "strict_cluster_ready": public_strict_cluster_gate["production_ready"],
         "online_risk_control_ready": public_online_gate["production_ready"],
+        "online_low_unknown_ready": public_online_gate.get("low_unknown_ready"),
         "scope": public_online_gate.get("scope"),
         "balanced_cluster_datasets": [
             {
@@ -421,8 +422,12 @@ def summarize_public_evidence(
                 "history_mentions": item["history_mentions"],
                 "test_mentions": item["test_mentions"],
                 "production_ready": item["production_ready"],
+                "low_unknown_ready": item.get("low_unknown_ready"),
                 "hybrid_linkable_precision": item["hybrid_linkable"]["precision"],
                 "hybrid_linkable_recall": item["hybrid_linkable"]["recall"],
+                "hybrid_linkable_unknown_rate": item["hybrid_linkable"].get(
+                    "unknown_rate"
+                ),
                 "hybrid_new_author_false_link_rate": item["hybrid_new_author"][
                     "false_link_rate"
                 ],
@@ -480,6 +485,11 @@ def write_final_summary(
         if public_validation is not None
         else None
     )
+    public_low_unknown_ready = (
+        public_validation["online_low_unknown_ready"]
+        if public_validation is not None
+        else None
+    )
     if public_validation is not None:
         dataset_hash_checks.extend(public_validation["dataset_hash_checks"])
     summary = {
@@ -504,8 +514,14 @@ def write_final_summary(
         "dataset_hash_checks": dataset_hash_checks,
         "cluster_production_ready": cluster_gate["production_ready"],
         "online_production_ready": online_gate["production_ready"],
+        "online_low_unknown_ready": online_gate.get("low_unknown_ready"),
         "threshold_sweep_ready": threshold_sweep is not None,
         "public_risk_control_ready": public_risk_control_ready,
+        "public_low_unknown_ready": public_low_unknown_ready,
+        "low_unknown_production_ready": (
+            online_gate.get("low_unknown_ready") is True
+            and (public_low_unknown_ready is not False)
+        ),
         "production_ready": (
             cluster_gate["production_ready"]
             and online_gate["production_ready"]
@@ -529,6 +545,10 @@ def write_final_summary(
                 "dataset_sha256": item.get("dataset_sha256"),
                 "hybrid_linkable_precision": item["hybrid_linkable"]["precision"],
                 "hybrid_linkable_recall": item["hybrid_linkable"]["recall"],
+                "hybrid_linkable_unknown_rate": item["hybrid_linkable"].get(
+                    "unknown_rate"
+                ),
+                "low_unknown_ready": item.get("low_unknown_ready"),
                 "hybrid_new_author_false_link_rate": (
                     item["hybrid_new_author"]["false_link_rate"]
                 ),

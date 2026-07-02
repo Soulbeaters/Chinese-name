@@ -3,7 +3,9 @@
     "hybrid_linkable_precision": 0.995,
     "hybrid_new_author_false_link_rate": 0.01,
     "hybrid_recall_gain_vs_framework": 0.0,
-    "hypergraph_support_threshold": 1.25
+    "hypergraph_support_threshold": 1.25,
+    "low_unknown_linkable_recall": 0.9,
+    "low_unknown_rate": 0.1
   },
   "datasets": [
     {
@@ -43,7 +45,12 @@
         "hybrid_new_author_false_link_rate": true,
         "hybrid_recall_gain_vs_framework": true
       },
-      "production_ready": true
+      "production_ready": true,
+      "low_unknown_checks": {
+        "hybrid_linkable_recall": false,
+        "hybrid_linkable_unknown_rate": false
+      },
+      "low_unknown_ready": false
     },
     {
       "label": "Advisor DOI ORCID",
@@ -82,9 +89,15 @@
         "hybrid_new_author_false_link_rate": true,
         "hybrid_recall_gain_vs_framework": true
       },
-      "production_ready": true
+      "production_ready": true,
+      "low_unknown_checks": {
+        "hybrid_linkable_recall": false,
+        "hybrid_linkable_unknown_rate": false
+      },
+      "low_unknown_ready": false
     }
   ],
   "production_ready": true,
+  "low_unknown_ready": false,
   "scope": "LINK/NEW/UNKNOWN online gate; UNKNOWN remains a manual-review output, not an automatic merge."
 }

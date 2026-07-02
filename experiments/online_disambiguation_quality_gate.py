@@ -15,6 +15,8 @@ DEFAULT_MIN_LINKABLE_PRECISION = 0.995
 DEFAULT_MAX_NEW_AUTHOR_FALSE_LINK = 0.01
 DEFAULT_MIN_RECALL_GAIN = 0.0
 DEFAULT_MIN_HYPERGRAPH_SUPPORT_THRESHOLD = 1.25
+DEFAULT_MIN_LOW_UNKNOWN_LINKABLE_RECALL = 0.90
+DEFAULT_MAX_LOW_UNKNOWN_RATE = 0.10
 
 
 def load_result(path: Path) -> dict[str, Any]:
@@ -54,6 +56,14 @@ def dataset_summary(
             recall_gain >= thresholds["hybrid_recall_gain_vs_framework"]
         ),
     }
+    low_unknown_checks = {
+        "hybrid_linkable_recall": (
+            hybrid_link["recall"] >= thresholds["low_unknown_linkable_recall"]
+        ),
+        "hybrid_linkable_unknown_rate": (
+            hybrid_link["unknown_rate"] <= thresholds["low_unknown_rate"]
+        ),
+    }
     return {
         "label": label,
         "dataset": result["dataset"],
@@ -89,6 +99,8 @@ def dataset_summary(
         },
         "production_checks": checks,
         "production_ready": all(checks.values()),
+        "low_unknown_checks": low_unknown_checks,
+        "low_unknown_ready": all(checks.values()) and all(low_unknown_checks.values()),
     }
 
 
@@ -104,6 +116,7 @@ def build_summary(
         "thresholds": thresholds,
         "datasets": datasets,
         "production_ready": all(item["production_ready"] for item in datasets),
+        "low_unknown_ready": all(item["low_unknown_ready"] for item in datasets),
         "scope": (
             "LINK/NEW/UNKNOWN online gate; UNKNOWN remains a manual-review output, "
             "not an automatic merge."
@@ -112,26 +125,33 @@ def build_summary(
 
 
 def print_table(summary: dict[str, Any]) -> None:
-    print("| Dataset | Hybrid link P/R/F1 | Recall gain | New false-link | Threshold | Gate |")
-    print("|---|---:|---:|---:|---:|---|")
+    print(
+        "| Dataset | Hybrid link P/R/F1 | UNKNOWN | Recall gain | New false-link | "
+        "Threshold | Risk gate | Low-UNKNOWN |"
+    )
+    print("|---|---:|---:|---:|---:|---:|---|---|")
     for item in summary["datasets"]:
         link = item["hybrid_linkable"]
         new = item["hybrid_new_author"]
         delta = item["delta_vs_framework"]
         gate = "PASS" if item["production_ready"] else "FAIL"
+        low_unknown = "PASS" if item["low_unknown_ready"] else "FAIL"
         print(
-            "| {label} | {p:.3f}/{r:.3f}/{f:.3f} | {gain:+.3f} | "
-            "{false:.3f} ({false_links}/{n}) | {threshold:.3f} | {gate} |".format(
+            "| {label} | {p:.3f}/{r:.3f}/{f:.3f} | {unknown:.3f} | {gain:+.3f} | "
+            "{false:.3f} ({false_links}/{n}) | {threshold:.3f} | {gate} | "
+            "{low_unknown} |".format(
                 label=item["label"],
                 p=pct(link["precision"]),
                 r=pct(link["recall"]),
                 f=pct(link["f1"]),
+                unknown=pct(link["unknown_rate"]),
                 gain=pct(delta["linkable_recall"]),
                 false=pct(new["false_link_rate"]),
                 false_links=new["false_links"],
                 n=new["evaluated_mentions"],
                 threshold=item["hypergraph_support_threshold"],
                 gate=gate,
+                low_unknown=low_unknown,
             )
         )
 
@@ -166,6 +186,16 @@ def main() -> None:
         type=float,
         default=DEFAULT_MIN_HYPERGRAPH_SUPPORT_THRESHOLD,
     )
+    parser.add_argument(
+        "--min-low-unknown-linkable-recall",
+        type=float,
+        default=DEFAULT_MIN_LOW_UNKNOWN_LINKABLE_RECALL,
+    )
+    parser.add_argument(
+        "--max-low-unknown-rate",
+        type=float,
+        default=DEFAULT_MAX_LOW_UNKNOWN_RATE,
+    )
     parser.add_argument("--warn-only", action="store_true")
     args = parser.parse_args()
 
@@ -178,6 +208,8 @@ def main() -> None:
             args.min_hybrid_recall_gain_vs_framework
         ),
         "hypergraph_support_threshold": args.min_hypergraph_support_threshold,
+        "low_unknown_linkable_recall": args.min_low_unknown_linkable_recall,
+        "low_unknown_rate": args.max_low_unknown_rate,
     }
     summary = build_summary(args.result, thresholds)
 
