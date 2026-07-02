@@ -148,6 +148,34 @@ This simple baseline is **not** a production candidate:
 
 The simple model is too conservative and does not solve the high-UNKNOWN problem. Its value is diagnostic: pairwise scalar features alone are not enough. The next supervised iteration should use profile-level/ranking features and a stronger optional learner such as LightGBM, with threshold calibration on validation folds.
 
+### Stage B2: candidate-capped graph relaxation
+
+On 2026-07-02, a read-only scan tested whether the current hybrid could safely lower UNKNOWN by accepting graph-supported predictions at `support >= 0.5` only when the online candidate set is small. This was tested before changing the production algorithm.
+
+Best internal candidate:
+
+| Dataset | Rule | Link precision | Link recall | UNKNOWN | New-author false-link | Decision |
+|---|---|---:|---:|---:|---:|---|
+| Crossref ORCID | support >= 0.5 and candidates <= 3 | 99.524% | 89.407% | 10.166% | 0.982% | Not adopted |
+| Advisor DOI ORCID | support >= 0.5 and candidates <= 3 | 99.906% | 91.556% | 8.358% | 0.299% | Not adopted |
+
+This almost improves the internal online gate, but it still misses the low-UNKNOWN target on Crossref (`recall >= 90%`, `UNKNOWN <= 10%`) and has a smaller precision safety margin than the current production setting.
+
+Public-dataset check:
+
+| Dataset | Profile/rule | Link precision | Link recall | UNKNOWN | New-author false-link | Decision |
+|---|---|---:|---:|---:|---:|---|
+| DBLP public | balanced, support >= 0.5 and candidates <= 3 | 99.597% | 82.786% | 16.879% | 0.534% | Not enough |
+| LAGOS-AND public | strict, support >= 0.5 and candidates <= 3 | 100.000% | 1.563% | 98.438% | 0.055% | No practical gain |
+| S2AND public | strict, support >= 0.5 and candidates <= 3 | 100.000% | 1.129% | 98.871% | 0.000% | No practical gain |
+
+Balanced-profile scans on LAGOS-AND and S2AND were also rejected because they lowered UNKNOWN only by creating too many false links:
+
+- LAGOS-AND balanced online: link precision `88.254%`, new-author false-link `14.678%`.
+- S2AND balanced online: link precision `87.593%`, new-author false-link `8.143%`.
+
+Conclusion: a small rule relaxation is not sufficient. This rule should not be added to production. Low-UNKNOWN progress requires a profile-level ranker with stronger public training data and explicit new-author rejection.
+
 ### Stage C: graph/GNN extension
 
 1. Build a heterogeneous graph schema:
