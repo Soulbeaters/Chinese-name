@@ -176,6 +176,22 @@ Balanced-profile scans on LAGOS-AND and S2AND were also rejected because they lo
 
 Conclusion: a small rule relaxation is not sufficient. This rule should not be added to production. Low-UNKNOWN progress requires a profile-level ranker with stronger public training data and explicit new-author rejection.
 
+### Stage B3: sampled mention-level ranking diagnostic
+
+On 2026-07-02, `experiments/analyze_author_linker_ranking_ceiling.py` tested mention-level candidate ranking over the existing exported pairwise feature table. The run used `428,436` feature rows from Crossref ORCID, Advisor DOI ORCID, DBLP, LAGOS-AND, and S2AND, with leave-one-dataset-out threshold and margin selection. The result is saved as `results/article2_author_linker_ranking_ceiling_20260702.json`.
+
+Best observed held-out results still failed the low-UNKNOWN gate:
+
+| Scorer | Weakest held-out behavior | Main failure |
+|---|---|---|
+| `framework_balanced_score` | S2AND: precision 97.769%, recall 41.569%, UNKNOWN 57.482%, new false-link 6.705% | false links and UNKNOWN |
+| `framework_strict_score` | S2AND: precision 98.051%, recall 21.396%, UNKNOWN 78.178%, new false-link 1.686% | recall and false links |
+| `context_score` | S2AND: precision 97.368%, recall 42.852%, UNKNOWN 55.990%, new false-link 6.966% | false links and UNKNOWN |
+
+Internal datasets also did not meet the low-UNKNOWN target. For example, `framework_balanced_score` on Crossref reached precision `99.786%`, but recall was only `49.951%` and UNKNOWN was `49.942%`; Advisor DOI ORCID reached recall `73.283%` with new-author false-link `1.727%`, above the current `1%` false-link gate.
+
+Conclusion: the existing sampled pairwise feature table is useful for diagnostics, but it is not enough for a production low-UNKNOWN ranker. The next implementation should export true mention-to-profile candidate features from the online benchmark, including candidate coverage, top-k profile scores, profile-level coauthor/affiliation aggregation, graph support, and explicit new-author negative examples.
+
 ### Stage C: graph/GNN extension
 
 1. Build a heterogeneous graph schema:
